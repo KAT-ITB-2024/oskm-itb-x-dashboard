@@ -9,7 +9,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:update": "yarn remove @katitb2024/database && yarn add @katitb2024/database@git+https://github.com/KAT-ITB-2024/database-oskm.git#98f14c17b4ab37cce135591870ae18529bde873e && yarn db:migrate",
+    "db:update": "yarn remove @katitb2024/database && yarn add @katitb2024/database@git+https://github.com/KAT-ITB-2024/database-oskm.git#master && yarn db:migrate",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.1.0",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "@katitb2024/database": "git+https://github.com/KAT-ITB-2024/database-oskm.git#98f14c17b4ab37cce135591870ae18529bde873e",
+    "@katitb2024/database": "git+https://github.com/KAT-ITB-2024/database-oskm.git#master",
     "@tanstack/react-query": "^5.39.0",
     "@trpc/client": "next",
     "@trpc/react-query": "next",
