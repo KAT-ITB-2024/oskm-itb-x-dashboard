@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.1.0",
-    "@t3-oss/env-nextjs": "^0.10.1",
     "@katitb2024/database": "git+https://github.com/KAT-ITB-2024/database-oskm.git#98f14c17b4ab37cce135591870ae18529bde873e",
+    "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.39.0",
     "@trpc/client": "next",
     "@trpc/react-query": "next",
@@ -30,6 +30,7 @@
     "postgres": "^3.4.4",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
+    "react-icons": "^5.2.1",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
     "zod": "^3.23.3"
