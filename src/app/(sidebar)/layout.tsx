@@ -7,9 +7,9 @@ export default function SidebarLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-20 bg-[url('/sidebar/bg-dashboard.svg')] bg-cover bg-no-repeat px-[5%] py-12">
+    <div className="flex min-h-[167vh] gap-20 bg-[url('/sidebar/bg-dashboard.svg')] bg-cover bg-no-repeat px-[5%] py-12">
       <Sidebar />
-      <div className="relative min-h-screen w-full rounded-lg bg-white px-[5%] py-16">
+      <div className="relative ml-40 min-h-screen w-full rounded-lg bg-white px-[5%] py-16">
         <Image
           src={"/sidebar/coral-dashboard.svg"}
           width={192}
