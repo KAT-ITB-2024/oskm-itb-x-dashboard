@@ -86,10 +86,7 @@ export default function Sidebar() {
         </div>
 
         <div className="mt-16 flex aspect-square w-28 cursor-pointer items-center justify-center rounded-full bg-[url('/sidebar/bg-sidebar-item.svg')] bg-cover bg-no-repeat">
-          <BiLogOut
-            size={26}
-            className={`mt-12 ${pathname.startsWith("/merchandise") ? "text-pink-500" : "text-black"}`}
-          />
+          <BiLogOut size={26} className={`mt-12 text-red-500`} />
         </div>
       </div>
       <Image
