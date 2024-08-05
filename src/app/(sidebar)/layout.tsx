@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Sidebar from "../components/Sidebar";
-import DashboardHeader from "../components/DashboardHeader";
 
 export default function SidebarLayout({
   children,
