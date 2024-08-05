@@ -1,5 +1,8 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { forgotRouter } from "./routers/forgot";
+import { utilityRouter } from "./routers/utility";
+import { assignmentRouter } from "./routers/assignment";
+import { presenceRouter } from "./routers/presence";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +11,10 @@ import { forgotRouter } from "./routers/forgot";
  */
 export const appRouter = createTRPCRouter({
   forgot: forgotRouter,
+  // uncomment the following lines to enable the routers
+  // assignment: assignmentRouter,
+  // presence: presenceRouter,
+  // utility: utilityRouter,
 });
 
 // export type definition of API
