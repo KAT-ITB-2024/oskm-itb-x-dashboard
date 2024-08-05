@@ -59,6 +59,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.nim = user.nim;
         token.role = user.role;
+        token.email = user.email;
       }
       return token;
     },
@@ -69,6 +70,7 @@ export const authOptions: NextAuthOptions = {
         id: token.id,
         nim: token.nim,
         role: token.role,
+        email: token.email,
       },
     }),
   },
@@ -126,8 +128,8 @@ export const authOptions: NextAuthOptions = {
             columns: {
               id: true,
               nim: true,
-              email: true,
               role: true,
+              email: true,
               password: true,
             },
             where: eq(users.email, email),
@@ -150,9 +152,9 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: user.id,
-            email: user.email,
             nim: user.nim,
             role: user.role,
+            email: user.email,
           };
         } catch (error) {
           if (error instanceof TRPCError) {
