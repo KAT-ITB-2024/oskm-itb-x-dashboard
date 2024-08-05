@@ -10,7 +10,7 @@ export default function NewPassword({
   token: string;
 }) {
   const [password, setPassword] = useState("");
-  const generateForgotPassword = api.forgot.resetPassword.useMutation();
+  const resetPassword = api.forgot.resetPassword.useMutation();
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-2 bg-black">
@@ -23,12 +23,11 @@ export default function NewPassword({
         className="bg-white p-2"
         onClick={async () => {
           try {
-            await generateForgotPassword.mutateAsync({
+            await resetPassword.mutateAsync({
               email,
               password,
               token,
             });
-            console.log("Check email (or server log)");
           } catch (error) {
             console.log(error);
           }
