@@ -1,18 +1,19 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import {
+  type DefaultUser,
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
-} from "next-auth";
-import { type Adapter } from "next-auth/adapters";
-
-import { db } from "~/server/db";
-import {
-  accounts,
-  sessions,
-  users,
-  verificationTokens,
-} from "~/server/db/schema";
+} from 'next-auth';
+import { type Adapter } from 'next-auth/adapters';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { env } from '~/env';
+import { db } from '~/server/db';
+import { users, type UserRole } from '@katitb2024/database';
+import { type DefaultJWT } from 'next-auth/jwt';
+import { TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
+import { compare } from 'bcrypt';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -20,19 +21,23 @@ import {
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+      nim: string;
+      role: UserRole;
+    } & DefaultSession['user'];
+  }
+  interface User extends DefaultUser {
+    nim: string;
+    role: UserRole;
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface JWT extends DefaultJWT {
+    nim: string;
+    role: UserRole;
+  }
 }
 
 /**
@@ -41,21 +46,33 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  secret: env.NEXTAUTH_SECRET,
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+        token.nim = user.nim;
+        token.role = user.role;
+      }
+      return token;
+    },
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token.id,
+        nim: token.nim,
+        role: token.role,
       },
     }),
   },
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }) as Adapter,
+  adapter: DrizzleAdapter(db) as Adapter,
   providers: [
     /**
      * ...add more providers here.
@@ -66,7 +83,94 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
+    CredentialsProvider({
+      name: 'Credentials',
+
+      credentials: {
+        nim: {
+          label: 'NIM',
+          type: 'text',
+          placeholder: 'Gunakan NIM TPB Anda',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: 'Gunakan password Anda',
+        },
+      },
+
+      async authorize(credentials) {
+        try {
+          if (!credentials) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Credentials are required',
+            });
+          }
+
+          if (!credentials.nim) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'NIM is required',
+            });
+          }
+
+          if (!credentials.password) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Password is required',
+            });
+          }
+
+          const { nim, password } = credentials;
+
+          const user = await db.query.users.findFirst({
+            columns: {
+              id: true,
+              nim: true,
+              role: true,
+              password: true,
+            },
+            where: eq(users.nim, nim),
+          });
+
+          if (!user) {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'User not found',
+            });
+          }
+
+          const isValidPassword = await compare(password, user.password);
+
+          if (!isValidPassword) {
+            throw new TRPCError({
+              code: 'UNAUTHORIZED',
+              message: 'Invalid Credentials',
+            });
+          }
+
+          return {
+            id: user.id,
+            nim: user.nim,
+            role: user.role,
+          };
+        } catch (error) {
+          if (error instanceof TRPCError) {
+            throw error;
+          } else {
+            throw new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              cause: error,
+            });
+          }
+        }
+      },
+    }),
   ],
+  pages: {
+    signIn: '/login',
+  },
 };
 
 /**
