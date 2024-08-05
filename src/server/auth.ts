@@ -13,7 +13,7 @@ import { users, type UserRole } from "@katitb2024/database";
 import { type DefaultJWT } from "next-auth/jwt";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { compare, hash } from "bcrypt";
+import { compare } from "bcrypt";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
