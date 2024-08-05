@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BiLogOut } from "react-icons/bi";
 import { FaShoppingCart } from "react-icons/fa";
 import { GiAlliedStar } from "react-icons/gi";
 import { IoMdCalendar } from "react-icons/io";
@@ -82,6 +83,13 @@ export default function Sidebar() {
               className={`mt-12 ${pathname.startsWith("/merchandise") ? "text-pink-500" : "text-black"}`}
             />
           </Link>
+        </div>
+
+        <div className="mt-16 flex aspect-square w-28 cursor-pointer items-center justify-center rounded-full bg-[url('/sidebar/bg-sidebar-item.svg')] bg-cover bg-no-repeat">
+          <BiLogOut
+            size={26}
+            className={`mt-12 ${pathname.startsWith("/merchandise") ? "text-pink-500" : "text-black"}`}
+          />
         </div>
       </div>
       <Image

@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-.sidebar-item {
-  border-radius: 180px;
-  background: url("/public/sidebar/bg-sidebar-item.svg") lightgray 50% / cover
-    no-repeat;
-  box-shadow: 4px 6px 50px 0px rgba(255, 191, 81, 0.8);
+.dashboard-title-text {
+  background: linear-gradient(90deg, #0010a4 20%, #64b1f7 80%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
