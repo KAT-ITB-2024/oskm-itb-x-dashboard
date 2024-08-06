@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { env } from "~/env";
 import { hash } from "bcrypt";
 
-import { createTransport } from "nodemailer";
+import { createTransport, TransportOptions } from "nodemailer";
 import { google } from "googleapis";
 import type Mail from "nodemailer/lib/mailer";
 const OAuth2 = google.auth.OAuth2;
@@ -34,9 +34,7 @@ const createTransporter = async () => {
   });
 
   const transporter = createTransport({
-    // eslint-disable-next-line
-    // @ts-ignore
-    service: "gmail",
+    service: "Gmail",
     auth: {
       type: "OAuth2",
       user: env.MAILER_FROM,
@@ -45,7 +43,7 @@ const createTransporter = async () => {
       clientSecret: env.MAILER_CLIENT_SECRET,
       refreshToken: env.MAILER_REFRESH_TOKEN,
     },
-  });
+  } as TransportOptions);
 
   await transporter.verify();
 
