@@ -4,8 +4,11 @@ import { Button } from "~/components/ui/button";
 
 export default function MametAddAssignment() {
   return (
-    <div className="flex w-full flex-col items-center justify-start px-28">
-      <form action="" className="flex w-full flex-col gap-4">
+    <div className="flex w-full flex-col items-center justify-start">
+      <form
+        action=""
+        className="flex max-h-screen w-full flex-col gap-4 overflow-y-auto px-28"
+      >
         <div className="flex flex-col">
           <label className="text-[#0010A4]">
             Judul Tugas<span className="text-red-500">*</span>
@@ -114,13 +117,13 @@ export default function MametAddAssignment() {
             />
           </div>
         </div>
-        <div className="my-10 flex justify-between">
-          <Button variant="destructive" className="w-[110px]">
-            Batal
-          </Button>
-          <Button className="w-[110px] bg-[#0010A4]">Submit</Button>
-        </div>
       </form>
+      <div className="my-10 flex w-full justify-between px-28">
+        <Button variant="destructive" className="w-[110px]">
+          Batal
+        </Button>
+        <Button className="w-[110px] bg-[#0010A4]">Submit</Button>
+      </div>
     </div>
   );
 }
