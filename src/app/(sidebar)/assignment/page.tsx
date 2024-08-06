@@ -1,10 +1,12 @@
-import DashboardHeader from "~/app/components/DashboardHeader";
+import React from "react";
+import MametNavigationAssigment from "./components/MametNavigationAssigment";
 
 export default function Page() {
   return (
     <div>
-      <DashboardHeader title="Assignment" />
-      <p>Page</p>
+      <div className="flex flex-col gap-4">
+        <MametNavigationAssigment />
+      </div>
     </div>
   );
 }
