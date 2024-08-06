@@ -118,6 +118,11 @@ export const forgotRouter = createTRPCRouter({
       } catch (error) {
         console.error("Failed to send email: ", error);
         console.log(`Forgot password URL: ${URL}`);
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to send email, try again later",
+        });
       }
     }),
   resetPassword: publicProcedure
