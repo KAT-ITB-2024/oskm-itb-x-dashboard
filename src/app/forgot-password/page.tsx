@@ -1,6 +1,6 @@
+import { validateToken } from "~/services/forgotToken";
 import ForgotForm from "./component/ForgotForm";
 import NewPassword from "./component/NewPasswordForm";
-import { validateToken } from "~/server/api/routers/forgot";
 
 export default async function Page({
   searchParams,

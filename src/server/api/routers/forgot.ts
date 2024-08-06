@@ -3,81 +3,11 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { users } from "@katitb2024/database";
-import { randomBytes } from "crypto";
 import { eq } from "drizzle-orm";
 import { env } from "~/env";
 import { hash } from "bcrypt";
-
-import { createTransport, TransportOptions } from "nodemailer";
-import { google } from "googleapis";
-import type Mail from "nodemailer/lib/mailer";
-const OAuth2 = google.auth.OAuth2;
-
-const createTransporter = async () => {
-  const oauth2Client = new OAuth2(
-    env.MAILER_CLIENT_ID,
-    env.MAILER_CLIENT_SECRET,
-    "https://developers.google.com/oauthplayground",
-  );
-
-  oauth2Client.setCredentials({
-    refresh_token: env.MAILER_REFRESH_TOKEN,
-  });
-
-  const accessToken = await new Promise((resolve, reject) => {
-    oauth2Client.getAccessToken((err, token) => {
-      if (err) {
-        reject("Failed to create access token :(");
-      }
-      resolve(token);
-    });
-  });
-
-  const transporter = createTransport({
-    service: "Gmail",
-    auth: {
-      type: "OAuth2",
-      user: env.MAILER_FROM,
-      accessToken,
-      clientId: env.MAILER_CLIENT_ID,
-      clientSecret: env.MAILER_CLIENT_SECRET,
-      refreshToken: env.MAILER_REFRESH_TOKEN,
-    },
-  } as TransportOptions);
-
-  await transporter.verify();
-
-  return transporter;
-};
-
-// Based on: https://dev.to/chandrapantachhetri/sending-emails-securely-using-node-js-nodemailer-smtp-gmail-and-oauth2-g3a
-const sendEmail = async (emailOptions: Mail.Options) => {
-  const emailTransporter = await createTransporter();
-  await emailTransporter.sendMail({ ...emailOptions, from: env.MAILER_FROM });
-};
-
-const forgotToken: Record<
-  string,
-  | {
-      token: string;
-      expired: number;
-    }
-  | undefined
-> = {};
-
-export function validateToken({
-  email,
-  token,
-}: {
-  email: string;
-  token: string;
-}) {
-  const item = forgotToken[email];
-  if (!item) return false;
-  if (item.token != token) return false;
-  if (Date.now() > item.expired) return false;
-  return true;
-}
+import { sendEmail } from "~/services/mail";
+import { clearToken, createToken, validateToken } from "~/services/forgotToken";
 
 const forgotPasswordURL = `${env.NEXTAUTH_URL}/forgot-password`;
 export const forgotRouter = createTRPCRouter({
@@ -98,12 +28,7 @@ export const forgotRouter = createTRPCRouter({
           message: "Email not found",
         });
 
-      const token = randomBytes(64).toString("hex");
-      forgotToken[email] = {
-        expired: Date.now() + 60 * 60 * 1000,
-        token,
-      };
-
+      const token = createToken(email);
       const data = { email, token };
       const URL = `${forgotPasswordURL}?${new URLSearchParams(data).toString()}`;
 
@@ -146,6 +71,6 @@ export const forgotRouter = createTRPCRouter({
           password: await hash(input.password, 10),
         })
         .where(eq(users.email, input.email));
-      forgotToken[input.email] = undefined;
+      clearToken(input.email);
     }),
 });
