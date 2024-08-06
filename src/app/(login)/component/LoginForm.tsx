@@ -1,7 +1,7 @@
 export default function LoginForm() {
   return (
     <div>
-      <p>LoginForm</p>
+      <p className="">LoginForm</p>
     </div>
   );
 }

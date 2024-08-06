@@ -6,7 +6,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        rem: "var(--font-rem)",
+        mogula: "var(--font-mogula)",
       },
     },
   },
