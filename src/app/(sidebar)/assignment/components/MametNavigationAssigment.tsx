@@ -1,47 +1,35 @@
 "use client";
 import React from "react";
-import MametListAssignment from "./MametListAssignment";
-import MametAddAssignment from "./MametAddAssignment";
-import DashboardHeader from "~/app/components/DashboardHeader";
+import { useRouter } from "next/navigation";
 
-export default function MametNavigationAssigment() {
-  const [checked, setChecked] = React.useState<string>("Assignment List");
-
-  const handleToggle = (value: string) => {
-    setChecked(value);
-  };
+export default function MametNavigationAssigment({ title }: { title: string }) {
+  const router = useRouter();
   return (
     <>
-      <DashboardHeader title="Assignment" />
       <div className="flex w-full">
         <div
-          aria-checked={checked === "Assignment List"}
+          aria-checked={title === "Assignment List"}
           className={`flex h-12 w-1/2 cursor-pointer items-center justify-center rounded-l-lg border-2 font-bold ${
-            checked === "Assignment List"
+            title === "Assignment List"
               ? "border-0 bg-gradient-to-r from-[#0010A4] to-[#EE1192] text-white"
               : "text-[#0010A4]"
           }`}
-          onClick={() => handleToggle("Assignment List")}
+          onClick={() => router.push("/assignment")}
         >
           Daftar Tugas
         </div>
         <div
-          aria-checked={checked === "Add Assignment"}
+          aria-checked={title === "Add Assignment"}
           className={`flex h-12 w-1/2 cursor-pointer items-center justify-center rounded-r-lg border-2 font-bold ${
-            checked === "Add Assignment"
+            title === "Add Assignment"
               ? "border-0 bg-gradient-to-r from-[#0010A4] to-[#EE1192] text-white"
               : "text-[#0010A4]"
           }`}
-          onClick={() => handleToggle("Add Assignment")}
+          onClick={() => router.push("/assignment/tambah")}
         >
           Tambah Tugas
         </div>
       </div>
-      {checked === "Assignment List" ? (
-        <MametListAssignment />
-      ) : (
-        <MametAddAssignment />
-      )}
     </>
   );
 }
