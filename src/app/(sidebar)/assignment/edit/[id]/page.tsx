@@ -1,3 +1,5 @@
+"use client";
+import React from "react";
 import { MdUpload } from "react-icons/md";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import { IoChevronBackSharp } from "react-icons/io5";
@@ -5,8 +7,9 @@ import Link from "next/link";
 import { Button } from "~/components/ui/button";
 
 export default function Page() {
+  const [questStaus, setQuestStatus] = React.useState<string>("Side Quest");
   return (
-    <div>
+    <>
       <DashboardHeader title="Edit Assignment" />
       <Link href="/assignment" className="my-6 flex items-center gap-3">
         <IoChevronBackSharp className="cursor-pointer text-2xl text-[#0010A4]" />
@@ -105,15 +108,8 @@ export default function Page() {
             </div>
             <input id="file-upload" type="file" className="hidden" />
           </div>
-          <div className="flex gap-6">
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                className="h-[24px] w-[24px] rounded-lg border-2 border-[#0010A4]"
-              />
-              <label className="text-[#0B46E8]">Side Quest</label>
-            </div>
-            <div className="flex w-full flex-col">
+          {questStaus === "Side Quest" ? (
+            <div className="flex flex-col">
               <label className="text-[#0010A4]">
                 Poin<span className="text-red-500">*</span>
               </label>
@@ -123,7 +119,7 @@ export default function Page() {
                 className="w-1/3 rounded-lg border-2 border-gray-300 px-6 py-3"
               />
             </div>
-          </div>
+          ) : null}
           <div className="my-10 flex justify-between">
             <Button variant="destructive" className="w-[110px]">
               Batal
@@ -132,6 +128,6 @@ export default function Page() {
           </div>
         </form>
       </div>
-    </div>
+    </>
   );
 }
