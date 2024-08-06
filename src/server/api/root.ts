@@ -1,5 +1,4 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { forgotRouter } from "./routers/forgot";
 import { utilityRouter } from "./routers/utility";
 import { assignmentRouter } from "./routers/assignment";
 import { presenceRouter } from "./routers/presence";
@@ -11,9 +10,8 @@ import { userRouter } from "./routers/user";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  forgot: forgotRouter,
   // uncomment the following lines to enable the routers
-  // user: userRouter,
+  user: userRouter,
   // assignment: assignmentRouter,
   // presence: presenceRouter,
   // utility: utilityRouter,

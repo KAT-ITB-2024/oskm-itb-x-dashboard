@@ -4,7 +4,7 @@ import { api } from "~/trpc/react";
 
 export default function ForgotForm() {
   const [email, setEmail] = useState("");
-  const generateForgotPassword = api.forgot.createToken.useMutation();
+  const generateForgotPassword = api.user.createForgotToken.useMutation();
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-2 bg-black">

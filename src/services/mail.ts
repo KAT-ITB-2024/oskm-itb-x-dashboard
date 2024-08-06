@@ -1,4 +1,5 @@
-import { createTransport, TransportOptions } from "nodemailer";
+import { createTransport } from "nodemailer";
+import type { TransportOptions } from "nodemailer";
 import { google } from "googleapis";
 import type Mail from "nodemailer/lib/mailer";
 import { env } from "~/env";

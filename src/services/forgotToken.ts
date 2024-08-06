@@ -1,4 +1,5 @@
 import { randomBytes } from "crypto";
+import { env } from "~/env";
 
 const forgotToken: Record<
   string,
@@ -8,6 +9,8 @@ const forgotToken: Record<
     }
   | undefined
 > = {};
+
+export const forgotPasswordURL = `${env.NEXTAUTH_URL}/forgot-password`;
 
 export function clearToken(email: string) {
   forgotToken[email] = undefined;

@@ -10,7 +10,7 @@ export default function NewPassword({
   token: string;
 }) {
   const [password, setPassword] = useState("");
-  const resetPassword = api.forgot.resetPassword.useMutation();
+  const resetPassword = api.user.resetPassword.useMutation();
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-2 bg-black">
