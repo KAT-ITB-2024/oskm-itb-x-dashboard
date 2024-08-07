@@ -59,7 +59,6 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.nim = user.nim;
         token.role = user.role;
-        token.email = user.email;
       }
       return token;
     },
@@ -70,7 +69,6 @@ export const authOptions: NextAuthOptions = {
         id: token.id,
         nim: token.nim,
         role: token.role,
-        email: token.email,
       },
     }),
   },
@@ -87,11 +85,12 @@ export const authOptions: NextAuthOptions = {
      */
     CredentialsProvider({
       name: "Credentials",
+
       credentials: {
-        email: {
-          label: "Email",
+        nim: {
+          label: "NIM",
           type: "text",
-          placeholder: "Gunakan email Anda",
+          placeholder: "Gunakan NIM TPB Anda",
         },
         password: {
           label: "Password",
@@ -109,10 +108,10 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
-          if (!credentials.email) {
+          if (!credentials.nim) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Email is required",
+              message: "NIM is required",
             });
           }
 
@@ -123,16 +122,16 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
-          const { email, password } = credentials;
+          const { nim, password } = credentials;
+
           const user = await db.query.users.findFirst({
             columns: {
               id: true,
               nim: true,
               role: true,
-              email: true,
               password: true,
             },
-            where: eq(users.email, email),
+            where: eq(users.nim, nim),
           });
 
           if (!user) {
@@ -143,6 +142,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           const isValidPassword = await compare(password, user.password);
+
           if (!isValidPassword) {
             throw new TRPCError({
               code: "UNAUTHORIZED",
@@ -154,7 +154,6 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             nim: user.nim,
             role: user.role,
-            email: user.email,
           };
         } catch (error) {
           if (error instanceof TRPCError) {
