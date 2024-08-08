@@ -17,6 +17,7 @@ import {
   // mametMentorProcedure,
 } from "~/server/api/trpc";
 import { resultOf } from "node_modules/@trpc/client/dist/links/internals/urlWithConnectionParams";
+import { Readable } from "stream";
 
 export const assignmentRouter = createTRPCRouter({
   getMainQuestAssignment: publicProcedure
@@ -39,6 +40,7 @@ export const assignmentRouter = createTRPCRouter({
         .from(assignmentSubmissions)
         .leftJoin(profiles, eq(assignmentSubmissions.userNim, profiles.userId))
         .where(eq(assignmentSubmissions.assignmentId, assignmentId))
+        
         .execute();
 
       if (!res) {
@@ -71,8 +73,12 @@ export const assignmentRouter = createTRPCRouter({
         ...csvRows.map((row) => row.join(",")),
       ].join("\n");
 
-      return csvContent;
-      // assuming all the creation process happened in frontend
-      // i think if converting process to happen in the backend, there's something that need to be added into the frontend
+      const buffer = Buffer.from(csvContent, 'utf-8');
+      const stream = Readable.from(buffer);
+      return {
+        fileName: `rekapNilai_${assignmentId}.csv`,
+        mimeType: 'text/csv',
+        stream,
+      };
     }),
 });
