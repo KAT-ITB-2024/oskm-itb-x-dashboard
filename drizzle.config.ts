@@ -1,12 +1,11 @@
-import { type Config } from "drizzle-kit";
-
-import { env } from "~/env";
+import { type Config } from 'drizzle-kit';
 
 export default {
-  schema: "./src/server/db/schema.ts",
-  dialect: "postgresql",
+  schema: './node_modules/@katitb2024/database/dist/schema.js',
+  dialect: 'postgresql',
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: 'postgresql://postgres:posgtres@localhost:5432/coba',
   },
-  tablesFilter: ["t3-template-app_*"],
+  out: './node_modules/@katitb2024/database/drizzle',
+  tablesFilter: ['*'],
 } satisfies Config;
