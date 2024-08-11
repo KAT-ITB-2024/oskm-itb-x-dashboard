@@ -101,8 +101,15 @@ export const userRouter = createTRPCRouter({
         .from(assignments)
 
         const countAssignmentsSubmitted = await ctx.db
-        .select({count: count(assignmentSubmissions.)})
+        .select({count: count(assignmentSubmissions)})
         .from(assignmentSubmissions)
-        .where(eq())
+        .where(eq(profiles.groupNumber, input.groupNumber))
+        .groupBy(users.nim)
+
+        const countPresences = await ctx.db
+        .select({count: count(eventPresences)})
+        .from(eventPresences)
+        .where(eq(profiles.groupNumber, input.groupNumber))
+        .groupBy(users.nim)
     }),
 });
