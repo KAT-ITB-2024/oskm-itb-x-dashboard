@@ -1,13 +1,12 @@
 // Router ini digunakan untuk segala yang berkaitan dengan assignment (tugas-tugas dan submisi)
 import {
-  Assignment,
-  AssignmentSubmission,
   assignmentSubmissions,
   profiles,
+  users
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq ,and } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -16,42 +15,40 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
-import { resultOf } from "node_modules/@trpc/client/dist/links/internals/urlWithConnectionParams";
-import { Readable } from "stream";
+import { profile } from "console";
 
 export const assignmentRouter = createTRPCRouter({
   getMainQuestAssignment: publicProcedure
-    .input(
-      z.object({
-        assignmentId: z.string(),
-      }),
-    )
+    .input(z.object({
+      assignmentId: z.string(),
+    }))
     .mutation(async ({ ctx, input }) => {
-      try{
+      try {
         const { assignmentId } = input;
 
-        const res = await ctx.db
-          .select({
-            nim: profiles.userId,
+        const results = await ctx.db
+        .select({
+            nim: assignmentSubmissions.userNim,
             nama: profiles.name,
             waktuPengumpulan: assignmentSubmissions.updatedAt,
             kelompok: profiles.group,
             nilai: assignmentSubmissions.point,
-          })
-          .from(assignmentSubmissions)
-          .leftJoin(profiles, eq(assignmentSubmissions.userNim, profiles.userId))
-          .where(eq(assignmentSubmissions.assignmentId, assignmentId))
-          
-          .execute();
+        })
+        .from(assignmentSubmissions)
+        .innerJoin(users, eq(assignmentSubmissions.userNim, users.nim))
+        .innerJoin(profiles, eq(users.id, profiles.userId))
+        .where(
+          and(
+            eq(assignmentSubmissions.assignmentId, assignmentId),
+            eq(users.nim,assignmentSubmissions.userNim),
+            eq(profiles.userId,users.id),
+          )
+        )
+        .execute();
 
-        if (!res) {
-          throw new TRPCError({
-            message: "The assignment table is empty",
-            code: "BAD_REQUEST",
-          });
-        }
         const headers = ["NIM", "Nama", "Waktu Pengumpulan", "Kelompok", "Nilai"];
-        const csvRows = res.map((result) => [
+
+        const csvRows = results.map((result) => [
           result.nim,
           result.nama,
           result.waktuPengumpulan.toLocaleString("id-ID", {
@@ -62,8 +59,6 @@ export const assignmentRouter = createTRPCRouter({
             minute: "2-digit",
             second: "2-digit",
             hour12: false,
-            dateStyle: "short",
-            timeStyle: "medium",
           }),
           result.kelompok,
           result.nilai,
@@ -74,25 +69,17 @@ export const assignmentRouter = createTRPCRouter({
           ...csvRows.map((row) => row.join(",")),
         ].join("\n");
 
-        const buffer = Buffer.from(csvContent, 'utf-8');
-        const stream = Readable.from(buffer);
         return {
           fileName: `rekapNilai_${assignmentId}.csv`,
           mimeType: 'text/csv',
-          stream,
+          content: csvContent,
         };
-      }catch(error){
-        if (error instanceof Error) {
-          throw new TRPCError({
-            message: error.message,
-            code: "BAD_REQUEST",
-          });
-        } else {
-          throw new TRPCError({
-            message: "An unknown error occurred",
-            code: "BAD_REQUEST",
-          });
-        }
+      } catch (error) {
+        console.log(error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred while generating the CSV",
+        });
       }
     }),
 });
