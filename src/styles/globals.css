@@ -67,3 +67,10 @@
     @apply bg-background text-foreground;
   }
 }
+<<<<<<< HEAD
+=======
+
+html {
+  @apply font-rem;
+}
+>>>>>>> a7d81178ac67015c43ddea5a0f3a5a0176b4528b

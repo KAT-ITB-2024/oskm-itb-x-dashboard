@@ -18,12 +18,15 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+<<<<<<< HEAD
         // Custom Variants
         pink: "bg-pink-500 text-white hover:bg-pink-500/70 [box-shadow:4px_4px_20px_0px_rgba(255,_140,_217,_0.75)]",
         pinkoutline:
           "border border-pink-500 bg-transparent hover:bg-pink-500 hover:text-white text-pink-500 [box-shadow:4px_4px_20px_0px_rgba(255,_140,_217,_0.75)]",
         yellow:
           "bg-[#FFE429] text-[#470BBB] hover:bg-[#FFE429]/70 [box-shadow:4px_4px_10px_0px_rgba(255,_191,_81,_0.75)]",
+=======
+>>>>>>> a7d81178ac67015c43ddea5a0f3a5a0176b4528b
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -47,6 +50,10 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
+<<<<<<< HEAD
+=======
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+>>>>>>> a7d81178ac67015c43ddea5a0f3a5a0176b4528b
     const Comp = asChild ? Slot : "button";
     return (
       <Comp

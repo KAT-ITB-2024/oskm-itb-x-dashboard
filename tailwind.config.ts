@@ -71,6 +71,13 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+<<<<<<< HEAD
+=======
+      },
+      fontFamily: {
+        rem: "var(--font-rem)",
+        mogula: "var(--font-mogula)",
+>>>>>>> a7d81178ac67015c43ddea5a0f3a5a0176b4528b
       },
     },
   },
