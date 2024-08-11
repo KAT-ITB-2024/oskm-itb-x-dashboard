@@ -18,7 +18,7 @@ import {
 import { profile } from "console";
 
 export const assignmentRouter = createTRPCRouter({
-  getMainQuestAssignment: publicProcedure
+  getMainQuestAssignmentCsv: publicProcedure
     .input(z.object({
       assignmentId: z.string(),
     }))

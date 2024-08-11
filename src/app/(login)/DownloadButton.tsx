@@ -5,7 +5,7 @@ import { api } from '~/trpc/react';
 
 
 function DownloadButton({ assignmentId }: { assignmentId: string }){
-  const downloadMutation = api.assignment.getMainQuestAssignment.useMutation({
+  const downloadMutation = api.assignment.getMainQuestAssignmentCsv.useMutation({
     onSuccess: (data) => {
       const blob = new Blob([data.content], { type: data.mimeType });
 
