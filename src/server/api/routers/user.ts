@@ -77,7 +77,7 @@ export const userRouter = createTRPCRouter({
         .where(eq(users.email, input.email));
       clearToken(input.email);
     }),
-    userRouter: publicProcedure
+    detailKelompok: publicProcedure
       .input(z.object({ groupNumber: z.number() }))
       .query(async ({ ctx, input }) => {
 
