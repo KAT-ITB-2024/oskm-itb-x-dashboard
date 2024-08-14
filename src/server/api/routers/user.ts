@@ -2,8 +2,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { users } from "@katitb2024/database";
-import { eq } from "drizzle-orm";
+import { assignments, assignmentSubmissions, eventPresences, profiles, users } from "@katitb2024/database";
+import { count, eq } from "drizzle-orm";
 import { hash } from "bcrypt";
 import { sendEmail } from "~/services/mail";
 import {
@@ -76,5 +76,91 @@ export const userRouter = createTRPCRouter({
         })
         .where(eq(users.email, input.email));
       clearToken(input.email);
-    }),
-});
+      }),
+  
+    detailKelompok: publicProcedure
+      .input(z.object({ userNim: z.string(), role: z.string(), groupNumber: z.number() }))
+      .query(async ({ ctx, input }) => {
+        if (input.role === "Mamet"){
+
+          const resultName = await ctx.db
+          .select({name: profiles.name})
+          .from(profiles)
+          .where(eq(profiles.groupNumber, input.groupNumber))
+    
+          const resultNim = await ctx.db
+          .select({nim: users.nim})
+          .from(users)
+          .where(eq(profiles.groupNumber, input.groupNumber))
+          
+          const resultFaculty = await ctx.db
+          .select({faculty: profiles.faculty})
+          .from(profiles)
+          .where(eq(profiles.groupNumber, input.groupNumber))      
+  
+          const countAssignments = await ctx.db
+          .select({count: count(assignments)})
+          .from(assignments)
+  
+          const countAssignmentsSubmitted = await ctx.db
+          .select({count: count(assignmentSubmissions)})
+          .from(assignmentSubmissions)
+          .where(eq(profiles.groupNumber, input.groupNumber))
+          .groupBy(users.nim) 
+
+          const countPresences = await ctx.db
+          .select({count: count(eventPresences)})
+          .from(eventPresences)
+          .where(eq(profiles.groupNumber, input.groupNumber))
+          .groupBy(users.nim)
+
+          }
+          if (input.role === "Mentor") {
+            const keluargaMentor = await ctx.db
+            .select({nomorKeluarga: profiles.groupNumber})
+            .from(profiles)
+            .where(eq(users.nim, input.userNim))
+            
+            let nomorKeluargaMentor = Number(keluargaMentor)
+  
+            if (input.groupNumber === nomorKeluargaMentor){
+  
+              const resultName = await ctx.db
+              .select({name: profiles.name})
+              .from(profiles)
+              .where(eq(profiles.groupNumber, input.groupNumber))
+        
+              const resultNim = await ctx.db
+              .select({nim: users.nim})
+              .from(users)
+              .where(eq(profiles.groupNumber, input.groupNumber))
+              
+              const resultFaculty = await ctx.db
+              .select({faculty: profiles.faculty})
+              .from(profiles)
+              .where(eq(profiles.groupNumber, input.groupNumber))      
+      
+              const countAssignments = await ctx.db
+              .select({count: count()})
+              .from(assignments)
+      
+              const countAssignmentsSubmitted = await ctx.db
+              .select({count: count(assignmentSubmissions)})
+              .from(assignmentSubmissions)
+              .where(eq(profiles.groupNumber, input.groupNumber))
+              .groupBy(users.nim)
+      
+              const countPresences = await ctx.db
+              .select({count: count(eventPresences)})
+              .from(eventPresences)
+              .where(eq(profiles.groupNumber, input.groupNumber))
+              .groupBy(users.nim)
+            }
+            else {
+              throw new TRPCError({message: "Nomor Keluarga tidak sesuai!", code: "FORBIDDEN"})
+            }
+          }
+      })
+})
+    
+      
