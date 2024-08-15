@@ -7,7 +7,8 @@ import {
   eventPresences,
   events,
   presenceTypeEnum,
-  users
+  users,
+  profiles
 } from "@katitb2024/database";
 
 
@@ -19,9 +20,34 @@ import {
   //   mentorProcedure,
   //   mametMentorProcedure,
 } from "~/server/api/trpc";
+import { Input } from "postcss";
 
 
 export const presenceRouter = createTRPCRouter({
+
+  // mendapat list presensi peserta pada sesuai keluarga dan event
+  getPresensiPeserta: publicProcedure
+  .input(
+    z.object({
+      eventId: z.string(),
+      group: z.string()
+    }))
+  .query(async ({ctx,input}) => {
+
+    const presensiPeserta = await ctx.db
+      .select({
+        nim : users.nim,
+        nama : profiles.name,
+        status : eventPresences.presenceType
+      })
+      .from(eventPresences)
+      .leftJoin(events,eq(events.id,eventPresences.eventId))
+      .leftJoin(users,eq(users.nim,eventPresences.userNim))
+      .leftJoin(profiles,eq(profiles.userId,users.id))
+      .where(and(eq(profiles.group,input.group),eq(users.role,"Peserta"),eq(eventPresences.eventId,input.eventId)))
+
+    return presensiPeserta
+  }),
 
   updatePresensiPeserta: publicProcedure
     .input(
