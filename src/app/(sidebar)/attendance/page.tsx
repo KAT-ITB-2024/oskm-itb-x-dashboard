@@ -1,12 +1,18 @@
+import React from "react";
+// import MametNavigationAssignment from "./components/MametNavigationAssignment";
 import DashboardHeader from "~/app/components/DashboardHeader";
+import MametListAttendance from "./components/MametAttendance/MametAttendance";
 
-// all attendance list
+// import { EventActions } from "./components/MametNavigationList";
+
 export default function Page() {
   return (
     <div>
-      <DashboardHeader title="Attendance" />
+      <div className="flex flex-col gap-4">
+        <DashboardHeader title="Attendance List" />
+        <MametListAttendance/>
 
-      <p>Page</p>
+      </div>
     </div>
   );
 }
