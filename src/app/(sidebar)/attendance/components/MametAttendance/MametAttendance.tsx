@@ -62,7 +62,7 @@ export default function MametListAttendance() {
   };
 
   const handleAddEvent = () => {
-    router.push('/attendance/tambah');
+    return router.push('/attendance/tambah');
   };
 
   const handleDownload = () => {
