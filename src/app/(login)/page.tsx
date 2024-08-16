@@ -1,10 +1,13 @@
-import { getServerAuthSession } from "~/server/auth";
-import LoginForm from "./component/LoginForm";
+  import { getServerAuthSession } from "~/server/auth";
+import NewAssignmentForm from "./NewAssignmentForm";
 
 export default async function Page() {
   const session = await getServerAuthSession();
   const user = session?.user;
   console.log(user);
 
-  return <LoginForm />;
+  return (<div>
+      <NewAssignmentForm/>
+    </div>
+  )
 }
