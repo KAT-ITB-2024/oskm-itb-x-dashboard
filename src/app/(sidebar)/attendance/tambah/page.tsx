@@ -7,6 +7,11 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import MametFormAttendance from "../components/MametFormAttendance";
 
+const handleSubmit = () => {
+  //function//
+
+};
+
 export default function Page() {
   return (
     <>
@@ -17,7 +22,7 @@ export default function Page() {
           Add Event 
         </h1>
       </Link>
-      <MametFormAttendance/>
+      <MametFormAttendance onSubmit={handleSubmit}/>
     </>
   );
 }
