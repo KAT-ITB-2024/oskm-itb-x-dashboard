@@ -3,8 +3,19 @@
 import React from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { useRouter } from "next/navigation";
 
-export default function MametFormAttendance() {
+interface FormProps {
+  onSubmit: () => void;
+}
+
+export default function MametFormAttendance({onSubmit} : FormProps) {
+  const router = useRouter()
+  const handleCancelDelete = () => {
+    return router.push('/attendance')
+  
+  };
+
   return (
     <div className="flex w-full flex-col items-center justify-start">
       <form
@@ -19,8 +30,7 @@ export default function MametFormAttendance() {
             placeholder="Masukkan judul event di sini..."
             className="min-h-12 rounded-lg border-2 border-gray-300 px-6 py-3"/>
         </div>
-        <div className="flex gap-6">
-          <div className="w-1/2">
+          <div className="w-full">
             <div className="flex flex-col">
               <label className="text-[#0010A4]">
                 Tanggal <span className="text-red-500">*</span>
@@ -30,8 +40,7 @@ export default function MametFormAttendance() {
                 className="rounded-lg border-2 border-gray-300 px-6 py-3"
               />
             </div>
-          </div>
-          <div className="w-1/2">
+        <div className="w-1/2">
 
           </div>
         </div>
@@ -60,11 +69,11 @@ export default function MametFormAttendance() {
           </div>
         </div>
       </form>
-      <div className="my-10 flex w-full justify-between px-28">
-        <Button variant="destructive" className="w-[110px]">
+      <div className="my-10 flex w-full justify-between px-28 py-20">
+        <Button variant="destructive" className="w-[110px]" onClick={handleCancelDelete}>
           Batal
         </Button>
-        <Button className="w-[110px] bg-[#0010A4]">Submit</Button>
+        <Button className="w-[110px] bg-[#0010A4]" onClick={onSubmit}>Submit</Button>
       </div>
     </div>
   );
