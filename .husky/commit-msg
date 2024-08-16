@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# npx --no-install commitlint --edit $1
+yarn lint
+npx pretty-quick --staged
+yarn build
