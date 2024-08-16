@@ -30,7 +30,7 @@ export const presenceRouter = createTRPCRouter({
   .input(
     z.object({
       eventId: z.string(),
-      group: z.string()
+      group: z.string(),
     }))
   .query(async ({ctx,input}) => {
 
@@ -38,7 +38,8 @@ export const presenceRouter = createTRPCRouter({
       .select({
         nim : users.nim,
         nama : profiles.name,
-        status : eventPresences.presenceType
+        status : eventPresences.presenceType,
+        updatedAt : eventPresences.updatedAt
       })
       .from(eventPresences)
       .leftJoin(events,eq(events.id,eventPresences.eventId))
@@ -90,6 +91,7 @@ export const presenceRouter = createTRPCRouter({
         .update(eventPresences)
         .set({
           presenceType: input.newPresenceType,
+          updatedAt : new Date
         })
         .where(
           and(
