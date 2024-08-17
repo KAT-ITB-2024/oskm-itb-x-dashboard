@@ -1,4 +1,17 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+
 import { IoMdSearch } from "react-icons/io";
+import { RiPencilFill } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
+import { MdDownload } from "react-icons/md";
+import Link from "next/link";
 
 export default function MametListAssignment() {
   return (
@@ -11,7 +24,38 @@ export default function MametListAssignment() {
         />
         <IoMdSearch className="text-xl text-gray-400" />
       </div>
-      <div>Table</div>
+      <Table className="border-spacing-0 rounded-lg">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="rounded-tl-lg">No</TableHead>
+            <TableHead>Judul Tugas</TableHead>
+            <TableHead>Waktu Mulai</TableHead>
+            <TableHead>Waktu Selesai</TableHead>
+            <TableHead className="rounded-tr-lg">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>1</TableCell>
+            <TableCell>Lorem Ipsum Dolor Sit Amet</TableCell>
+            <TableCell>DD:MM:YYYY 00:00 WIB</TableCell>
+            <TableCell>DD:MM:YYYY 00:00 WIB</TableCell>
+            <TableCell>
+              <div className="flex items-center justify-center gap-2 text-2xl">
+                <Link href="/assignment/edit/id">
+                  <RiPencilFill className="text-[#0010A4]" />
+                </Link>
+                <Link href="">
+                  <MdDelete className="text-[#DC2522]" />
+                </Link>
+                <Link href="">
+                  <MdDownload className="text-[#3678FF]" />
+                </Link>
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
       <nav className="flex flex-row gap-3">
         <p>Total 85 Items</p>
         <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
@@ -57,7 +101,6 @@ export default function MametListAssignment() {
           <li>
             <a
               href="#"
-              aria-current="page"
               className="z-10 flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
             >
               3
@@ -103,11 +146,9 @@ export default function MametListAssignment() {
             </a>
           </li>
         </ul>
-        <div className="h-6 rounded-md border px-3.5">
-          <p>
-            <span className="text-gray-500">20</span> / page
-          </p>
-        </div>
+        <p className="rounded-md border px-3.5 text-center">
+          <span className="text-gray-500">20</span> / page
+        </p>
       </nav>
     </div>
   );
