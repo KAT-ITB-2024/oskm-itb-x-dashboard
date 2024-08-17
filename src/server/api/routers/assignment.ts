@@ -10,34 +10,52 @@ import {
   //   mentorProcedure,
   //   mametMentorProcedure,
 } from "~/server/api/trpc";
-import { assign } from "nodemailer/lib/shared";
+
+function updateAttribute(left:any, right:any){
+    if(left){
+      return left;
+    } return right;
+}
 
 export const assignmentRouter = createTRPCRouter({
     editAssignmentMamet:publicProcedure
       .input(z.object({
           assignmentId:z.string(),
           file: z.string().optional(),
-          judul:z.string().optional(),
+          title:z.string().optional(),
           point:z.number().optional(),
-          waktuMulai:z.date().optional(),
-          waktuSelesai:z.date().optional(),
-          deskripsi:z.string().optional(),
+          startTime:z.date().optional(),
+          deadline:z.date().optional(),
+          description:z.string().optional(),
       }))
       .mutation(async({ctx,input})=>{
           try{
 
             const { assignmentId, ...updateData } = input;
 
-            const filteredUpdateData = Object.fromEntries(
-              Object.entries(updateData).filter(([_, value]) => value != null)
-            );
+            const [data] = await ctx.db.select()
+                                              .from(assignments)
+                                              .where(eq(assignments.id,assignmentId))
 
-
-
-            const updateAssignment = await ctx.db.update(assignments)
-                                                                      .set(filteredUpdateData)
-                                                                      .where(eq(assignments.id,assignmentId))
-              
+            if(!data){
+              throw new TRPCError({
+                code:"NOT_FOUND",
+                message:"There is no assignment with such id"
+              })
+            }
+            
+            // manually update each
+            data.deadline =updateAttribute(updateData.deadline,data.deadline);
+            data.description = updateAttribute(updateData.description,data.description)
+            data.file = updateAttribute(updateData.file , data.file);
+            data.point = updateAttribute(updateData.point,data.point);
+            data.startTime = updateAttribute(updateData.startTime, data.startTime);
+            data.title = updateAttribute(updateData.title,data.title);
+            data.updatedAt = new Date();
+      
+            await ctx.db.update(assignments)
+                      .set(data)
+                      .where(eq(assignments.id,assignmentId))
 
             return {
                 success:true,
