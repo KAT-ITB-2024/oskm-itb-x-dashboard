@@ -2,7 +2,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { groups, profiles, users } from "@katitb2024/database";
+import { groups, profiles, roleEnum, users } from "@katitb2024/database";
 import { and, eq, ilike } from "drizzle-orm";
 import { hash } from "bcrypt";
 import { sendEmail } from "~/services/mail";
@@ -82,8 +82,8 @@ export const userRouter = createTRPCRouter({
   getMenteeByKeluarga: publicProcedure
     .input(
       z.object({
-        keluarga: z.string(), // string untuk cari keluarga
-        search: z.string().default("").optional(), // Query searching ilike opsional
+        keluarga: z.string(),
+        search: z.string().default("").optional(),
       }),
     )
     .query(async ({ input }) => {
@@ -100,14 +100,13 @@ export const userRouter = createTRPCRouter({
           .where(
             and(
               eq(groups.name, input.keluarga),
-              eq(users.role, "Peserta"),
+              eq(users.role, roleEnum.enumValues[0]),
               input.search && input.search !== ""
                 ? ilike(profiles.name, `%${input.search}%`)
                 : undefined,
             ),
           );
 
-        // Null handling
         if (!res.length) {
           throw new TRPCError({
             code: "NOT_FOUND",
@@ -115,7 +114,6 @@ export const userRouter = createTRPCRouter({
           });
         }
 
-        // List nim & nama
         return res.map((row) => ({
           nim: row.nim,
           nama: row.nama,
@@ -132,8 +130,8 @@ export const userRouter = createTRPCRouter({
   updateScore: publicProcedure
     .input(
       z.object({
-        nim: z.string(), // Query masukan nim (unik)
-        points: z.number().max(100).min(0), // constraint selang 0 sampai 100 default 0
+        nim: z.string(),
+        points: z.number().max(100).min(0),
       }),
     )
     .mutation(async ({ input }) => {
@@ -145,7 +143,6 @@ export const userRouter = createTRPCRouter({
           .where(eq(users.nim, input.nim))
           .then((results) => results[0]);
 
-        // Null Handling
         if (!userProfile?.profiles?.userId) {
           throw new TRPCError({
             code: "NOT_FOUND",
@@ -153,7 +150,6 @@ export const userRouter = createTRPCRouter({
           });
         }
 
-        // Menambahkan poin tambahan ke poin sekarang
         let newPoints;
         if (!userProfile.profiles.point) {
           newPoints = input.points;
@@ -161,7 +157,6 @@ export const userRouter = createTRPCRouter({
           newPoints = userProfile.profiles.point + input.points;
         }
 
-        // Update query ke db
         await db
           .update(profiles)
           .set({ point: newPoints })
