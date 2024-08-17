@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState } from 'react';
 import { api } from '~/trpc/react';
 import { assignmentTypeEnum } from '@katitb2024/database';
@@ -7,7 +8,7 @@ import { FolderEnum } from '~/server/bucket';
 const ALLOWED_FORMATS = ['image/jpeg', 'image/png', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB in bytes
 
-function NewAssignmentForm() {
+export function NewAssignmentFormClient() {
   const [formData, setFormData] = useState({
     judul: '',
     assignmentType: assignmentTypeEnum.enumValues[0],
@@ -18,9 +19,15 @@ function NewAssignmentForm() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState('');
+  const [uploadedFileKey, setUploadedFileKey] = useState<string | null>(null);
 
   const uploadFileMutation = api.storage.uploadFile.useMutation();
   const createAssignmentMutation = api.assignment.uploadNewAssignmentMamet.useMutation();
+  const downloadFileQuery = api.storage.downloadFile.useQuery(
+    { key: uploadedFileKey || '' },
+    { enabled: false }
+  );
+
   const isSubmitting = createAssignmentMutation.status === 'pending' || uploadFileMutation.status === 'pending';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -49,7 +56,7 @@ function NewAssignmentForm() {
     setStatus('Submitting assignment...');
 
     try {
-      let fileUrl = '';
+      let fileKey = '';
       if (file) {
         const reader = new FileReader();
         reader.onload = async (e) => {
@@ -60,10 +67,13 @@ function NewAssignmentForm() {
               fileName: file.name,
               fileContent: base64Content!,
             });
-            fileUrl = uploadResult;
+            fileKey = uploadResult.split('/').slice(-2).join('/'); // Extract the key from the URL
 
-            // Now that we have the file URL, submit the assignment
-            await submitAssignment(fileUrl);
+            // Now that we have the file key, submit the assignment
+            const submittedFileKey = await submitAssignment(fileKey);
+            if (submittedFileKey) {
+              setUploadedFileKey(submittedFileKey);
+            }
           }
         };
         reader.readAsDataURL(file);
@@ -77,21 +87,80 @@ function NewAssignmentForm() {
     }
   };
 
-  const submitAssignment = async (fileUrl?: string) => {
+  const submitAssignment = async (fileKey?: string) => {
     try {
       const result = await createAssignmentMutation.mutateAsync({
         ...formData,
-        file: fileUrl,
+        file: fileKey,
         point: formData.point ? parseInt(formData.point) : undefined,
         waktuMulai: formData.waktuMulai ? new Date(formData.waktuMulai) : undefined,
         waktuSelesai: new Date(formData.waktuSelesai),
       });
       setStatus(`Assignment created successfully. ID: ${result!.id}`);
-      // Reset form or redirect as needed
+      return fileKey;
     } catch (error) {
       console.error('Error creating assignment:', error);
       setStatus('Failed to create assignment. Please try again.');
+      return null;
     }
+  };
+
+  const handleDownload = async () => {
+    if (uploadedFileKey) {
+      try {
+        const result = await downloadFileQuery.refetch();
+        if (result.data) {
+          const blob = base64ToBlob(result.data.content, result.data.contentType);
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = result.data.fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        } else {
+          throw new Error('Failed to download file');
+        }
+      } catch (error) {
+        console.error('Error downloading file:', error);
+        setStatus('Failed to download file. Please try again.');
+      }
+    }
+  };
+
+  const handleOpenInNewTab = async () => {
+    if (uploadedFileKey) {
+      try {
+        const result = await downloadFileQuery.refetch();
+        if (result.data) {
+          const blob = base64ToBlob(result.data.content, result.data.contentType);
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          // Note: We're not revoking the URL here as it needs to persist for the new tab
+        } else {
+          throw new Error('Failed to open file');
+        }
+      } catch (error) {
+        console.error('Error opening file:', error);
+        setStatus('Failed to open file. Please try again.');
+      }
+    }
+  };
+
+  const base64ToBlob = (base64: string, contentType: string) => {
+    const byteCharacters = atob(base64);
+    const byteArrays = [];
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+    return new Blob(byteArrays, { type: contentType });
   };
 
   return (
@@ -193,6 +262,25 @@ function NewAssignmentForm() {
         {isSubmitting ? 'Submitting...' : 'Create Assignment'}
       </button>
 
+      {uploadedFileKey && (
+        <div className="mt-4 space-x-2">
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Download File
+          </button>
+          <button
+            type="button"
+            onClick={handleOpenInNewTab}
+            className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+          >
+            Open in New Tab
+          </button>
+        </div>
+      )}
+
       {status && (
         <div className="mt-4 p-2 bg-gray-100 border rounded">
           Status: {status}
@@ -201,5 +289,3 @@ function NewAssignmentForm() {
     </form>
   );
 }
-
-export default NewAssignmentForm;

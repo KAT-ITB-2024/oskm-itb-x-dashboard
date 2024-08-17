@@ -1,5 +1,6 @@
   import { getServerAuthSession } from "~/server/auth";
-import NewAssignmentForm from "./NewAssignmentForm";
+import { NewAssignmentFormClient } from "./NewAssignmentFormClient";
+
 
 export default async function Page() {
   const session = await getServerAuthSession();
@@ -7,7 +8,7 @@ export default async function Page() {
   console.log(user);
 
   return (<div>
-      <NewAssignmentForm/>
+      <NewAssignmentFormClient/>
     </div>
   )
 }

@@ -57,39 +57,39 @@ export const storageRouter = createTRPCRouter({
         });
       }
     }),
-    // downloadFile: publicProcedure
-    // .input(
-    //   z.object({
-    //     key: z.string().min(1),
-    //   })
-    // )
-    // .query(async ({ input }) => {
-    //   try {
-    //     const getObjectCommand = new GetObjectCommand({
-    //       Bucket: process.env.NEXT_PUBLIC_DO_BUCKET_NAME,
-    //       Key: input.key,
-    //     });
+    downloadFile: publicProcedure
+    .input(
+      z.object({
+        key: z.string().min(1),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const getObjectCommand = new GetObjectCommand({
+          Bucket: process.env.NEXT_PUBLIC_DO_BUCKET_NAME,
+          Key: input.key,
+        });
 
-    //     const { Body, ContentType } = await s3Client.send(getObjectCommand);
+        const { Body, ContentType } = await s3Client.send(getObjectCommand);
 
-    //     if (!Body) {
-    //       throw new Error("File not found");
-    //     }
+        if (!Body) {
+          throw new Error("File not found");
+        }
 
-    //     const fileContent = await Body.transformToByteArray();
-    //     const base64Content = Buffer.from(fileContent).toString('base64');
+        const fileContent = await Body.transformToByteArray();
+        const base64Content = Buffer.from(fileContent).toString('base64');
 
-    //     return {
-    //       content: base64Content,
-    //       contentType: ContentType || 'application/octet-stream',
-    //       fileName: input.key.split('/').pop() || 'download',
-    //     };
-    //   } catch (error) {
-    //     console.error(error);
-    //     throw new TRPCError({
-    //       code: "INTERNAL_SERVER_ERROR",
-    //       message: "Error downloading file",
-    //     });
-    //   }
-    // }),
+        return {
+          content: base64Content,
+          contentType: ContentType || 'application/octet-stream',
+          fileName: input.key.split('/').pop() || 'download',
+        };
+      } catch (error) {
+        console.error(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error downloading file",
+        });
+      }
+    }),
 });
