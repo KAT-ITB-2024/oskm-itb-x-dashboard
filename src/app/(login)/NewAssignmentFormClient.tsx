@@ -67,7 +67,7 @@ export function NewAssignmentFormClient() {
               fileName: file.name,
               fileContent: base64Content!,
             });
-            fileKey = uploadResult.split('/').slice(-2).join('/'); // Extract the key from the URL
+            fileKey = uploadResult;// Extract the key from the URL
 
             // Now that we have the file key, submit the assignment
             const submittedFileKey = await submitAssignment(fileKey);
@@ -96,7 +96,6 @@ export function NewAssignmentFormClient() {
         waktuMulai: formData.waktuMulai ? new Date(formData.waktuMulai) : undefined,
         waktuSelesai: new Date(formData.waktuSelesai),
       });
-      setStatus(`Assignment created successfully. ID: ${result!.id}`);
       return fileKey;
     } catch (error) {
       console.error('Error creating assignment:', error);
