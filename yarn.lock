@@ -757,9 +757,9 @@
   integrity sha512-POQxm42IUp6n89kKWF4IZi18v3fxQWFRolvBA6phNVmA8psdfB1MvDnGacCJdS+EOX12w/CyHM62z//rHmYmvw==
 
 "@tanstack/react-query@^5.39.0":
-  version "5.51.21"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.51.21.tgz#cdd14677bcc809a83e01b6c38842c841ce7420af"
-  integrity sha512-Q/V81x3sAYgCsxjwOkfLXfrmoG+FmDhLeHH5okC/Bp8Aaw2c33lbEo/mMcMnkxUPVtB2FLpzHT0tq3c+OlZEbw==
+  version "5.51.23"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.51.23.tgz#83c223f4cb6054b206de8856b73ca7e41a63ba1f"
+  integrity sha512-CfJCfX45nnVIZjQBRYYtvVMIsGgWLKLYC4xcUiYEey671n1alvTZoCBaU9B85O8mF/tx9LPyrI04A6Bs2THv4A==
   dependencies:
     "@tanstack/query-core" "5.51.21"
 
@@ -814,18 +814,18 @@
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
 "@types/node@*":
-  version "22.1.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.1.0.tgz#6d6adc648b5e03f0e83c78dc788c2b037d0ad94b"
-  integrity sha512-AOmuRF0R2/5j1knA3c6G3HOk523Ga+l+ZXltX8SF1+5oqcXijjfTd8fY3XRZqSihEu9XhtQnKYLmkFaoxgsJHw==
+  version "22.4.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.4.0.tgz#c295fe1d6f5f58916cc61dbef8cf65b5b9b71de9"
+  integrity sha512-49AbMDwYUz7EXxKU/r7mXOsxwFr4BYbvB7tWYxVuLdb2ibd30ijjXINSMAHiEEZk5PCRBmW1gUeisn2VMKt3cQ==
   dependencies:
-    undici-types "~6.13.0"
+    undici-types "~6.19.2"
 
 "@types/node@^20.11.20":
-  version "20.14.14"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.14.14.tgz#6b655d4a88623b0edb98300bb9dd2107225f885e"
-  integrity sha512-d64f00982fS9YoOgJkAMolK7MN8Iq3TDdVjchbYHdEmjth/DHowx82GnoA+tVUAN+7vxfYUgAzi+JXbKNd2SDQ==
+  version "20.15.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.15.0.tgz#7305f7fe7c62cd31047ed8d65c5092f0b0e1c55d"
+  integrity sha512-eQf4OkH6gA9v1W0iEpht/neozCsZKMTK+C4cU6/fv7wtJCCL8LEQ4hie2Ln8ZP/0YYM2xGj7//f8xyqItkJ6QA==
   dependencies:
-    undici-types "~5.26.4"
+    undici-types "~6.13.0"
 
 "@types/nodemailer@^6.4.15":
   version "6.4.15"
@@ -2243,15 +2243,15 @@ gauge@^3.0.0:
     wide-align "^1.1.2"
 
 gaxios@^6.0.0, gaxios@^6.0.3, gaxios@^6.1.1:
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/gaxios/-/gaxios-6.7.0.tgz#37b7c5961cb67d8d4b0ae8110dcd83cc6791eb6d"
-  integrity sha512-DSrkyMTfAnAm4ks9Go20QGOcXEyW/NmZhvTYBU2rb4afBB393WIMQPWPEDMl/k8xqiNN9HYq2zao3oWXsdl2Tg==
+  version "6.7.1"
+  resolved "https://registry.yarnpkg.com/gaxios/-/gaxios-6.7.1.tgz#ebd9f7093ede3ba502685e73390248bb5b7f71fb"
+  integrity sha512-LDODD4TMYx7XXdpwxAVRAIAuB0bzv0s+ywFonY46k126qzQHT9ygyoa9tncmOiQmmDrik65UYsEkv3lbfqQ3yQ==
   dependencies:
     extend "^3.0.2"
     https-proxy-agent "^7.0.1"
     is-stream "^2.0.0"
     node-fetch "^2.6.9"
-    uuid "^10.0.0"
+    uuid "^9.0.1"
 
 gcp-metadata@^6.1.0:
   version "6.1.0"
@@ -2504,9 +2504,9 @@ husky@^9.1.3:
   integrity sha512-bho94YyReb4JV7LYWRWxZ/xr6TtOTt8cMfmQ39MQYJ7f/YE268s3GdghGwi+y4zAeqewE5zYLvuhV0M0ijsDEA==
 
 ignore@^5.2.0, ignore@^5.3.1:
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.1.tgz#5073e554cd42c5b33b394375f538b8593e34d4ef"
-  integrity sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.2.tgz#3cd40e729f3643fd87cb04e50bf0eb722bc596f5"
+  integrity sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==
 
 import-fresh@^3.2.1:
   version "3.3.0"
@@ -3424,9 +3424,9 @@ postcss-nested@^6.0.1:
     postcss-selector-parser "^6.1.1"
 
 postcss-selector-parser@^6.0.11, postcss-selector-parser@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.1.1.tgz#5be94b277b8955904476a2400260002ce6c56e38"
-  integrity sha512-b4dlw/9V8A71rLIDsSwVmak9z2DuBUB7CA1/wSdelNEzqsjoSPeADTWNO09lpH49Diy3/JIZ2bSPB1dI3LJCHg==
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.1.2.tgz#27ecb41fb0e3b6ba7a1ec84fff347f734c7929de"
+  integrity sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==
   dependencies:
     cssesc "^3.0.0"
     util-deprecate "^1.0.2"
@@ -3479,9 +3479,9 @@ preact@10.11.3:
   integrity sha512-eY93IVpod/zG3uMF22Unl8h9KkrcKIRs2EGar8hwLZZDU1lkjph303V9HZBwufh2s736U6VXuhD109LYqPoffg==
 
 preact@^10.6.3:
-  version "10.23.1"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.23.1.tgz#d400107289bc979881c5212cb5f5cd22cd1dc38c"
-  integrity sha512-O5UdRsNh4vdZaTieWe3XOgSpdMAmkIYBCT3VhQDlKrzyCm8lUYsk0fmVEvoQQifoOjFRTaHZO69ylrzTW2BH+A==
+  version "10.23.2"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.23.2.tgz#52deec92796ae0f0cc6b034d9c66e0fbc1b837dc"
+  integrity sha512-kKYfePf9rzKnxOAKDpsWhg/ysrHPqT+yQ7UW4JjdnqjFIeNUnNcEJvhuA8fDenxAGWzUqtd51DfVg7xp/8T9NA==
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -3548,9 +3548,9 @@ react-dom@^18.3.0:
     scheduler "^0.23.2"
 
 react-icons@^5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.2.1.tgz#28c2040917b2a2eda639b0f797bff1888e018e4a"
-  integrity sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.3.0.tgz#ccad07a30aebd40a89f8cfa7d82e466019203f1c"
+  integrity sha512-DnUk8aFbTyQPSkCfF8dbX6kQjXA9DktMeJqfjrg6cK9vwQVMxmcA3BfP4QoiztVmEHtwlTgLFsPuH2NskKT6eg==
 
 react-is@^16.13.1:
   version "16.13.1"
@@ -3994,10 +3994,44 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
+"t3-template-app@file:.":
+  version "0.1.0"
+  dependencies:
+    "@auth/drizzle-adapter" "^1.1.0"
+    "@katitb2024/database" "git+https://github.com/KAT-ITB-2024/database-oskm.git#master"
+    "@metamorph/trpc-panel" "^1.0.5"
+    "@radix-ui/react-slot" "^1.1.0"
+    "@t3-oss/env-nextjs" "^0.10.1"
+    "@tanstack/react-query" "^5.39.0"
+    "@trpc/client" next
+    "@trpc/react-query" next
+    "@trpc/server" next
+    bcrypt "^5.1.1"
+    class-variance-authority "^0.7.0"
+    clsx "^2.1.1"
+    dotenv "^16.4.5"
+    drizzle-orm "^0.31.2"
+    geist "^1.3.0"
+    googleapis "^140.0.1"
+    lucide-react "^0.424.0"
+    next "^14.2.1"
+    next-auth "^4.24.7"
+    nodemailer "^6.9.14"
+    postgres "^3.4.4"
+    react "^18.3.0"
+    react-dom "^18.3.0"
+    react-icons "^5.2.1"
+    server-only "^0.0.1"
+    superjson "^2.2.1"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-c8701940-5478-423d-b3c5-9ec10ee3d2d9-1723900811853/node_modules/t3-template-app"
+    tailwind-merge "^2.4.0"
+    tailwindcss-animate "^1.0.7"
+    zod "^3.23.3"
+
 tailwind-merge@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-2.4.0.tgz#1345209dc1f484f15159c9180610130587703042"
-  integrity sha512-49AwoOQNKdqKPd9CViyH5wJoSKsCDjUlzL8DxuGp3P1FsGY36NJDAa18jLZcaHAUUuTj+JB8IAo8zWgBNvBF7A==
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-2.5.2.tgz#000f05a703058f9f9f3829c644235f81d4c08a1f"
+  integrity sha512-kjEBm+pvD+6eAwzJL2Bi+02/9LFLal1Gs61+QB7HvTfQQ0aXwC5LGT8PEt1gS0CWKktKe6ysPTAy3cBC5MeiIg==
 
 tailwindcss-animate@^1.0.7:
   version "1.0.7"
@@ -4005,9 +4039,9 @@ tailwindcss-animate@^1.0.7:
   integrity sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==
 
 tailwindcss@^3.4.3:
-  version "3.4.8"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.8.tgz#74fdfc085732c244ad9ca4ee0d539bc5dddd58fd"
-  integrity sha512-GkP17r9GQkxgZ9FKHJQEnjJuKBcbFhMFzKu5slmN6NjlCuFnYJMQ8N4AZ6VrUyiRXlDtPKHkesuQ/MS913Nvdg==
+  version "3.4.10"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.10.tgz#70442d9aeb78758d1f911af29af8255ecdb8ffef"
+  integrity sha512-KWZkVPm7yJRhdu4SRSl9d4AK2wM3a50UsvgHZO7xY77NQr2V+fIrEuoDGQcbvswWvFGbS2f6e+jC/6WJm1Dl0w==
   dependencies:
     "@alloc/quick-lru" "^5.2.0"
     arg "^5.0.2"
@@ -4220,15 +4254,15 @@ unbox-primitive@^1.0.2:
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
 
-undici-types@~5.26.4:
-  version "5.26.5"
-  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
-  integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
-
 undici-types@~6.13.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.13.0.tgz#e3e79220ab8c81ed1496b5812471afd7cf075ea5"
   integrity sha512-xtFJHudx8S2DSoujjMd1WeWvn7KKWFRESZTMeL1RptAYERu29D6jphMjjY+vn96jvN3kVPDNxU/E13VTaXj6jg==
+
+undici-types@~6.19.2:
+  version "6.19.6"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.19.6.tgz#e218c3df0987f4c0e0008ca00d6b6472d9b89b36"
+  integrity sha512-e/vggGopEfTKSvj4ihnOLTsqhrKRN3LeO6qSN/GxohhuRv8qH9bNQ4B8W7e/vFL+0XTnmHPB4/kegunZGA4Org==
 
 uri-js@^4.2.2:
   version "4.4.1"
@@ -4262,17 +4296,12 @@ util@^0.10.3:
   dependencies:
     inherits "2.0.3"
 
-uuid@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-10.0.0.tgz#5a95aa454e6e002725c79055fd42aaba30ca6294"
-  integrity sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==
-
 uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
-uuid@^9.0.0:
+uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
