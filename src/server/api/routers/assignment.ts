@@ -11,6 +11,16 @@ import {
   //   mentorProcedure,
   //   mametMentorProcedure,
 } from "~/server/api/trpc";
+import { profile } from "console";
+
+type MenteeAssignment = {
+    nama:string
+    nim:string
+    keterlambatan:number|null;
+    nilai: number | null;
+    linkFile:string|null;
+
+}
 
 export const assignmentRouter = createTRPCRouter({
 
@@ -21,7 +31,6 @@ export const assignmentRouter = createTRPCRouter({
     }))
     .query(async({ctx,input})=>{
         try{
-          // with the assumption that we fetch the groupName using input instead of context/session
             const {assignmentId, groupName} = input;
 
             const res = await ctx.db
@@ -48,11 +57,29 @@ export const assignmentRouter = createTRPCRouter({
             
             const resultsWithKeterlambatan = res.map(item => ({
               ...item,
-              keterlambatan: item.updatedAt > item.deadline
-                ?  Math.floor((item.updatedAt.getTime() - item.deadline.getTime()) / 1000) : 0
+              terlambat: item.updatedAt > item.deadline  ?  Math.floor((item.updatedAt.getTime() - item.deadline.getTime()) / 1000) : 0
             }));
 
-            return resultsWithKeterlambatan;
+            const allMentee = await ctx.db.select({
+                                                              nama:profiles.name,
+                                                              nim:users.nim
+                                                          })
+                                                        .from(profiles)
+                                                        .where(eq(profiles.group,groupName))
+                                                        .innerJoin(users,eq(users.id,profiles.userId))
+
+
+            const menteeAssignment = allMentee  as MenteeAssignment[];
+
+            menteeAssignment.forEach(mentee=>{
+              const find = resultsWithKeterlambatan.find(r => r.nama === mentee.nama && r.nim === r.nim)
+
+              mentee.keterlambatan = find ? find.terlambat : null;
+              mentee.nilai = find ? find.nilai : null;
+              mentee.linkFile = find ? find.linkFile : null
+            })
+
+            return menteeAssignment;
         }catch(error){
           console.log(error)
           throw new TRPCError({
