@@ -1,5 +1,5 @@
 // Router ini digunakan untuk segala yang berkaitan dengan assignment (tugas-tugas dan submisi)
-import { Assignment, assignments, assignmentTypeEnum } from "@katitb2024/database";
+import { Assignment, assignments, assignmentTypeEnum, notifications } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { uuid } from "drizzle-orm/pg-core";
 import { now } from "next-auth/client/_utils";
@@ -30,10 +30,7 @@ export const assignmentRouter = createTRPCRouter({
           try{
             const { file,judul,assignmentType, point,waktuMulai,waktuSelesai,deskripsi} = input;
             
-            const id = uuidv4();
-
-            const inst:Assignment = {
-                id,
+            const inst = {
                 point:point ? point : null,
                 file:file ? file : null,
                 title:judul,
@@ -45,11 +42,23 @@ export const assignmentRouter = createTRPCRouter({
                 updatedAt: new Date(),
             }
 
-            const res = await ctx.db.insert(assignments).values(
+            await ctx.db.insert(assignments).values(
               inst
-            ).returning({id: assignments.id});
+            ).returning();
 
-            return res[0];
+            // add into notification
+            const content = `Ada tugas baru nih - ${judul}, jangan lupa dikerjain ya!`;
+
+            await ctx.db.insert(notifications).values(
+              {
+                content
+              }
+            );
+
+            return {
+              success: true,
+              message: "New assignment added updated successfully",
+            };
           }catch(error){
               console.log(error)
               throw new TRPCError({
