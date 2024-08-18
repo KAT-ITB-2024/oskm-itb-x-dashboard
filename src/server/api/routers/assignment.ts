@@ -1,9 +1,10 @@
 // Router ini digunakan untuk segala yang berkaitan dengan assignment (tugas-tugas dan submisi)
 
-import { assignments, assignmentSubmissions, groups, profiles, users } from "@katitb2024/database";
+import { assignments, AssignmentType,assignmentTypeEnum, assignmentSubmissions, groups, profiles, users } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {eq, and} from "drizzle-orm";
+
 
 import {
   createTRPCRouter,
@@ -157,6 +158,28 @@ export const assignmentRouter = createTRPCRouter({
           throw new TRPCError({
             code:"INTERNAL_SERVER_ERROR",
             message:`Error when updating mentee assignment point : ${error}`
+          });
+        }
+       }),
+    getAllMainAssignmentMentor:publicProcedure
+    .query(async({ctx})=>{
+        try{  
+          
+          const compare:AssignmentType = 'Main';
+          const res = await ctx.db
+                .select({
+                  judulTugas:assignments.title,
+                  waktuMulai:assignments.startTime,
+                  waktuSelesai:assignments.deadline
+                })
+                .from(assignments)
+                .where(eq(assignments.assignmentType,compare ))
+
+          return res
+        }catch(error){
+          throw new TRPCError({
+            code:"INTERNAL_SERVER_ERROR",
+            message:"An error occured while getting all main assignment "
           })
         }
     }),
