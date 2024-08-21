@@ -2,7 +2,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { assignments, assignmentSubmissions, eventPresences, profiles, users } from "@katitb2024/database";
+import { assignments, assignmentSubmissions, eventPresences, groups, profiles, roleEnum, users } from "@katitb2024/database";
 import { count, eq } from "drizzle-orm";
 import { hash } from "bcrypt";
 import { sendEmail } from "~/services/mail";
@@ -79,24 +79,24 @@ export const userRouter = createTRPCRouter({
       }),
   
     detailKelompok: publicProcedure
-      .input(z.object({ userNim: z.string(), role: z.string(), groupNumber: z.number() }))
+      .input(z.object({ userNim: z.string(), role: z.string(), groupName: z.string() }))
       .query(async ({ ctx, input }) => {
-        if (input.role === "Mamet"){
+        if (input.role === roleEnum.enumValues[2]){
 
           const resultName = await ctx.db
           .select({name: profiles.name})
           .from(profiles)
-          .where(eq(profiles.groupNumber, input.groupNumber))
+          .where(eq(groups.name, input.groupName))
     
           const resultNim = await ctx.db
           .select({nim: users.nim})
           .from(users)
-          .where(eq(profiles.groupNumber, input.groupNumber))
+          .where(eq(groups.name, input.groupName))
           
           const resultFaculty = await ctx.db
           .select({faculty: profiles.faculty})
           .from(profiles)
-          .where(eq(profiles.groupNumber, input.groupNumber))      
+          .where(eq(groups.name, input.groupName))      
   
           const countAssignments = await ctx.db
           .select({count: count(assignments)})
@@ -105,40 +105,40 @@ export const userRouter = createTRPCRouter({
           const countAssignmentsSubmitted = await ctx.db
           .select({count: count(assignmentSubmissions)})
           .from(assignmentSubmissions)
-          .where(eq(profiles.groupNumber, input.groupNumber))
+          .where(eq(groups.name, input.groupName))
           .groupBy(users.nim) 
 
           const countPresences = await ctx.db
           .select({count: count(eventPresences)})
           .from(eventPresences)
-          .where(eq(profiles.groupNumber, input.groupNumber))
+          .where(eq(groups.name, input.groupName))
           .groupBy(users.nim)
 
           }
-          if (input.role === "Mentor") {
+          if (input.role === roleEnum.enumValues[1]) {
             const keluargaMentor = await ctx.db
-            .select({nomorKeluarga: profiles.groupNumber})
+            .select({namaKeluarga: groups.name})
             .from(profiles)
             .where(eq(users.nim, input.userNim))
             
-            let nomorKeluargaMentor = Number(keluargaMentor)
+            let namaKeluargaMentor = String(keluargaMentor)
   
-            if (input.groupNumber === nomorKeluargaMentor){
+            if (input.groupName === namaKeluargaMentor){
   
               const resultName = await ctx.db
               .select({name: profiles.name})
               .from(profiles)
-              .where(eq(profiles.groupNumber, input.groupNumber))
+              .where(eq(groups.name, input.groupName))
         
               const resultNim = await ctx.db
               .select({nim: users.nim})
               .from(users)
-              .where(eq(profiles.groupNumber, input.groupNumber))
+              .where(eq(groups.name, input.groupName))
               
               const resultFaculty = await ctx.db
               .select({faculty: profiles.faculty})
               .from(profiles)
-              .where(eq(profiles.groupNumber, input.groupNumber))      
+              .where(eq(groups.name, input.groupName))      
       
               const countAssignments = await ctx.db
               .select({count: count()})
@@ -147,13 +147,13 @@ export const userRouter = createTRPCRouter({
               const countAssignmentsSubmitted = await ctx.db
               .select({count: count(assignmentSubmissions)})
               .from(assignmentSubmissions)
-              .where(eq(profiles.groupNumber, input.groupNumber))
+              .where(eq(groups.name, input.groupName))
               .groupBy(users.nim)
       
               const countPresences = await ctx.db
               .select({count: count(eventPresences)})
               .from(eventPresences)
-              .where(eq(profiles.groupNumber, input.groupNumber))
+              .where(eq(groups.name, input.groupName))
               .groupBy(users.nim)
             }
             else {
