@@ -4,7 +4,6 @@ import { assignmentRouter } from "./routers/assignment";
 import { presenceRouter } from "./routers/presence";
 import { userRouter } from "./routers/user";
 import { storageRouter } from "./routers/storage";
-import { storage } from "googleapis/build/src/apis/storage";
 
 /**
  * This is the primary router for your server.
@@ -15,7 +14,7 @@ export const appRouter = createTRPCRouter({
   // uncomment the following lines to enable the routers
   user: userRouter,
   assignment: assignmentRouter,
-  storage:storageRouter,
+  storage: storageRouter,
   // presence: presenceRouter,
   // utility: utilityRouter,
 });

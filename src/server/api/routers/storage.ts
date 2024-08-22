@@ -7,18 +7,7 @@ import sanitize from "sanitize-filename";
 import { FolderEnum } from "~/server/bucket";
 import { TRPCError } from "@trpc/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-
-const getContentType = (fileName: string): string => {
-  const extension = fileName.split('.').pop()?.toLowerCase();
-  switch (extension) {
-    case 'pdf': return 'application/pdf';
-    case 'jpg':
-    case 'jpeg': return 'image/jpeg';
-    case 'png': return 'image/png';
-    case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    default: return 'application/octet-stream'; 
-  }
-};
+import { getContentType } from "~/utils/fileUtils";
 
 export const storageRouter = createTRPCRouter({
   uploadFile: publicProcedure
@@ -26,8 +15,8 @@ export const storageRouter = createTRPCRouter({
       z.object({
         folder: z.nativeEnum(FolderEnum),
         fileName: z.string().min(1),
-        fileContent: z.string(), 
-      })
+        fileContent: z.string(),
+      }),
     )
     .mutation(async ({ input }) => {
       try {
@@ -36,7 +25,7 @@ export const storageRouter = createTRPCRouter({
         const sanitizedFilename = `${fileUUID}-${sanitizedFileName}`;
         const key = `${input.folder}/${sanitizedFilename}`;
 
-        const fileBuffer = Buffer.from(input.fileContent, 'base64');
+        const fileBuffer = Buffer.from(input.fileContent, "base64");
 
         const putObjectCommand = new PutObjectCommand({
           Bucket: process.env.NEXT_PUBLIC_DO_BUCKET_NAME,
@@ -46,8 +35,8 @@ export const storageRouter = createTRPCRouter({
         });
 
         await s3Client.send(putObjectCommand);
-        
-        return key
+
+        return key;
       } catch (error) {
         console.error(error);
         throw new TRPCError({
@@ -56,11 +45,11 @@ export const storageRouter = createTRPCRouter({
         });
       }
     }),
-    downloadFile: publicProcedure
+  downloadFile: publicProcedure
     .input(
       z.object({
         key: z.string().min(1),
-      })
+      }),
     )
     .query(async ({ input }) => {
       try {
@@ -76,12 +65,12 @@ export const storageRouter = createTRPCRouter({
         }
 
         const fileContent = await Body.transformToByteArray();
-        const base64Content = Buffer.from(fileContent).toString('base64');
+        const base64Content = Buffer.from(fileContent).toString("base64");
 
         return {
           content: base64Content,
-          contentType: ContentType || 'application/octet-stream',
-          fileName: input.key.split('/').pop() || 'download',
+          contentType: ContentType ?? "application/octet-stream",
+          fileName: input.key.split("/").pop() ?? "download",
         };
       } catch (error) {
         console.error(error);
