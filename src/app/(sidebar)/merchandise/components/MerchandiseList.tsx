@@ -1,0 +1,192 @@
+"use client";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+
+import { IoMdSearch } from "react-icons/io";
+import { RiPencilFill } from "react-icons/ri";
+import { MdCheck } from "react-icons/md";
+import Link from "next/link";
+import { useState } from "react";
+
+export default function MerchandiseList() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);
+  };
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuantity(Number(e.target.value));
+  };
+
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-4">
+      <div className="flex w-full items-center justify-between rounded-lg border-2 border-input bg-white px-6 py-3">
+        <input
+          type="text"
+          placeholder="Cari Merchandise"
+          className="w-full bg-transparent outline-none"
+        />
+        <IoMdSearch className="text-xl text-gray-400" />
+      </div>
+      <Table className="border-spacing-0 rounded-lg">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="rounded-tl-lg">No</TableHead>
+            <TableHead>Merchandise ID</TableHead>
+            <TableHead>Merchandise Name</TableHead>
+            <TableHead>Harga</TableHead>
+            <TableHead>Gambar</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead className="rounded-tr-lg">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>1</TableCell>
+            <TableCell className="text-start">M0001</TableCell>
+            <TableCell className="text-start">Kaos OSKM Putih</TableCell>
+            <TableCell>200</TableCell>
+            <TableCell>
+              <Link href="" className="text-[#3678FF] underline">
+                Link
+              </Link>
+            </TableCell>
+            <TableCell>
+              {isEditing ? (
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={handleQuantityChange}
+                  min="0"
+                  className="w-20 rounded-md border-2 px-2 py-1"
+                />
+              ) : (
+                quantity
+              )}
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center justify-center gap-2 text-2xl">
+                {isEditing ? (
+                  <button onClick={handleSaveClick}>
+                    <MdCheck />
+                  </button>
+                ) : (
+                  <button onClick={handleEditClick}>
+                    <RiPencilFill />
+                  </button>
+                )}
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      <nav className="flex flex-row gap-3">
+        <p>Total 85 Items</p>
+        <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
+          <li>
+            <a
+              href="#"
+              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              <span className="sr-only">Previous</span>
+              <svg
+                className="h-2 w-2 rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 1 1 5l4 4"
+                />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              1
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              2
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="z-10 flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              3
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              4
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              5
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
+            >
+              <span className="sr-only">Next</span>
+              <svg
+                className="h-2 w-2 rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 6 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m1 9 4-4-4-4"
+                />
+              </svg>
+            </a>
+          </li>
+        </ul>
+        <p className="rounded-md border px-3.5 text-center">
+          <span className="text-gray-500">20</span> / page
+        </p>
+      </nav>
+    </div>
+  );
+}
