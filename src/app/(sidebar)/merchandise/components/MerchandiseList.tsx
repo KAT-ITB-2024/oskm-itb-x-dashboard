@@ -15,16 +15,52 @@ import { MdCheck } from "react-icons/md";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function MerchandiseList() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [quantity, setQuantity] = useState(0);
+interface Merchandise {
+  id: number;
+  merchandise_id: string;
+  merchandise_name: string;
+  price: number;
+  url_image: string;
+  quantity: number;
+}
+// MOCKUP DATA
+const initialMerchandises: Merchandise[] = [
+  {
+    id: 1,
+    merchandise_id: "M0001",
+    merchandise_name: "Kaos OSKM Putih",
+    price: 200,
+    url_image: "",
+    quantity: 2,
+  },
+  {
+    id: 2,
+    merchandise_id: "M0002",
+    merchandise_name: "Lanyard",
+    price: 50,
+    url_image: "",
+    quantity: 1,
+  },
+];
 
-  const handleEditClick = () => {
-    setIsEditing(true);
+export default function MerchandiseList() {
+  const [merchandises, setMerchandises] = useState(initialMerchandises);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [quantity, setQuantity] = useState<number | null>(null);
+
+  const handleEditClick = (id: number, currentQuantity: number) => {
+    setEditingId(id);
+    setQuantity(currentQuantity);
   };
 
-  const handleSaveClick = () => {
-    setIsEditing(false);
+  const handleSaveClick = (id: number) => {
+    setMerchandises((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: quantity! } : item,
+      ),
+    );
+    setEditingId(null);
+    setQuantity(null);
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,43 +90,56 @@ export default function MerchandiseList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>1</TableCell>
-            <TableCell className="text-start">M0001</TableCell>
-            <TableCell className="text-start">Kaos OSKM Putih</TableCell>
-            <TableCell>200</TableCell>
-            <TableCell>
-              <Link href="" className="text-[#3678FF] underline">
-                Link
-              </Link>
-            </TableCell>
-            <TableCell>
-              {isEditing ? (
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={handleQuantityChange}
-                  min="0"
-                  className="w-20 rounded-md border-2 px-2 py-1"
-                />
-              ) : (
-                quantity
-              )}
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center justify-center gap-2 text-2xl">
-                {isEditing ? (
-                  <button onClick={handleSaveClick}>
-                    <MdCheck />
-                  </button>
+          {merchandises.map((merchandise) => (
+            <TableRow key={merchandise.id}>
+              <TableCell>{merchandise.id}</TableCell>
+              <TableCell className="text-start">
+                {merchandise.merchandise_id}
+              </TableCell>
+              <TableCell className="text-start">
+                {merchandise.merchandise_name}
+              </TableCell>
+              <TableCell>{merchandise.price}</TableCell>
+              <TableCell>
+                <Link
+                  href={merchandise.url_image}
+                  className="text-[#3678FF] underline"
+                >
+                  Link
+                </Link>
+              </TableCell>
+              <TableCell>
+                {editingId === merchandise.id ? (
+                  <input
+                    type="number"
+                    value={quantity!}
+                    onChange={handleQuantityChange}
+                    min="0"
+                    className="w-20 rounded-md border-2 px-2 py-1"
+                  />
                 ) : (
-                  <button onClick={handleEditClick}>
-                    <RiPencilFill />
-                  </button>
+                  merchandise.quantity
                 )}
-              </div>
-            </TableCell>
-          </TableRow>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center justify-center gap-2 text-2xl">
+                  {editingId === merchandise.id ? (
+                    <button onClick={() => handleSaveClick(merchandise.id)}>
+                      <MdCheck />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        handleEditClick(merchandise.id, merchandise.quantity)
+                      }
+                    >
+                      <RiPencilFill />
+                    </button>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
       <nav className="flex flex-row gap-3">
