@@ -108,7 +108,7 @@ export default function MerchandiseList() {
                   Link
                 </Link>
               </TableCell>
-              <TableCell>
+              <TableCell className="h-16 w-32">
                 {editingId === merchandise.id ? (
                   <input
                     type="number"
