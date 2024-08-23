@@ -125,7 +125,7 @@ export default function MerchandiseList() {
                 <div className="flex items-center justify-center gap-2 text-2xl">
                   {editingId === merchandise.id ? (
                     <button onClick={() => handleSaveClick(merchandise.id)}>
-                      <MdCheck />
+                      <MdCheck className="hover:text-green-600" />
                     </button>
                   ) : (
                     <button
@@ -133,7 +133,7 @@ export default function MerchandiseList() {
                         handleEditClick(merchandise.id, merchandise.quantity)
                       }
                     >
-                      <RiPencilFill />
+                      <RiPencilFill className="hover:text-blue-400" />
                     </button>
                   )}
                 </div>
