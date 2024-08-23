@@ -1,7 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { utilityRouter } from "./routers/utility";
+// import { utilityRouter } from "./routers/utility";
 import { assignmentRouter } from "./routers/assignment";
-import { presenceRouter } from "./routers/presence";
+// import { presenceRouter } from "./routers/presence";
 import { userRouter } from "./routers/user";
 
 /**
