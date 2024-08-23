@@ -1,9 +1,19 @@
+"use client";
+
 import React from "react";
 import { Button } from "~/components/ui/button";
+import { IoMdClose } from "react-icons/io";
 import { MdUpload } from "react-icons/md";
 
 export default function MametEditAssignment() {
   const [questStaus, setQuestStatus] = React.useState<string>("Side Quest");
+  const hiddenFileInput = React.useRef<HTMLInputElement>(null);
+  const [file, setFile] = React.useState<File | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target?.files?.[0] ?? null);
+  };
+
   return (
     <div className="flex w-full flex-col items-center justify-start">
       <form
@@ -97,7 +107,32 @@ export default function MametEditAssignment() {
             </p>
             <p className="text-xs text-gray-500">Maximum file size 20 MB</p>
           </div>
-          <input id="file-upload" type="file" className="hidden" />
+          <div
+            className={`my-3 flex w-1/3 items-center justify-between gap-2 rounded-sm border-2 border-[#0010A4] px-4 py-2 text-xs font-bold text-[#0010A4]  ${
+              file ? "block" : "hidden"
+            }`}
+          >
+            <input
+              id="file-upload"
+              type="file"
+              ref={hiddenFileInput}
+              className="hidden"
+              onChange={handleChange}
+            />
+            <div className="flex gap-1">
+              <p>{file?.name}</p>
+              <p className="text-nowrap text-[10px] font-light">
+                {file?.size
+                  ? parseFloat(file.size.toPrecision(3)) / 1000000
+                  : 0}{" "}
+                MB{" "}
+              </p>
+            </div>
+            <IoMdClose
+              className="cursor-pointer text-lg"
+              onClick={() => setFile(null)}
+            />
+          </div>
         </div>
         {questStaus === "Side Quest" ? (
           <div className="flex flex-col">

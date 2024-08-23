@@ -12,7 +12,7 @@ import { userRouter } from "./routers/user";
 export const appRouter = createTRPCRouter({
   // uncomment the following lines to enable the routers
   user: userRouter,
-  // assignment: assignmentRouter,
+  assignment: assignmentRouter,
   // presence: presenceRouter,
   // utility: utilityRouter,
 });
