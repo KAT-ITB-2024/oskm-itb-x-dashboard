@@ -157,10 +157,15 @@ export default function DetailMerchandise(props: { params: { id: string } }) {
         </div>
       </div>
       {showModal && (
-        <ModalExchangeSuccessful
-          onClose={handleClose}
-          order_id={merchandise?.order_id ?? ""}
-        />
+        <div>
+          <div className="fixed inset-0 z-40 bg-black opacity-30"></div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <ModalExchangeSuccessful
+              onClose={handleClose}
+              order_id={merchandise?.order_id ?? ""}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

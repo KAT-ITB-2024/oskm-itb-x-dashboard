@@ -11,7 +11,7 @@ export default function ModalExchangeSuccessful({
   order_id,
 }: ModalProps) {
   return (
-    <div className="absolute left-[400px] top-36 z-20 flex w-80 flex-col items-center rounded-lg bg-[#0010A4] px-9 py-12">
+    <div className="absolute left-1/2 top-1/2 flex w-80 -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-lg bg-[#0010A4] px-9 py-12">
       <MdClose
         className="absolute right-3 top-3 size-7 cursor-pointer text-[#FFE429]"
         onClick={onClose}
