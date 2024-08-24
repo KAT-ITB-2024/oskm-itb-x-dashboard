@@ -14,6 +14,8 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   // assignment: assignmentRouter,
   presence: presenceRouter,
+  assignment: assignmentRouter,
+  // presence: presenceRouter,
   // utility: utilityRouter,
 });
 
