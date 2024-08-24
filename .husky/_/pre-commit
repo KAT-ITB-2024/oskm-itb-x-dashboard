@@ -1,5 +1,2 @@
-
-
-yarn lint
-npx pretty-quick --staged
-yarn build
+#!/usr/bin/env sh
+. "$(dirname "$0")/h"
