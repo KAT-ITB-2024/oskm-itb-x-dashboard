@@ -22,6 +22,7 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
+import { group, profile } from "console";
 
 type MenteeAssignment = {
   nama: string;
@@ -45,7 +46,8 @@ export const assignmentRouter = createTRPCRouter({
       try {
         const { assignmentId, groupName, menteeNim } = input;
 
-        if(groupName === undefined && menteeNim === undefined){
+        if((groupName === undefined && menteeNim === undefined) || 
+            (groupName ==="" && menteeNim === "")){
           throw new TRPCError({
             code: "BAD_REQUEST",
             message:
@@ -61,10 +63,17 @@ export const assignmentRouter = createTRPCRouter({
         .innerJoin(users, eq(users.id, profiles.userId))
         .where(
           and(
-            groupName ? eq(profiles.group, groupName) : undefined,
-            menteeNim ? eq(users.nim, menteeNim) : undefined
+            groupName ? eq(profiles.group, groupName) : eq(users.id,users.id),
+            menteeNim ? eq(users.nim, menteeNim) :  eq(users.id,users.id),
           )
         );
+        
+        if(allMentee.length === 0){
+           throw new TRPCError({
+            code:"NOT_FOUND",
+            message:"There is no such mentee with that groupName and/or menteeNim"
+           })
+        }
 
         const menteeNims = allMentee.map(mentee => mentee.nim);
 
