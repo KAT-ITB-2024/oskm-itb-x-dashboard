@@ -1,7 +1,10 @@
+import DashboardHeader from "~/app/components/DashboardHeader";
+import MentorAttendanceEdit from "../../components/MentorAttendanceEdit";
 export default function Page() {
   return (
     <div>
-      <p>Page</p>
+      <DashboardHeader title="Attendance" />
+      <MentorAttendanceEdit />
     </div>
   );
 }
