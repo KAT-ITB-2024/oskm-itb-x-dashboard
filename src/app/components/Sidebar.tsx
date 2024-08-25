@@ -7,7 +7,7 @@ import { BiLogOut } from "react-icons/bi";
 import { FaShoppingCart } from "react-icons/fa";
 import { GiAlliedStar } from "react-icons/gi";
 import { IoMdCalendar } from "react-icons/io";
-import { MdAssignment, MdGroup, MdOutlineAssignment } from "react-icons/md";
+import { MdAssignment, MdGroup } from "react-icons/md";
 
 const sidebarItems = [
   {
