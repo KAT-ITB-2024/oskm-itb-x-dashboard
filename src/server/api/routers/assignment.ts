@@ -12,9 +12,8 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, gt, asc } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
-
 import {
   createTRPCRouter,
   publicProcedure,
@@ -22,7 +21,6 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
-import { group, profile } from "console";
 
 type MenteeAssignment = {
   nama: string;
@@ -38,84 +36,79 @@ export const assignmentRouter = createTRPCRouter({
     .input(
       z.object({
         assignmentId: z.string(),
-        groupName: z.string().optional(),
-        menteeNim:z.string().optional(),
+        groupName: z.string(),
+        lastNim:z.string().nullable(),
+        limit:z.number().min(1).max(100).default(8)
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { assignmentId, groupName, menteeNim } = input;
 
-        if((groupName === undefined && menteeNim === undefined) || 
-            (groupName ==="" && menteeNim === "")){
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              "Both of groupName and menteeNim should not be empty!",
-          });
-        }
+        const {assignmentId, groupName, limit, lastNim} = input;
+        
 
-        const allMentee =  await ctx.db.select({
-          nama: profiles.name,
-          nim: users.nim,
-        })
-        .from(profiles)
+        const allMentee = await ctx.db.select({
+            nama:profiles.name,
+            nim:users.nim
+        }).from(profiles)
         .innerJoin(users, eq(users.id, profiles.userId))
         .where(
           and(
-            groupName ? eq(profiles.group, groupName) : eq(users.id,users.id),
-            menteeNim ? eq(users.nim, menteeNim) :  eq(users.id,users.id),
+            eq(profiles.group, groupName),
+            lastNim ? gt(users.nim,lastNim) : eq(users.id,users.id),
           )
-        );
-        
+        ).orderBy(asc(users.nim))
+        .limit(limit);
+
         if(allMentee.length === 0){
-           throw new TRPCError({
-            code:"NOT_FOUND",
-            message:"There is no such mentee with that groupName and/or menteeNim"
-           })
-        }
+          throw new TRPCError({
+           code:"NOT_FOUND",
+           message:"There is no such mentee with that groupName or lastNim"
+          })
+       }
 
-        const menteeNims = allMentee.map(mentee => mentee.nim);
+       const menteeNims = allMentee.map(mentee => mentee.nim);
 
-        const menteeAssignment = allMentee as MenteeAssignment[];
+       const menteeAssignment = allMentee as MenteeAssignment[];
 
-        const submissions = await ctx.db
-        .select({
-          nama: profiles.name,
-          nim: users.nim,
-          nilai: assignmentSubmissions.point,
-          linkFile:assignmentSubmissions.downloadUrl,
-          updatedAt: assignmentSubmissions.updatedAt,
-          deadline: assignments.deadline,
-          assignmentsId: assignmentSubmissions.id,
-        })
-        .from(assignmentSubmissions)
-        .innerJoin(users, eq(assignmentSubmissions.userNim, users.nim))
-        .innerJoin(profiles, eq(users.id, profiles.userId))
-        .innerJoin(
-          assignments,
-          eq(assignmentSubmissions.assignmentId, assignments.id),
-        )
-        .where(
-          and(
-            eq(assignmentSubmissions.assignmentId, assignmentId),
-            eq(users.nim, assignmentSubmissions.userNim),
-            eq(profiles.userId, users.id),
-            inArray(users.nim,menteeNims)
-          ),
-        );
+       const submissions = await ctx.db
+       .select({
+         nama: profiles.name,
+         nim: users.nim,
+         nilai: assignmentSubmissions.point,
+         linkFile:assignmentSubmissions.downloadUrl,
+         updatedAt: assignmentSubmissions.updatedAt,
+         deadline: assignments.deadline,
+         assignmentsId: assignmentSubmissions.id,
+       })
+       .from(assignmentSubmissions)
+       .innerJoin(users, eq(assignmentSubmissions.userNim, users.nim))
+       .innerJoin(profiles, eq(users.id, profiles.userId))
+       .innerJoin(
+         assignments,
+         eq(assignmentSubmissions.assignmentId, assignments.id),
+       )
+       .where(
+         and(
+           eq(assignmentSubmissions.assignmentId, assignmentId),
+           eq(users.nim, assignmentSubmissions.userNim),
+           eq(profiles.userId, users.id),
+           inArray(users.nim,menteeNims)
+         ),
+       );
 
 
 
-        menteeAssignment.forEach((mentee)=>{
-          const find = submissions.find((s)=>s.nim == mentee.nim);
-          mentee.keterlambatan = calculateOverDueTime(find?.deadline, find?.updatedAt);
-          mentee.assignmentSubmissions = find?.assignmentsId ?? null;
-          mentee.linkFile = find?.linkFile ?? null;
-          mentee.nilai = find?.nilai ?? 0;
-        })
+       menteeAssignment.forEach((mentee)=>{
+         const find = submissions.find((s)=>s.nim == mentee.nim);
+         mentee.keterlambatan = calculateOverDueTime(find?.deadline, find?.updatedAt);
+         mentee.assignmentSubmissions = find?.assignmentsId ?? null;
+         mentee.linkFile = find?.linkFile ?? null;
+         mentee.nilai = find?.nilai ?? 0;
+       })
 
-        return menteeAssignment;
+       return menteeAssignment;
+
       } catch (error) {
         console.log(error);
         throw new TRPCError({
