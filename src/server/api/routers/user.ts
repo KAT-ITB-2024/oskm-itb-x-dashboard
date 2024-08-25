@@ -266,9 +266,8 @@ export const userRouter = createTRPCRouter({
   detailKelompokMamet: publicProcedure
     .input(
       z.object({
-        groupName: z.string(), // Group name for which details are requested
+        groupName: z.string().optional(), // Group name for which details are requested
         search: z.string().optional().default(""), // Search mentee by name
-        keluargaFilter: z.string().optional(), // Filter by keluarga
         sortBy: z.enum(["nim", "nama"]).optional().default("nim"), // Sort by nim or nama
         sortOrder: z.enum(["asc", "desc"]).optional().default("asc"), // Sort order
         page: z.number().optional().default(1), // Pagination: current page
@@ -278,7 +277,7 @@ export const userRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const {
         search,
-        keluargaFilter, // Group name for which details are requested
+        groupName, // Group name for which details are requested
         sortBy,
         sortOrder,
         page,
@@ -301,7 +300,7 @@ export const userRouter = createTRPCRouter({
           .where(
             and(
               eq(users.role, roleEnum.enumValues[0]), // Only mentees
-              keluargaFilter ? eq(groups.name, keluargaFilter) : undefined, // Filter by keluarga if provided
+              groupName ? eq(groups.name, groupName) : undefined, // Filter by keluarga if provided
             ),
           )
           .groupBy(groups.name);
@@ -327,7 +326,7 @@ export const userRouter = createTRPCRouter({
             and(
               eq(users.role, roleEnum.enumValues[0]), // Only mentees
               ilike(profiles.name, `%${search}%`), // Search by mentee name
-              keluargaFilter ? eq(groups.name, keluargaFilter) : undefined, // Filter by keluarga if provided
+              groupName ? eq(groups.name, groupName) : undefined, // Filter by keluarga if provided
             ),
           )
           .groupBy(users.nim, profiles.name, profiles.faculty)
