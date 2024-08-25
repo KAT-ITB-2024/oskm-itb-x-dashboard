@@ -12,7 +12,7 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, gt, asc, or, ilike, ne } from "drizzle-orm";
+import { eq, and, inArray, gt, asc, or, ilike } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -21,7 +21,6 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
-import { profile } from "console";
 
 type MenteeAssignment = {
   nama: string;
