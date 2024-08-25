@@ -12,7 +12,7 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, gt, asc } from "drizzle-orm";
+import { eq, and, inArray, gt, asc, or, ilike, ne } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -21,6 +21,7 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
+import { profile } from "console";
 
 type MenteeAssignment = {
   nama: string;
@@ -38,14 +39,21 @@ export const assignmentRouter = createTRPCRouter({
         assignmentId: z.string(),
         groupName: z.string(),
         lastNim:z.string().nullable(),
-        limit:z.number().min(1).max(100).default(8)
+        limit:z.number().min(1).max(100).default(8),
+        searchString:z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
 
-        const {assignmentId, groupName, limit, lastNim} = input;
+        const {assignmentId, groupName, limit, lastNim, searchString} = input;
         
+        // uncomment this when testing because trpc panel couldn't handle null value
+        // let {lastNim} = input;
+        // if(lastNim == "null"){
+        //   lastNim = null;
+        // }
+
 
         const allMentee = await ctx.db.select({
             nama:profiles.name,
@@ -56,6 +64,10 @@ export const assignmentRouter = createTRPCRouter({
           and(
             eq(profiles.group, groupName),
             lastNim ? gt(users.nim,lastNim) : eq(users.id,users.id),
+            searchString ?or(
+              ilike(users.nim, `%${searchString}%`),
+              ilike(profiles.name, `%${searchString}%`)
+            ) :eq(users.id,users.id),
           )
         ).orderBy(asc(users.nim))
         .limit(limit);
@@ -93,7 +105,7 @@ export const assignmentRouter = createTRPCRouter({
            eq(assignmentSubmissions.assignmentId, assignmentId),
            eq(users.nim, assignmentSubmissions.userNim),
            eq(profiles.userId, users.id),
-           inArray(users.nim,menteeNims)
+           inArray(users.nim,menteeNims),
          ),
        );
 
