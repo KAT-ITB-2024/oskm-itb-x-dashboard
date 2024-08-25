@@ -37,8 +37,8 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         assignmentId: z.string(),
         groupName: z.string(),
-        lastNim:z.string().nullable(),
-        limit:z.number().min(1).max(100).default(8),
+        lastNim:z.string().optional(),
+        limit:z.number().min(1).max(100).default(10),
         searchString:z.string().optional(),
       }),
     )
@@ -46,13 +46,6 @@ export const assignmentRouter = createTRPCRouter({
       try {
 
         const {assignmentId, groupName, limit, lastNim, searchString} = input;
-        
-        // uncomment this when testing because trpc panel couldn't handle null value
-        // let {lastNim} = input;
-        // if(lastNim == "null"){
-        //   lastNim = null;
-        // }
-
 
         const allMentee = await ctx.db.select({
             nama:profiles.name,
@@ -108,8 +101,6 @@ export const assignmentRouter = createTRPCRouter({
          ),
        );
 
-
-
        menteeAssignment.forEach((mentee)=>{
          const find = submissions.find((s)=>s.nim == mentee.nim);
          mentee.keterlambatan = calculateOverDueTime(find?.deadline, find?.updatedAt);
@@ -119,7 +110,6 @@ export const assignmentRouter = createTRPCRouter({
        })
 
        return menteeAssignment;
-
       } catch (error) {
         console.log(error);
         throw new TRPCError({
