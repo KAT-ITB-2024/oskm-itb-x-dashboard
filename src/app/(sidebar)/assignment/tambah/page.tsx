@@ -1,5 +1,5 @@
 import React from "react";
-import MametNavigationAssigment from "../components/MametNavigationAssigment";
+import MametNavigationAssignment from "../components/MametNavigationAssignment";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import MametAddAssignment from "../components/MametAddAssignment";
 
@@ -8,7 +8,7 @@ export default function page() {
     <div>
       <div className="flex flex-col gap-4">
         <DashboardHeader title="Add Assignment" />
-        <MametNavigationAssigment title="Add Assignment" />
+        <MametNavigationAssignment title="Add Assignment" />
         <MametAddAssignment />
       </div>
     </div>
