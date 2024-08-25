@@ -187,18 +187,16 @@ export const userRouter = createTRPCRouter({
       z.object({
         userNim: z.string(), // NIM of the user making the request
         search: z.string().optional().default(""), // Search mentee by name
-        page: z.number().optional().default(1), // Pagination: current page
-        pageSize: z.number().optional().default(10), // Pagination: page size
+        page: z.number().optional().default(1),
+        pageSize: z.number().optional().default(10),
       }),
     )
     .query(async ({ input }) => {
       const { userNim, search, page, pageSize } = input;
 
       try {
-        // Determine the offset for pagination
         const offset = (page - 1) * pageSize;
 
-        // Check if the user is assigned to the given group
         const mentorGroup = await db
           .select({ namaKeluarga: groups.name })
           .from(groups)
@@ -214,7 +212,6 @@ export const userRouter = createTRPCRouter({
           });
         }
 
-        // Fetch mentee data from the mentor's group with search and pagination
         const menteesData = await db
           .select({
             nim: users.nim,
@@ -234,8 +231,8 @@ export const userRouter = createTRPCRouter({
           .where(
             and(
               eq(groups.name, mentorGroup), // Only mentees in the mentor's group
-              eq(users.role, roleEnum.enumValues[0]), // Only mentees
-              ilike(profiles.name, `%${search}%`), // Search by mentee name
+              eq(users.role, roleEnum.enumValues[0]),
+              ilike(profiles.name, `%${search}%`),
             ),
           )
           .groupBy(users.nim, profiles.name, profiles.faculty)
@@ -262,7 +259,7 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
-  // Procedure to get group details for Mamet with pagination, search, filters, and sorting
+  // Procedure to get group details for Mamet
   detailKelompokMamet: publicProcedure
     .input(
       z.object({
@@ -270,8 +267,8 @@ export const userRouter = createTRPCRouter({
         search: z.string().optional().default(""), // Search mentee by name
         sortBy: z.enum(["nim", "nama"]).optional().default("nim"), // Sort by nim or nama
         sortOrder: z.enum(["asc", "desc"]).optional().default("asc"), // Sort order
-        page: z.number().optional().default(1), // Pagination: current page
-        pageSize: z.number().optional().default(10), // Pagination: page size
+        page: z.number().optional().default(1),
+        pageSize: z.number().optional().default(10),
       }),
     )
     .query(async ({ input }) => {
@@ -285,10 +282,8 @@ export const userRouter = createTRPCRouter({
       } = input;
 
       try {
-        // Determine the offset for pagination
         const offset = (page - 1) * pageSize;
 
-        // Fetch all groups
         const groupsData = await db
           .select({
             namaKeluarga: groups.name,
@@ -299,13 +294,12 @@ export const userRouter = createTRPCRouter({
           .fullJoin(users, eq(users.id, profiles.userId))
           .where(
             and(
-              eq(users.role, roleEnum.enumValues[0]), // Only mentees
-              groupName ? eq(groups.name, groupName) : undefined, // Filter by keluarga if provided
+              eq(users.role, roleEnum.enumValues[0]),
+              groupName ? eq(groups.name, groupName) : undefined,
             ),
           )
           .groupBy(groups.name);
 
-        // Fetch mentee data from all groups with search, filters, sorting, and pagination
         const menteesData = await db
           .select({
             nim: users.nim,
@@ -324,9 +318,9 @@ export const userRouter = createTRPCRouter({
           .leftJoin(eventPresences, eq(eventPresences.userNim, users.nim))
           .where(
             and(
-              eq(users.role, roleEnum.enumValues[0]), // Only mentees
-              ilike(profiles.name, `%${search}%`), // Search by mentee name
-              groupName ? eq(groups.name, groupName) : undefined, // Filter by keluarga if provided
+              eq(users.role, roleEnum.enumValues[0]),
+              ilike(profiles.name, `%${search}%`),
+              groupName ? eq(groups.name, groupName) : undefined,
             ),
           )
           .groupBy(users.nim, profiles.name, profiles.faculty)
@@ -338,7 +332,7 @@ export const userRouter = createTRPCRouter({
               : sortOrder === "asc"
                 ? asc(profiles.name)
                 : desc(profiles.name),
-          ) // Sorting
+          )
           .offset(offset)
           .limit(pageSize);
 
