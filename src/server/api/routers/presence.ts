@@ -375,6 +375,7 @@ export const presenceRouter = createTRPCRouter({
     ),
 
   // Mamet
+  // Status: Tested
   getPresenceOfAnEventCSV: publicProcedure
     .input(
       z.object({
