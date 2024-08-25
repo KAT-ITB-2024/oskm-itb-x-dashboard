@@ -6,12 +6,11 @@ import {
   groups,
   profiles,
   roleEnum,
-  assignments,
   assignmentSubmissions,
   eventPresences,
   users,
 } from "@katitb2024/database";
-import { and, count, eq, ilike } from "drizzle-orm";
+import { and, count, eq, ilike, asc, desc } from "drizzle-orm";
 import { hash } from "bcrypt";
 import { sendEmail } from "~/services/mail";
 import {
@@ -182,92 +181,186 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
-  detailKelompok: publicProcedure
+  // Procedure to get group details for Mentor
+  detailKelompokMentor: publicProcedure
     .input(
       z.object({
-        userNim: z.string(),
-        role: z.string(),
-        groupName: z.string(),
+        userNim: z.string(), // NIM of the user making the request
+        search: z.string().optional().default(""), // Search mentee by name
+        page: z.number().optional().default(1), // Pagination: current page
+        pageSize: z.number().optional().default(10), // Pagination: page size
       }),
     )
-    .query(async ({ ctx, input }) => {
-      if (input.role === roleEnum.enumValues[2]) {
-        const resultName = await ctx.db
-          .select({ name: profiles.name })
-          .from(profiles)
-          .where(eq(groups.name, input.groupName));
+    .query(async ({ input }) => {
+      const { userNim, search, page, pageSize } = input;
 
-        const resultNim = await ctx.db
-          .select({ nim: users.nim })
-          .from(users)
-          .where(eq(groups.name, input.groupName));
+      try {
+        // Determine the offset for pagination
+        const offset = (page - 1) * pageSize;
 
-        const resultFaculty = await ctx.db
-          .select({ faculty: profiles.faculty })
-          .from(profiles)
-          .where(eq(groups.name, input.groupName));
-
-        const countAssignments = await ctx.db
-          .select({ count: count(assignments) })
-          .from(assignments);
-
-        const countAssignmentsSubmitted = await ctx.db
-          .select({ count: count(assignmentSubmissions) })
-          .from(assignmentSubmissions)
-          .where(eq(groups.name, input.groupName))
-          .groupBy(users.nim);
-
-        const countPresences = await ctx.db
-          .select({ count: count(eventPresences) })
-          .from(eventPresences)
-          .where(eq(groups.name, input.groupName))
-          .groupBy(users.nim);
-      }
-      if (input.role === roleEnum.enumValues[1]) {
-        const keluargaMentor = await ctx.db
+        // Check if the user is assigned to the given group
+        const mentorGroup = await db
           .select({ namaKeluarga: groups.name })
-          .from(profiles)
-          .where(eq(users.nim, input.userNim));
+          .from(groups)
+          .fullJoin(profiles, eq(profiles.group, groups.name))
+          .fullJoin(users, eq(users.id, profiles.userId))
+          .where(eq(users.nim, userNim))
+          .then((res) => res[0]?.namaKeluarga);
 
-        let namaKeluargaMentor = String(keluargaMentor);
-
-        if (input.groupName === namaKeluargaMentor) {
-          const resultName = await ctx.db
-            .select({ name: profiles.name })
-            .from(profiles)
-            .where(eq(groups.name, input.groupName));
-
-          const resultNim = await ctx.db
-            .select({ nim: users.nim })
-            .from(users)
-            .where(eq(groups.name, input.groupName));
-
-          const resultFaculty = await ctx.db
-            .select({ faculty: profiles.faculty })
-            .from(profiles)
-            .where(eq(groups.name, input.groupName));
-
-          const countAssignments = await ctx.db
-            .select({ count: count() })
-            .from(assignments);
-
-          const countAssignmentsSubmitted = await ctx.db
-            .select({ count: count(assignmentSubmissions) })
-            .from(assignmentSubmissions)
-            .where(eq(groups.name, input.groupName))
-            .groupBy(users.nim);
-
-          const countPresences = await ctx.db
-            .select({ count: count(eventPresences) })
-            .from(eventPresences)
-            .where(eq(groups.name, input.groupName))
-            .groupBy(users.nim);
-        } else {
+        if (!mentorGroup) {
           throw new TRPCError({
-            message: "Nomor Keluarga tidak sesuai!",
             code: "FORBIDDEN",
+            message: "Mentor is not assigned to any group.",
           });
         }
+
+        // Fetch mentee data from the mentor's group with search and pagination
+        const menteesData = await db
+          .select({
+            nim: users.nim,
+            nama: profiles.name,
+            fakultas: profiles.faculty,
+            tugasDikumpulkan: count(assignmentSubmissions.id),
+            kehadiran: count(eventPresences.id),
+          })
+          .from(users)
+          .fullJoin(profiles, eq(users.id, profiles.userId))
+          .fullJoin(groups, eq(profiles.group, groups.name))
+          .leftJoin(
+            assignmentSubmissions,
+            eq(assignmentSubmissions.userNim, users.nim),
+          )
+          .leftJoin(eventPresences, eq(eventPresences.userNim, users.nim))
+          .where(
+            and(
+              eq(groups.name, mentorGroup), // Only mentees in the mentor's group
+              eq(users.role, roleEnum.enumValues[0]), // Only mentees
+              ilike(profiles.name, `%${search}%`), // Search by mentee name
+            ),
+          )
+          .groupBy(users.nim, profiles.name, profiles.faculty)
+          .offset(offset)
+          .limit(pageSize);
+
+        return {
+          mentees: menteesData.map((mentee) => ({
+            nim: mentee.nim,
+            nama: mentee.nama,
+            fakultas: mentee.fakultas,
+            tugasDikumpulkan: mentee.tugasDikumpulkan,
+            kehadiran: mentee.kehadiran,
+          })),
+          page,
+          pageSize,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get group details." + String(error),
+          cause: error,
+        });
+      }
+    }),
+
+  // Procedure to get group details for Mamet with pagination, search, filters, and sorting
+  detailKelompokMamet: publicProcedure
+    .input(
+      z.object({
+        groupName: z.string(), // Group name for which details are requested
+        search: z.string().optional().default(""), // Search mentee by name
+        keluargaFilter: z.string().optional(), // Filter by keluarga
+        sortBy: z.enum(["nim", "nama"]).optional().default("nim"), // Sort by nim or nama
+        sortOrder: z.enum(["asc", "desc"]).optional().default("asc"), // Sort order
+        page: z.number().optional().default(1), // Pagination: current page
+        pageSize: z.number().optional().default(10), // Pagination: page size
+      }),
+    )
+    .query(async ({ input }) => {
+      const {
+        search,
+        keluargaFilter, // Group name for which details are requested
+        sortBy,
+        sortOrder,
+        page,
+        pageSize,
+      } = input;
+
+      try {
+        // Determine the offset for pagination
+        const offset = (page - 1) * pageSize;
+
+        // Fetch all groups
+        const groupsData = await db
+          .select({
+            namaKeluarga: groups.name,
+            jumlahMentee: count(users.id),
+          })
+          .from(groups)
+          .fullJoin(profiles, eq(profiles.group, groups.name))
+          .fullJoin(users, eq(users.id, profiles.userId))
+          .where(
+            and(
+              eq(users.role, roleEnum.enumValues[0]), // Only mentees
+              keluargaFilter ? eq(groups.name, keluargaFilter) : undefined, // Filter by keluarga if provided
+            ),
+          )
+          .groupBy(groups.name);
+
+        // Fetch mentee data from all groups with search, filters, sorting, and pagination
+        const menteesData = await db
+          .select({
+            nim: users.nim,
+            nama: profiles.name,
+            fakultas: profiles.faculty,
+            tugasDikumpulkan: count(assignmentSubmissions.id),
+            kehadiran: count(eventPresences.id),
+          })
+          .from(users)
+          .fullJoin(profiles, eq(users.id, profiles.userId))
+          .fullJoin(groups, eq(profiles.group, groups.name))
+          .leftJoin(
+            assignmentSubmissions,
+            eq(assignmentSubmissions.userNim, users.nim),
+          )
+          .leftJoin(eventPresences, eq(eventPresences.userNim, users.nim))
+          .where(
+            and(
+              eq(users.role, roleEnum.enumValues[0]), // Only mentees
+              ilike(profiles.name, `%${search}%`), // Search by mentee name
+              keluargaFilter ? eq(groups.name, keluargaFilter) : undefined, // Filter by keluarga if provided
+            ),
+          )
+          .groupBy(users.nim, profiles.name, profiles.faculty)
+          .orderBy(
+            sortBy === "nim"
+              ? sortOrder === "asc"
+                ? asc(users.nim)
+                : desc(users.nim)
+              : sortOrder === "asc"
+                ? asc(profiles.name)
+                : desc(profiles.name),
+          ) // Sorting
+          .offset(offset)
+          .limit(pageSize);
+
+        return {
+          groups: groupsData,
+          mentees: menteesData.map((mentee) => ({
+            nim: mentee.nim,
+            nama: mentee.nama,
+            fakultas: mentee.fakultas,
+            tugasDikumpulkan: mentee.tugasDikumpulkan,
+            kehadiran: mentee.kehadiran,
+          })),
+          page,
+          pageSize,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get group details." + String(error),
+          cause: error,
+        });
       }
     }),
 });
