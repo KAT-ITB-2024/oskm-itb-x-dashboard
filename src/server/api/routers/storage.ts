@@ -64,8 +64,7 @@ export const storageRouter = createTRPCRouter({
 
         await s3Client.send(putObjectCommand);
 
-        const fileUrl = `https://${process.env.NEXT_PUBLIC_DO_BUCKET_NAME}.nyc3.digitaloceanspaces.com/${key}`;
-        return fileUrl;
+        return key;
       } catch (error) {
         console.error(error);
         throw new TRPCError({
