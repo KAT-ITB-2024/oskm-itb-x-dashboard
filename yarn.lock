@@ -1103,7 +1103,7 @@
 
 "@katitb2024/database@git+https://github.com/KAT-ITB-2024/database-oskm.git#master":
   version "1.0.0"
-  resolved "git+https://github.com/KAT-ITB-2024/database-oskm.git#173a51e13766117c30f66618d9f566087b1532f1"
+  resolved "git+https://github.com/KAT-ITB-2024/database-oskm.git#4f36e4b4596e0282298cdd18c46d8dbc7578825d"
   dependencies:
     "@paralleldrive/cuid2" "^2.2.2"
     bcrypt "^5.1.1"
@@ -5128,7 +5128,6 @@ supports-preserve-symlinks-flag@^1.0.0:
     "@auth/drizzle-adapter" "^1.1.0"
     "@aws-sdk/client-s3" "^3.631.0"
     "@aws-sdk/s3-request-presigner" "^3.632.0"
-    "@katitb2024/database" "git+https://github.com/KAT-ITB-2024/database-oskm.git#master"
     "@metamorph/trpc-panel" "^1.0.5"
     "@radix-ui/react-slot" "^1.1.0"
     "@t3-oss/env-nextjs" "^0.10.1"
@@ -5155,7 +5154,7 @@ supports-preserve-symlinks-flag@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-5d412c21-1c27-4036-9444-aebf572ea83a-1724520187550/node_modules/t3-template-app"
+    t3-template-app "file:E:/YarnCache/v6/npm-t3-template-app-0.1.0-9d6d288f-fecd-4b2b-8e8e-7d26097ffb46-1724550942454/node_modules/t3-template-app"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"

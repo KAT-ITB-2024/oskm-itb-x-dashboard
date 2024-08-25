@@ -37,18 +37,19 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         assignmentId: z.string(),
         groupName: z.string(),
+        menteeNim:z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { assignmentId, groupName } = input;
+        const { assignmentId, groupName, menteeNim } = input;
 
-        const res = await ctx.db
+        let res = await ctx.db
           .select({
             nama: profiles.name,
             nim: users.nim,
             nilai: assignmentSubmissions.point,
-            linkFile: assignmentSubmissions.file,
+            linkFile: assignmentSubmissions.filename,
             updatedAt: assignmentSubmissions.updatedAt,
             deadline: assignments.deadline,
             assignmentsId: assignmentSubmissions.id,
@@ -287,8 +288,8 @@ export const assignmentRouter = createTRPCRouter({
         file: z.string().optional(),
         judul: z.string(),
         assignmentType: z.enum(assignmentTypeEnum.enumValues),
-        point: z.number().optional(),
-        waktuMulai: z.date().optional(),
+        point: z.number(),
+        waktuMulai: z.date(),
         waktuSelesai: z.date(),
         deskripsi: z.string(),
       }),
@@ -306,11 +307,11 @@ export const assignmentRouter = createTRPCRouter({
         } = input;
 
         const inst = {
-          point: point ? point : null,
-          file: file ? file : null,
+          point,
+          file,
           title: judul,
           description: deskripsi,
-          startTime: waktuMulai ? waktuMulai : null,
+          startTime: waktuMulai,
           deadline: waktuSelesai,
           assignmentType,
           createdAt: new Date(),
