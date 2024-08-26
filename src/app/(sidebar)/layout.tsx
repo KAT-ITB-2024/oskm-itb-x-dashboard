@@ -7,9 +7,9 @@ export default function SidebarLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between gap-12 h-screen bg-[url('/sidebar/bg-dashboard.svg')] bg-cover bg-no-repeat px-10 py-12 overflow-hidden">
+    <div className="flex h-screen justify-between gap-12 overflow-hidden bg-[url('/sidebar/bg-dashboard.svg')] bg-cover bg-no-repeat px-10 py-12">
       <Sidebar />
-      <div className="relative flex-1 h-full rounded-lg bg-white p-8">
+      <div className="relative h-full flex-1 rounded-lg bg-white p-8">
         <Image
           src={"/sidebar/coral-dashboard.svg"}
           width={150}
