@@ -22,7 +22,7 @@ export default function SidebarLayout({
           width={192}
           height={90}
           alt="Coral Atas"
-          className="absolute -bottom-6 -left-20"
+          className="absolute -bottom-6 -left-20 z-10"
         />
         {children}
       </div>

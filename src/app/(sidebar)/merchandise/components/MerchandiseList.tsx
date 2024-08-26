@@ -108,14 +108,14 @@ export default function MerchandiseList() {
                   Link
                 </Link>
               </TableCell>
-              <TableCell className="h-16 w-32">
+              <TableCell className="relative">
                 {editingId === merchandise.id ? (
                   <input
                     type="number"
                     value={quantity!}
                     onChange={handleQuantityChange}
                     min="0"
-                    className="w-20 rounded-md border-2 px-2 py-1"
+                    className="w-20 rounded-md border-2 px-2 py-1 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                   />
                 ) : (
                   merchandise.quantity

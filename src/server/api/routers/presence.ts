@@ -360,7 +360,7 @@ export const presenceRouter = createTRPCRouter({
             nim: row.nim,
             name: row.name,
             group: row.group,
-            presence: row.presence 
+            presence: row.presence,
           }));
 
           return {
