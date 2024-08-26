@@ -2,6 +2,7 @@
 import React from "react";
 import MametListAttendance from "./components/MametListAttendance/MametListAttendance";
 import DashboardHeader from "~/app/components/DashboardHeader";
+import MentorListAttendance from "./components/MentorListAttendance";
 
 export default function Page() {
 
