@@ -19,7 +19,6 @@ import {
 } from "~/components/ui/select";
 import Pagination from "./paginationTable";
 import SearchBar from "./searchBarTable";
-import Image from "next/image";
 import { FiEdit, FiCheck } from "react-icons/fi";
 import { FiArrowLeft } from "react-icons/fi";
 import { api } from "~/trpc/react";
@@ -258,11 +257,8 @@ export default function MentorAttendanceEdit() {
                     <TableCell className="border border-[#D1D4DB]">
                       <Select
                         value={participant.status}
-                        onValueChange={(value) =>
-                          handleSelectChange(
-                            index,
-                            value as Participant["status"],
-                          )
+                        onValueChange={(value: Participant["status"]) =>
+                          handleSelectChange(index, value)
                         }
                       >
                         <SelectTrigger>
