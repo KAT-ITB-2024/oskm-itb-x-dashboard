@@ -12,7 +12,7 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, gt, asc, or, ilike, lt, desc } from "drizzle-orm";
+import { eq, and, inArray, gt, asc, or, ilike, count, desc } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -207,60 +207,77 @@ export const assignmentRouter = createTRPCRouter({
 
   getAllMainAssignmentMentor: publicProcedure.
   input(z.object({
-      lastId:z.string().optional(),
-      limit:z.number().min(1).default(10),
-      searchString:z.string().optional(),
-      ascendingSort:z.boolean(),
+    searchString:z.string().optional().default(""),
+    sortOrder:z.enum(["asc","desc"]).optional().default("asc"),
+    page:z.number().optional().default(1),
+    pageSize:z.number().optional().default(10)
   })).
   query(async ({ ctx ,input}) => {
     try {
-      const {lastId,limit,searchString, ascendingSort} = input;
+      const {
+        searchString,
+        sortOrder,
+        page,
+        pageSize
+      } = input;
 
-      let bound : {
-        boundDate:Date
-      }|undefined;
-
-      if(lastId){
-        const [temp] =  await ctx
-        .db
-        .select({boundDate:assignments.startTime})
-        .from(assignments)
-        .where(eq(assignments.id,lastId))
-        bound = temp;
-      }
-
-
-      const compare: AssignmentType = "Main";
+      const compare:AssignmentType = "Main";
+      const offset = (page-1)*pageSize;
       const res = await ctx.db
         .select({
-          judulTugas: assignments.title,
+          judulTugas:assignments.title,
           waktuMulai: assignments.startTime,
           waktuSelesai: assignments.deadline,
           assignmentId:assignments.id,
         })
         .from(assignments)
-        .where(and(
-          eq(assignments.assignmentType, compare),
-          ( searchString ? or(
-            ilike(assignments.title, `%${searchString}%`),
-            ilike(assignments.description, `%${searchString}%`)
-          ) : eq(assignments.id,assignments.id)),
-          (bound ? 
-
-            ascendingSort ?
-            gt(assignments.startTime,bound.boundDate): 
-            lt(assignments.startTime,bound.boundDate)
-            :
-          eq(assignments.id,assignments.id) )
-        )).limit(limit)
-        .orderBy(
-          ascendingSort ?
-          asc(assignments.startTime) :
-          desc(assignments.startTime)
+        .where(
+          and(
+            eq(assignments.assignmentType, compare),
+            or(
+              ilike(assignments.title, `%${searchString}%`),
+              ilike(assignments.description, `%${searchString}%`)
+            )
+          )
         )
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(
+          sortOrder === "asc" 
+          ? asc(assignments.startTime) :
+            desc(assignments.startTime)
+        )
+
+        if(res.length == 0){
+          throw new TRPCError({
+            code:"NOT_FOUND",
+            message:"THERE IS NO SUCH ASSIGNMENT"
+          })
+        }
+
+        const countRows = (
+          await ctx.db.select({
+            count:count()
+          }).from(assignments)
+        )[0] ?? {count:0};
         
-      return res;
+        return {
+          data:res,
+          meta:{
+            totalCount:countRows.count,
+            page,
+            pageSize,
+            totalPages:Math.ceil(countRows.count/pageSize)
+          }
+        }
+
     } catch (error) {
+      if(error instanceof TRPCError){
+        throw new TRPCError({
+          code:"INTERNAL_SERVER_ERROR",
+          message: `An error occurred: ${error}`,
+        });
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured while getting all main assignment ",
