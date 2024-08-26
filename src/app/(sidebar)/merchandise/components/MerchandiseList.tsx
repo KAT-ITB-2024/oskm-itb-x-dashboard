@@ -44,6 +44,7 @@ const initialMerchandises: Merchandise[] = [
 ];
 
 export default function MerchandiseList() {
+  const [search, setSearch] = useState("");
   const [merchandises, setMerchandises] = useState(initialMerchandises);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [quantity, setQuantity] = useState<number | null>(null);
@@ -74,6 +75,8 @@ export default function MerchandiseList() {
           type="text"
           placeholder="Cari Merchandise"
           className="w-full bg-transparent outline-none"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <IoMdSearch className="text-xl text-gray-400" />
       </div>
