@@ -2,7 +2,8 @@
 
 import {
   assignments,
-  AssignmentType,
+  notifications,
+  type AssignmentType,
   assignmentTypeEnum,
   assignmentSubmissions,
   groups,
@@ -110,6 +111,7 @@ export const assignmentRouter = createTRPCRouter({
         });
       }
     }),
+    
   editMenteeAssignmentPoint: publicProcedure
     .input(
       z.object({
@@ -121,7 +123,7 @@ export const assignmentRouter = createTRPCRouter({
       try {
         const { assignmentId, point } = input;
 
-        let [group] = await ctx.db
+        const [group] = await ctx.db
           .select({
             groupName: groups.name,
             point: groups.point,
@@ -139,7 +141,7 @@ export const assignmentRouter = createTRPCRouter({
           });
         }
 
-        let [prevData] = await ctx.db
+        const [prevData] = await ctx.db
           .select({
             point: assignmentSubmissions.point,
           })
@@ -157,18 +159,18 @@ export const assignmentRouter = createTRPCRouter({
           });
         }
 
-        prevData!.point = point;
-        group!.point = group!.point + point;
+        prevData.point = point;
+        group.point = group.point + point;
 
         await ctx.db
           .update(assignmentSubmissions)
-          .set({ point: prevData!.point })
+          .set({ point: prevData.point })
           .where(eq(assignmentSubmissions.id, assignmentId));
 
         // update group data
-        const res = await ctx.db
+        await ctx.db
           .update(groups)
-          .set({ point: group!.point })
+          .set({ point: group.point })
           .where(eq(groups.name, group.groupName));
 
         return {
@@ -180,10 +182,11 @@ export const assignmentRouter = createTRPCRouter({
         console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Error when updating mentee assignment point : ${error}`,
+          message: `Error when updating mentee assignment point : ${String(error)}`,
         });
       }
     }),
+
   getAllMainAssignmentMentor: publicProcedure.query(async ({ ctx }) => {
     try {
       const compare: AssignmentType = "Main";
@@ -204,6 +207,7 @@ export const assignmentRouter = createTRPCRouter({
       });
     }
   }),
+
   getMainQuestAssignmentCsv: publicProcedure
     .input(
       z.object({
