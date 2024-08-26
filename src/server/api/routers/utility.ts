@@ -39,22 +39,34 @@ export const utilityRouter = createTRPCRouter({
             image: merchandises.image,
             stock: merchandises.stock,
           })
-          .from(merchandises);
-
-        const search =
-          input.search && input.search !== ""
-            ? query.where(ilike(merchandises.name, `%${input.search}%`))
-            : query;
+          .from(merchandises)
+          .where(
+            input.search && input.search !== ""
+              ? ilike(merchandises.name, `%${input.search}%`)
+              : undefined,
+          );
 
         const limit =
-          input.limit !== undefined ? search.limit(input.limit) : search;
+          input.limit !== undefined ? query.limit(input.limit) : query;
 
         const offset =
           input.offset !== undefined ? limit.offset(input.offset) : limit;
 
         const res = await offset;
 
-        return res;
+        const total = await ctx.db
+          .select({ count: count() })
+          .from(merchandises)
+          .where(
+            input.search && input.search !== ""
+              ? ilike(merchandises.name, `%${input.search}%`)
+              : undefined,
+          );
+
+        return {
+          res,
+          count: total[0]?.count,
+        };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -62,20 +74,6 @@ export const utilityRouter = createTRPCRouter({
         });
       }
     }),
-
-  // GET Total Merchandise
-  getTotalMerchandise: publicProcedure.query(async ({ ctx }) => {
-    try {
-      const res = await ctx.db.select({ count: count() }).from(merchandises);
-
-      return res[0];
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to count Merchandise",
-      });
-    }
-  }),
 
   // PUT Edit Quantity Merchandise
   updateQuantity: publicProcedure
@@ -136,22 +134,33 @@ export const utilityRouter = createTRPCRouter({
           })
           .from(merchandiseExchanges)
           .fullJoin(users, eq(merchandiseExchanges.userId, users.id))
-          .fullJoin(profiles, eq(users.id, profiles.userId));
-
-        const search =
-          input.search && input.search !== ""
-            ? query.where(ilike(merchandises.name, `%${input.search}%`))
-            : query;
+          .fullJoin(profiles, eq(users.id, profiles.userId))
+          .where(
+            input.search && input.search !== ""
+              ? ilike(merchandiseExchanges.id, `%${input.search}%`)
+              : undefined,
+          );
 
         const limit =
-          input.limit !== undefined ? search.limit(input.limit) : search;
+          input.limit !== undefined ? query.limit(input.limit) : query;
 
         const offset =
           input.offset !== undefined ? limit.offset(input.offset) : limit;
 
         const res = await offset;
+        const total = await ctx.db
+          .select({ count: count() })
+          .from(merchandiseExchanges)
+          .where(
+            input.search && input.search !== ""
+              ? ilike(merchandiseExchanges.id, `%${input.search}%`)
+              : undefined,
+          );
 
-        return res;
+        return {
+          res,
+          count: total[0]?.count,
+        };
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -159,22 +168,6 @@ export const utilityRouter = createTRPCRouter({
         });
       }
     }),
-
-  // GET Total Merchandise Exchange
-  getTotalMerchandiseExchange: publicProcedure.query(async ({ ctx }) => {
-    try {
-      const res = await ctx.db
-        .select({ count: count() })
-        .from(merchandiseExchanges);
-
-      return res[0];
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to count Merchandise Exchange",
-      });
-    }
-  }),
 
   // Get Details Exchange Merchandise
   getDetailsExchange: publicProcedure
