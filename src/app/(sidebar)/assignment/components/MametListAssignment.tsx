@@ -1,4 +1,14 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+
 import { IoMdSearch } from "react-icons/io";
+
 import {
   Table,
   TableBody,
@@ -92,6 +102,7 @@ const listAssigment = [
     linkcsv: "#",
   },
 ];
+
 
 export default function MametListAssignment() {
   return (
@@ -197,7 +208,7 @@ export default function MametListAssignment() {
           </Table>
         </div>
       </div>
-
+     
       <nav className="flex flex-row gap-3">
         <p>Total 85 Items</p>
         <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
@@ -243,7 +254,6 @@ export default function MametListAssignment() {
           <li>
             <a
               href="#"
-              aria-current="page"
               className="z-10 flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
             >
               3
@@ -289,11 +299,9 @@ export default function MametListAssignment() {
             </a>
           </li>
         </ul>
-        <div className="h-6 rounded-md border px-3.5">
-          <p>
-            <span className="text-gray-500">20</span> / page
-          </p>
-        </div>
+        <p className="rounded-md border px-3.5 text-center">
+          <span className="text-gray-500">20</span> / page
+        </p>
       </nav>
     </div>
   );
