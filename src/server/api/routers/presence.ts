@@ -1,5 +1,8 @@
 // Router ini digunakan untuk segala yang berkaitan dengan presence (absensi)
 import {
+  EventDay,
+  PresenceEvent,
+  PresenceType,
   eventPresences,
   events,
   groups,
@@ -24,12 +27,12 @@ export type TAttendanceOfAnEvent = {
   nim: string;
   name: string;
   group: string;
-  presence: "Hadir" | "Izin/Sakit" | "Alpha";
+  presence: PresenceType;
 }[];
 
 export type TAttendance = {
-  day: "Day 1" | "Day 2" | "Day 3" | "Day 4";
-  openingOrClosing: "Opening" | "Closing";
+  day: EventDay;
+  openingOrClosing: PresenceEvent;
   attendance: TAttendanceOfAnEvent;
 };
 
@@ -92,7 +95,7 @@ export const presenceRouter = createTRPCRouter({
               nim: row.nim,
               name: row.name,
               group: row.group,
-              presence: row.presence as "Hadir" | "Izin/Sakit" | "Alpha",
+              presence: row.presence,
             })),
           };
         } catch (error) {
@@ -132,16 +135,16 @@ export const presenceRouter = createTRPCRouter({
 
       const groupingMap = new Map<
         {
-          day: "Day 1" | "Day 2" | "Day 3" | "Day 4";
-          openingOrClosing: "Opening" | "Closing";
+          day: EventDay;
+          openingOrClosing: PresenceEvent;
         },
         TAttendanceOfAnEvent
       >();
 
       q.forEach((row) => {
         const key = {
-          day: row.day as "Day 1" | "Day 2" | "Day 3" | "Day 4",
-          openingOrClosing: row.openingOrClosing as "Opening" | "Closing",
+          day: row.day,
+          openingOrClosing: row.openingOrClosing,
         };
 
         if (!groupingMap.has(key)) {
@@ -152,7 +155,7 @@ export const presenceRouter = createTRPCRouter({
           nim: row.nim,
           name: row.name,
           group: row.group,
-          presence: row.presence as "Hadir" | "Izin/Sakit" | "Alpha",
+          presence: row.presence,
         });
       });
 
@@ -247,7 +250,7 @@ export const presenceRouter = createTRPCRouter({
           const insertData = rolePesertaUsers.map((row) => ({
             eventId,
             userNim: row.nim,
-            presenceType: "Alpha" as "Hadir" | "Izin/Sakit" | "Alpha",
+            presenceType: "Alpha" as PresenceType,
             presenceEvent: openingOrClosing,
             updatedAt: new Date(),
           }));
@@ -357,7 +360,7 @@ export const presenceRouter = createTRPCRouter({
             nim: row.nim,
             name: row.name,
             group: row.group,
-            presence: row.presence as "Hadir" | "Izin/Sakit" | "Alpha",
+            presence: row.presence,
           }));
 
           return {
