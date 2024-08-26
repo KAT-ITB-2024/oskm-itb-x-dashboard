@@ -1,10 +1,10 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import ForgotForm from "./component/ForgotForm";
 import NewPassword from "./component/NewPasswordForm";
 import { validateToken } from "~/services/forgotToken";
 
-export default async function Page({
+export default function Page({
   searchParams,
 }: {
   searchParams: {
@@ -13,30 +13,44 @@ export default async function Page({
   };
 }) {
   const { email, token } = searchParams;
+  const [loading, setLoading] = useState(true);
+  const [validToken, setValidToken] = useState<boolean | null>(null);
 
-  if (email && token) {
-    const valid = await validateToken({ email, token }); // Make sure to await this if it's an async function
+  useEffect(() => {
+    const checkToken = async () => {
+      if (email && token) {
+        const valid = await validateToken({ email, token });
+        setValidToken(valid);
+      } else {
+        setValidToken(false);
+      }
+      setLoading(false);
+    };
+    checkToken();
+  }, [email, token]);
 
-    if (valid) {
-      return (
-        <div className="h-screen w-screen overflow-hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/img/background.png)' }}>
-          <div className="flex items-center justify-center h-full w-full">
-            <div className="container mx-auto p-4">
-              <NewPassword {...{ email, token }} />
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return <div className="h-screen w-screen flex items-center justify-center text-red-500">Invalid or stale token, try again later</div>;
-    }
+  if (loading) {
+    return (
+      <div style={{ height: '100vh', width: '100vw', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/img/background.png)' }}>
-      <div className="flex items-center justify-center h-full w-full">
-        <div className="container mx-auto p-4">
-          <ForgotForm />
+    <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <div style={{
+        backgroundImage: 'url(/img/background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        width: '100vw',
+        height: '100vh',
+      }}>
+        <div className="flex items-center justify-center h-full w-full">
+          <div className="container mx-auto p-4">
+            {validToken ? <NewPassword {...{ email, token }} /> : <ForgotForm />}
+          </div>
         </div>
       </div>
     </div>

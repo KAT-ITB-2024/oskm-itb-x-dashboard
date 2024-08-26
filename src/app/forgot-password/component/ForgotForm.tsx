@@ -20,30 +20,10 @@ export default function ForgotForm() {
     <div className="forgot-container flex items-center justify-center h-screen">
       <div className="forgot-box text-center">
         <div className="flex flex-col items-center">
-          <h1
-            className="
-              text-[42px]
-              font-mogula
-              font-normal
-              text-[#0010A4]
-              text-shadow: 0 0 10px #0010A4
-              leading-none
-            "
-          >
-            LUPA
-            <br />
-            KATA SANDI?
+          <h1 className="text-[42px] font-mogula font-normal text-[#0010A4] leading-none">
+            LUPA<br/>KATA SANDI?
           </h1>
-          <p
-            className="
-              text-[15px]
-              font-REM
-              font-normal
-              text-[#0010A4]
-              text-shadow: 0 0 10px #0010A4
-              mt-[20px]
-            "
-          >
+          <p className="text-[15px] font-REM font-normal text-[#0010A4] mt-[20px]">
             Tenang saja, Aqualings!
           </p>
         </div>
@@ -52,15 +32,16 @@ export default function ForgotForm() {
             Email <span className="text-[#DC2522]">*</span>
           </p>
           <div className="w-full mb-4">
-            <label htmlFor="email" className="sr-only font-REM">
-              Email
-            </label>
+            <label htmlFor="email" className="sr-only font-REM">Email</label>
             <div className="flex items-center border border-[#9EA2AD] rounded-lg px-11 py-2 bg-white">
               <input
                 id="email"
                 type="text"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  console.log("Email updated:", e.target.value);
+                }}
                 className="w-full h-full focus:outline-none font-REM text-sm pl-3 pr-3 text-black bg-white placeholder-gray-500"
                 placeholder="Masukkan Email Anda"
               />
