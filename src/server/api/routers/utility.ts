@@ -8,7 +8,7 @@ import {
   merchandiseExchangeStatusEnum,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
-import { eq, ilike } from "drizzle-orm";
+import { count, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -39,27 +39,43 @@ export const utilityRouter = createTRPCRouter({
             image: merchandises.image,
             stock: merchandises.stock,
           })
-          .from(merchandises)
-          .where(
-            input.search && input.search !== ""
-              ? ilike(merchandises.name, `%${input.search}%`)
-              : undefined,
-          );
+          .from(merchandises);
 
-        let res;
+        const search =
+          input.search && input.search !== ""
+            ? query.where(ilike(merchandises.name, `%${input.search}%`))
+            : query;
 
-        if (input.limit !== undefined && input.offset !== undefined) {
-          res = query.limit(input.limit).offset(input.offset);
-        }
+        const limit =
+          input.limit !== undefined ? search.limit(input.limit) : search;
 
-        return await res;
+        const offset =
+          input.offset !== undefined ? limit.offset(input.offset) : limit;
+
+        const res = await offset;
+
+        return res;
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch Merchandise list`,
+          message: "Failed to fetch Merchandise list",
         });
       }
     }),
+
+  // GET Total Merchandise
+  getTotalMerchandise: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const res = await ctx.db.select({ count: count() }).from(merchandises);
+
+      return res[0];
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to count Merchandise",
+      });
+    }
+  }),
 
   // PUT Edit Quantity Merchandise
   updateQuantity: publicProcedure
@@ -74,7 +90,8 @@ export const utilityRouter = createTRPCRouter({
         const res = await ctx.db
           .update(merchandises)
           .set({ stock: input.quantity })
-          .where(eq(merchandises.id, input.id));
+          .where(eq(merchandises.id, input.id))
+          .returning({ foundId: merchandises.id });
 
         if (!res.length) {
           throw new TRPCError({
@@ -113,33 +130,51 @@ export const utilityRouter = createTRPCRouter({
         const query = ctx.db
           .select({
             id: merchandiseExchanges.id,
-            nim: users.id,
+            nim: users.nim,
             name: profiles.name,
             status: merchandiseExchanges.status,
           })
           .from(merchandiseExchanges)
-          .innerJoin(users, eq(merchandiseExchanges.userId, users.id))
-          .innerJoin(profiles, eq(users.id, profiles.userId))
-          .where(
-            input.search && input.search !== ""
-              ? ilike(merchandiseExchanges.id, `%${input.search}%`)
-              : undefined,
-          );
+          .fullJoin(users, eq(merchandiseExchanges.userId, users.id))
+          .fullJoin(profiles, eq(users.id, profiles.userId));
 
-        let res;
+        const search =
+          input.search && input.search !== ""
+            ? query.where(ilike(merchandises.name, `%${input.search}%`))
+            : query;
 
-        if (input.limit !== undefined && input.offset !== undefined) {
-          res = query.limit(input.limit).offset(input.offset);
-        }
+        const limit =
+          input.limit !== undefined ? search.limit(input.limit) : search;
 
-        return await res;
+        const offset =
+          input.offset !== undefined ? limit.offset(input.offset) : limit;
+
+        const res = await offset;
+
+        return res;
       } catch (error) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch exchange merchandise`,
+          message: "Failed to fetch exchange merchandise",
         });
       }
     }),
+
+  // GET Total Merchandise Exchange
+  getTotalMerchandiseExchange: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const res = await ctx.db
+        .select({ count: count() })
+        .from(merchandiseExchanges);
+
+      return res[0];
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to count Merchandise Exchange",
+      });
+    }
+  }),
 
   // Get Details Exchange Merchandise
   getDetailsExchange: publicProcedure
@@ -158,16 +193,9 @@ export const utilityRouter = createTRPCRouter({
             status: merchandiseExchanges.status,
           })
           .from(merchandiseExchanges)
-          .innerJoin(users, eq(users.id, merchandiseExchanges.userId))
-          .innerJoin(profiles, eq(profiles.userId, users.id))
+          .fullJoin(users, eq(users.id, merchandiseExchanges.userId))
+          .fullJoin(profiles, eq(profiles.userId, users.id))
           .where(eq(merchandiseExchanges.id, input.id));
-
-        if (!res.length) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Merchandise exchange id can't be found",
-          });
-        }
 
         const details = await ctx.db
           .select({
@@ -176,7 +204,7 @@ export const utilityRouter = createTRPCRouter({
             quantity: merchandiseExchangeDetails.quantity,
           })
           .from(merchandiseExchangeDetails)
-          .innerJoin(
+          .fullJoin(
             merchandises,
             eq(merchandiseExchangeDetails.merchandiseId, merchandises.id),
           )
@@ -217,18 +245,19 @@ export const utilityRouter = createTRPCRouter({
               ? merchandiseExchangeStatusEnum.enumValues[0]
               : merchandiseExchangeStatusEnum.enumValues[1],
           })
-          .where(eq(merchandiseExchanges.id, input.id));
+          .where(eq(merchandiseExchanges.id, input.id))
+          .returning({ foundId: merchandiseExchanges.id });
 
         if (!res.length) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Merchandise exchange id can't be found",
+            message: "Merchandise can't be found",
           });
         }
 
         return {
           success: true,
-          message: "Merchandise quantity updated xuccessfully.",
+          message: "Merchandise quantity updated successfully.",
         };
       } catch (error) {
         if (error instanceof TRPCError) {
