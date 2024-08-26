@@ -133,8 +133,8 @@ export const utilityRouter = createTRPCRouter({
             status: merchandiseExchanges.status,
           })
           .from(merchandiseExchanges)
-          .fullJoin(users, eq(merchandiseExchanges.userId, users.id))
-          .fullJoin(profiles, eq(users.id, profiles.userId))
+          .leftJoin(users, eq(merchandiseExchanges.userId, users.id))
+          .leftJoin(profiles, eq(users.id, profiles.userId))
           .where(
             input.search && input.search !== ""
               ? ilike(merchandiseExchanges.id, `%${input.search}%`)
@@ -148,6 +148,7 @@ export const utilityRouter = createTRPCRouter({
           input.offset !== undefined ? limit.offset(input.offset) : limit;
 
         const res = await offset;
+
         const total = await ctx.db
           .select({ count: count() })
           .from(merchandiseExchanges)
@@ -186,8 +187,8 @@ export const utilityRouter = createTRPCRouter({
             status: merchandiseExchanges.status,
           })
           .from(merchandiseExchanges)
-          .fullJoin(users, eq(users.id, merchandiseExchanges.userId))
-          .fullJoin(profiles, eq(profiles.userId, users.id))
+          .leftJoin(users, eq(users.id, merchandiseExchanges.userId))
+          .leftJoin(profiles, eq(profiles.userId, users.id))
           .where(eq(merchandiseExchanges.id, input.id));
 
         const details = await ctx.db
@@ -197,7 +198,7 @@ export const utilityRouter = createTRPCRouter({
             quantity: merchandiseExchangeDetails.quantity,
           })
           .from(merchandiseExchangeDetails)
-          .fullJoin(
+          .leftJoin(
             merchandises,
             eq(merchandiseExchangeDetails.merchandiseId, merchandises.id),
           )
