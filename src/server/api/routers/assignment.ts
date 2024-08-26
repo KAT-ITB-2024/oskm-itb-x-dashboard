@@ -48,7 +48,7 @@ export const assignmentRouter = createTRPCRouter({
             nama: profiles.name,
             nim: users.nim,
             nilai: assignmentSubmissions.point,
-            linkFile: assignmentSubmissions.file,
+            linkFile: assignmentSubmissions.downloadUrl,
             updatedAt: assignmentSubmissions.updatedAt,
             deadline: assignments.deadline,
             assignmentsId: assignmentSubmissions.id,
@@ -111,7 +111,7 @@ export const assignmentRouter = createTRPCRouter({
         });
       }
     }),
-    
+
   editMenteeAssignmentPoint: publicProcedure
     .input(
       z.object({
@@ -305,19 +305,19 @@ export const assignmentRouter = createTRPCRouter({
           deskripsi,
         } = input;
 
-        const inst = {
-          point: point ? point : null,
-          file: file ? file : null,
-          title: judul,
-          description: deskripsi,
-          startTime: waktuMulai ? waktuMulai : null,
-          deadline: waktuSelesai,
-          assignmentType,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        // const inst = {
+        //   point: point ? point : null,
+        //   file: file ? file : null,
+        //   title: judul,
+        //   description: deskripsi,
+        //   startTime: waktuMulai ? waktuMulai : null,
+        //   deadline: waktuSelesai,
+        //   assignmentType,
+        //   createdAt: new Date(),
+        //   updatedAt: new Date(),
+        // };
 
-        await ctx.db.insert(assignments).values(inst).returning();
+        // await ctx.db.insert(assignments).values(inst).returning();
 
         // add into notification
         const content = `Ada tugas baru nih - ${judul}, jangan lupa dikerjain ya!`;
@@ -335,6 +335,60 @@ export const assignmentRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An error occurred while generating the CSV",
+        });
+      }
+    }),
+  editAssignmentMamet: publicProcedure
+    .input(
+      z.object({
+        assignmentId: z.string(),
+        file: z.string().optional(),
+        title: z.string().optional(),
+        point: z.number().optional(),
+        startTime: z.date().optional(),
+        deadline: z.date().optional(),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { assignmentId, ...updateData } = input;
+
+        const [data] = await ctx.db
+          .select()
+          .from(assignments)
+          .where(eq(assignments.id, assignmentId));
+
+        if (!data) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "There is no assignment with such id",
+          });
+        }
+
+        // manually update each
+        data.deadline = updateData.deadline ?? data.deadline;
+        data.description = updateData.description ?? data.description;
+        data.downloadUrl = updateData.file ?? data.downloadUrl;
+        data.point = updateData.point ?? data.point;
+        data.startTime = updateData.startTime ?? data.startTime;
+        data.title = updateData.title ?? data.title;
+        data.updatedAt = new Date();
+
+        await ctx.db
+          .update(assignments)
+          .set(data)
+          .where(eq(assignments.id, assignmentId));
+
+        return {
+          success: true,
+          message: "The assignment is successfully updated",
+        };
+      } catch (error) {
+        console.log(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error when updating  an assignment",
         });
       }
     }),

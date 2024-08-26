@@ -1,8 +1,8 @@
 // Router ini digunakan untuk segala yang berkaitan dengan presence (absensi)
 import {
-  EventDay,
-  PresenceEvent,
-  PresenceType,
+  type EventDay,
+  type PresenceEvent,
+  type PresenceType,
   eventPresences,
   events,
   groups,
