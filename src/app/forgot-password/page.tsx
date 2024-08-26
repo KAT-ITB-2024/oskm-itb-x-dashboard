@@ -4,7 +4,6 @@ import ForgotForm from "./component/ForgotForm";
 import NewPassword from "./component/NewPasswordForm";
 import { validateToken } from "~/services/forgotToken";
 
-// eslint-disable-next-line @next/next/no-async-client-component
 export default async function Page({
   searchParams,
 }: {
@@ -16,7 +15,7 @@ export default async function Page({
   const { email, token } = searchParams;
 
   if (email && token) {
-    const valid = validateToken({ email, token });
+    const valid = await validateToken({ email, token }); // Make sure to await this if it's an async function
 
     if (valid) {
       return (
@@ -29,7 +28,7 @@ export default async function Page({
         </div>
       );
     } else {
-      return <div>Invalid or stale token, try again later</div>;
+      return <div className="h-screen w-screen flex items-center justify-center text-red-500">Invalid or stale token, try again later</div>;
     }
   }
 

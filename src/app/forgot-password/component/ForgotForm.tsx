@@ -41,7 +41,7 @@ export default function ForgotForm() {
               font-normal
               text-[#0010A4]
               text-shadow: 0 0 10px #0010A4
-              mt-20px
+              mt-[20px]
             "
           >
             Tenang saja, Aqualings!
