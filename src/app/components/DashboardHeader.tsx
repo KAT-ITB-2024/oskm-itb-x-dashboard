@@ -15,7 +15,7 @@ export default function DashboardHeader({ title }: DashboardHeaderProps) {
       />
 
       <div className="">
-        <h1 className="dashboard-title-text text-4xl font-bold">Dashboard</h1>
+        <h1 className="dashboard-title-text text-4xl font-mogula bg-gradient-to-r from-[#0010A4] via-[#0010A4] to-[#64B1F7] bg-clip-text text-transparent">Dashboard</h1>
         <p className="text-lg text-[#1023AA]">{title}</p>
       </div>
     </div>
