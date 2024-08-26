@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "~/server/bucket";
 import sanitize from "sanitize-filename";
 import { FolderEnum } from "~/server/bucket";
@@ -10,6 +10,34 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getContentType } from "~/utils/fileUtils";
 
 export const storageRouter = createTRPCRouter({
+  deleteFile: publicProcedure
+    .input(
+      z.object({
+        key: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { key } = input;
+        const deleteObjectCommand = new DeleteObjectCommand({
+          Bucket: process.env.NEXT_PUBLIC_DO_BUCKET_NAME,
+          Key: key,
+        });
+
+        await s3Client.send(deleteObjectCommand);
+
+        return {
+          success: true,
+          message: "File deleted successfully",
+        };
+      } catch (error) {
+        console.log(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error when deleting file",
+        });
+      }
+    }),
   uploadFile: publicProcedure
     .input(
       z.object({
