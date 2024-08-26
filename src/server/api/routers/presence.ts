@@ -10,7 +10,7 @@ import {
   users,
 } from "@katitb2024/database";
 import { profile } from "console";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -360,7 +360,7 @@ export const presenceRouter = createTRPCRouter({
             nim: row.nim,
             name: row.name,
             group: row.group,
-            presence: row.presence,
+            presence: row.presence as "Hadir" | "Izin/Sakit" | "Alpha",
           }));
 
           return {
@@ -519,5 +519,34 @@ export const presenceRouter = createTRPCRouter({
         );
 
       return { message: "Presence successfully updated" };
+    }),
+
+  getEventsThatHasPresence: publicProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        dataPerPage: z.number(),
+      }),
+    )
+    .query(async ({ input: { page, dataPerPage } }) => {
+      const eventsWithPresence = await db
+        .selectDistinct({
+          eventId: eventPresences.eventId,
+          eventDay: events.day,
+          eventOpeningOrClosing: eventPresences.presenceEvent,
+          eventDate: events.eventDate,
+          startTime: events.openingOpenPresenceTime,
+          endTime: events.openingClosePresenceTime,
+        })
+        .from(eventPresences)
+        .innerJoin(events, eq(events.id, eventPresences.eventId))
+        .orderBy(desc(events.eventDate), desc(events.openingOpenPresenceTime));
+
+      const paginatedData = eventsWithPresence.slice(
+        dataPerPage * (page - 1),
+        dataPerPage * page,
+      );
+
+      return paginatedData;
     }),
 });
