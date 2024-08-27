@@ -1,7 +1,7 @@
 import React from "react";
 import MametNavigationAssignment from "./components/MametNavigationAssignment";
 import DashboardHeader from "~/app/components/DashboardHeader";
-import MametListAssignment from "./components/MametListAssignment";
+// import MametListAssignment from "./components/MametListAssignment";
 import MentorListAssignment from "./components/MentorListAssignment";
 
 export default function Page() {
