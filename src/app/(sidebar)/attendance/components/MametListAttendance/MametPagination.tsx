@@ -1,10 +1,12 @@
-
-export default function MametPagination () {
-    return(<div>
-               <nav className="flex flex-row gap-3">
-         <p>Total 8 Items</p>
-         <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
-            <li>  <a
+export default function MametPagination() {
+  return (
+    <div>
+      <nav className="flex flex-row gap-3">
+        <p>Total 8 Items</p>
+        <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
+          <li>
+            {" "}
+            <a
               href="#"
               className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
             >
@@ -94,6 +96,6 @@ export default function MametPagination () {
           <span className="text-gray-500">20</span> / page
         </p>
       </nav>
-    </div>);
-
-};
+    </div>
+  );
+}
