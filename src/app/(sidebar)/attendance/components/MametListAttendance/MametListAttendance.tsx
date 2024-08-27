@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
@@ -13,46 +12,37 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/ui/table"; // Mengimpor Tabel 2
+} from "~/components/ui/table";
 import MametNavigation from "./MametNavigation";
 import MametPagination from "./MametPagination";
 import { RiPencilFill } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";
 import { MdDownload } from "react-icons/md";
+import { api } from "~/trpc/react";
+import { format } from "date-fns";
 
 interface Event {
-  id: string;
-  day: string;
-  eventDate: string;
-  openingOpenPresenceTime: string;
-  openingClosePresenceTime: string;
-  closingOpenPresenceTime: string;
-  closingClosePresenceTime: string;
+  eventId: string;
+  eventDay: "Day 1" | "Day 2" | "Day 3" | "Day 4";
+  eventDate: Date;
+  openingOpenPresenceTime: string | null;
+  openingClosePresenceTime: string | null;
+  closingOpenPresenceTime: string | null;
+  closingClosePresenceTime: string | null;
 }
 
-const mockupData: Event[] = [
-  {
-    id: "1",
-    day: "Day 1",
-    eventDate: "HH:MM:YY",
-    openingOpenPresenceTime: "09:00:00",
-    openingClosePresenceTime: "10:00:00",
-    closingOpenPresenceTime: "17:00:00",
-    closingClosePresenceTime: "18:00:00",
-  },
-  {
-    id: "2",
-    day: "Day 2",
-    eventDate: "HH:MM:YY",
-    openingOpenPresenceTime: "09:00:00",
-    openingClosePresenceTime: "10:00:00",
-    closingOpenPresenceTime: "17:00:00",
-    closingClosePresenceTime: "18:00:00",
-  },
-];
-
 export default function MametListAttendance() {
-  const [events, setEvents] = useState<Event[]>(mockupData);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 1; 
+
+  const { data, isLoading } = api.presence.getEventsThatHasPresence.useQuery({
+    page: currentPage,
+    dataPerPage: itemsPerPage,
+  });
+
+  const events = data?.paginatedData ??  [];
+  const totalItems = data?.totalItems ?? 0;
+
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
@@ -63,11 +53,11 @@ export default function MametListAttendance() {
   };
 
   const handleAddEvent = () => {
-    return router.push('/attendance/tambah');
+    return router.push("/attendance/tambah");
   };
 
   const handleDownload = () => {
-    // Your CSV download logic
+    //  CSV download logic
   };
 
   const handleDeleteClick = (event: Event) => {
@@ -77,7 +67,7 @@ export default function MametListAttendance() {
 
   const handleConfirmDelete = () => {
     if (eventToDelete) {
-      setEvents(events.filter(e => e.id !== eventToDelete.id));
+      //  delete operation here 
       setShowConfirmDelete(false);
       setEventToDelete(null);
     }
@@ -89,28 +79,41 @@ export default function MametListAttendance() {
   };
 
   const renderTableRows = () => {
-    // render rows function sample for testing
-    let rowIndex = 0;
+    if (isLoading && events.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={6}>Loading...</TableCell>
+        </TableRow>
+      );
+    }
+
+    let rowIndex = (currentPage - 1) * (itemsPerPage*2);
 
     return events.flatMap((event) => {
-      const dayNumber = event.day.split(" ")[1];
       const rows = [];
-
-      if (selectedDay && event.day !== selectedDay) {
+      if (selectedDay && event.eventDay !== selectedDay) {
         return [];
       }
+      const eventDate: Date =
+        event.eventDate instanceof Date ? event.eventDate : new Date(event.eventDate);
+      const formattedDate = format(eventDate, "dd/MM/yyyy");
 
-      if (event.openingOpenPresenceTime !== "00:00:00") {  //00:00:00 assumed as default//
+      // Render row for Opening event
+      if (event.openingOpenPresenceTime !== null) {
         rowIndex += 1;
         rows.push(
-          <TableRow key={`opening-${event.id}`} className="border-b border-gray-200 bg-white">
+          <TableRow key={`opening-${event.eventId}`} className="border-b border-gray-200 bg-white">
             <TableCell className="border-r border-l border-gray-200">{rowIndex}</TableCell>
-            <TableCell className="border-r border-gray-200">{`Opening Day ${dayNumber}`}</TableCell>
-            <TableCell className="border-r border-gray-200">{event.eventDate}</TableCell>
-            <TableCell className="border-r border-gray-200">{event.openingOpenPresenceTime}</TableCell>
-            <TableCell className="border-r border-gray-200">{event.openingClosePresenceTime}</TableCell>
+            <TableCell className="border-r border-gray-200">{`Opening ${event.eventDay}`}</TableCell>
+            <TableCell className="border-r border-gray-200">{formattedDate}</TableCell>
+            <TableCell className="border-r border-gray-200">
+              {event.openingOpenPresenceTime}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">
+              {event.openingClosePresenceTime}
+            </TableCell>
             <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
-              <Link href={`/attendance/edit/opening-${event.id}`}>
+              <Link href={`/attendance/edit/opening-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
               <Button className="bg-transparent text-2xl" onClick={() => handleDeleteClick(event)}>
@@ -124,17 +127,22 @@ export default function MametListAttendance() {
         );
       }
 
-      if (event.closingOpenPresenceTime !== "00:00:00") {  
+      // Render row for Closing event
+      if (event.closingOpenPresenceTime !== null) {
         rowIndex += 1;
         rows.push(
-          <TableRow  key={`closing-${event.id}`} className="border-b border-gray-200 bg-white">
+          <TableRow key={`closing-${event.eventId}`} className="border-b border-gray-200 bg-white">
             <TableCell className="border-l border-r border-gray-200">{rowIndex}</TableCell>
-            <TableCell className="border-r border-gray-200">{`Closing Day ${dayNumber}`}</TableCell>
-            <TableCell className="border-r border-gray-200">{event.eventDate}</TableCell>
-            <TableCell className="border-r border-gray-200">{event.closingOpenPresenceTime}</TableCell>
-            <TableCell className="border-r border-gray-200">{event.closingClosePresenceTime}</TableCell>
+            <TableCell className="border-r border-gray-200">{`Closing ${event.eventDay}`}</TableCell>
+            <TableCell className="border-r border-gray-200">{formattedDate}</TableCell>
+            <TableCell className="border-r border-gray-200">
+              {event.closingOpenPresenceTime}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">
+              {event.closingClosePresenceTime}
+            </TableCell>
             <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
-              <Link href={`/attendance/edit/closing-${event.id}`}>
+              <Link href={`/attendance/edit/closing-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
               <Button className="bg-transparent text-2xl" onClick={() => handleDeleteClick(event)}>
@@ -171,42 +179,24 @@ export default function MametListAttendance() {
             <TableHead className="rounded-tr-lg border-b border-white text-white">Action</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {/* A Row Layout Example */}
-        <TableRow  key={`closing-${0}`} className="border-b border-gray-200 bg-white">
-            <TableCell className="border-l border-r border-gray-200">{0}</TableCell>
-            <TableCell className="border-r border-gray-200">{'Contoh Layout'}</TableCell>
-            <TableCell className="border-r border-gray-200">{'HH:MM:YY'}</TableCell>
-            <TableCell className="border-r border-gray-200">{'23:59:59'}</TableCell>
-            <TableCell className="border-r border-gray-200">{'23:59:59'}</TableCell>
-            <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
-              <Link href={`/attendance/edit/closing-${0}`}>
-                <RiPencilFill className="text-[#0010A4]" />
-              </Link>
-              <Button className="bg-transparent text-2xl" >
-                <MdDelete className="text-[#DC2522]" />
-              </Button>
-              <Link href="#" onClick={handleDownload}>
-                <MdDownload className="text-[#3678FF]" />
-              </Link>
-            </TableCell>
-          </TableRow>
-
-            {/* Rows from render table function Examples */}
-          {renderTableRows()}
-
-        </TableBody>
+        <TableBody>{renderTableRows()}</TableBody>
       </Table>
-      <MametPagination />
+      <MametPagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage} // This updates the current page
+      />
 
       {showConfirmDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <ConfirmDeleteEvent 
-            onConfirm={handleConfirmDelete} 
-            onCancel={handleCancelDelete} 
-            onClose={handleCancelDelete} 
+          <ConfirmDeleteEvent
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            onClose={handleCancelDelete}
           />
         </div>
       )}
     </div>
-  );}
+  );
+}
