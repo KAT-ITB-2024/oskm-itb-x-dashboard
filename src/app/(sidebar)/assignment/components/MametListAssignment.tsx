@@ -1,3 +1,5 @@
+import { IoMdSearch } from "react-icons/io";
+
 import {
   Table,
   TableBody,
@@ -6,56 +8,196 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from "~/components/ui/select";
 
-import { IoMdSearch } from "react-icons/io";
-import { RiPencilFill } from "react-icons/ri";
-import { MdDelete } from "react-icons/md";
-import { MdDownload } from "react-icons/md";
-import Link from "next/link";
+// Anggap sudah ada data daftar tugasnya
+
+const listAssigment = [
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 2,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 2,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 2,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+  {
+    no: 1,
+    judul: "Judul",
+    mulai: "Day, 00/00/00 00.00",
+    selesai: "Day, 00/00/00 00.00",
+    linkcsv: "#",
+  },
+];
 
 export default function MametListAssignment() {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4">
-      <div className="flex w-full items-center justify-between rounded-lg border-2 border-input bg-white px-6 py-3">
-        <input
-          type="text"
-          placeholder="Cari Tugas"
-          className="w-full bg-transparent outline-none"
-        />
-        <IoMdSearch className="text-xl text-gray-400" />
+      <div className="flex w-full flex-row justify-between">
+        <div className="flex h-[48px] w-5/6 items-start justify-between rounded-lg border-2 border-input bg-white px-4 py-3">
+          <input
+            type="text"
+            placeholder="Cari Tugas"
+            className="w-full bg-transparent outline-none"
+          />
+          <IoMdSearch className="text-xl text-gray-400" />
+        </div>
+
+        <div>
+          <Select>
+            <SelectTrigger className="bg-whitepx-4 ml-4 flex h-[48px] w-[226px] items-center justify-between rounded-lg border-2 border-input py-3 text-gray-400">
+              <SelectValue placeholder="Filter Hari" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="senin">Senin</SelectItem>
+                <SelectItem value="selasa">Selasa</SelectItem>
+                <SelectItem value="rabu">Rabu</SelectItem>
+                <SelectItem value="kamis">Kamis</SelectItem>
+                <SelectItem value="jumat">Jumat</SelectItem>
+                <SelectItem value="sabtu">Sabtu</SelectItem>
+                <SelectItem value="minggu">Minggu</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <Table className="border-spacing-0 rounded-lg">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="rounded-tl-lg">No</TableHead>
-            <TableHead>Judul Tugas</TableHead>
-            <TableHead>Waktu Mulai</TableHead>
-            <TableHead>Waktu Selesai</TableHead>
-            <TableHead className="rounded-tr-lg">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow>
-            <TableCell>1</TableCell>
-            <TableCell>Lorem Ipsum Dolor Sit Amet</TableCell>
-            <TableCell>DD:MM:YYYY 00:00 WIB</TableCell>
-            <TableCell>DD:MM:YYYY 00:00 WIB</TableCell>
-            <TableCell>
-              <div className="flex items-center justify-center gap-2 text-2xl">
-                <Link href="/assignment/edit/id">
-                  <RiPencilFill className="text-[#0010A4]" />
-                </Link>
-                <Link href="">
-                  <MdDelete className="text-[#DC2522]" />
-                </Link>
-                <Link href="">
-                  <MdDownload className="text-[#3678FF]" />
-                </Link>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      <div className="flex w-full flex-col items-center justify-center gap-4">
+        <div className="mt-5 w-full">
+          <Table className="border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
+            <TableHeader className="h-[56px]">
+              <TableRow>
+                <TableHead
+                  style={{ width: "5%" }}
+                  className="border-2 border-gray-300 text-center font-bold text-white"
+                >
+                  No.
+                </TableHead>
+                <TableHead
+                  style={{ width: "33%" }}
+                  className="border-2 border-gray-300 text-center font-bold text-white"
+                >
+                  Judul
+                </TableHead>
+                <TableHead
+                  style={{ width: "22%" }}
+                  className="border-2 border-gray-300 text-center font-bold text-white"
+                >
+                  Waktu Mulai
+                </TableHead>
+                <TableHead
+                  style={{ width: "22%" }}
+                  className="border-2 border-gray-300 text-center font-bold text-white"
+                >
+                  Waktu Selesai
+                </TableHead>
+                <TableHead
+                  style={{ width: "18%" }}
+                  className="border-2 border-gray-300 text-center font-bold text-white"
+                >
+                  Action
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="bg-white">
+              {listAssigment.map((item, index) => (
+                <TableRow key={item.no} className="border-2 border-gray-500 ">
+                  <TableCell className="border-2 border-gray-300 text-center">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className="border-2 border-gray-300 text-[16px]">
+                    {item.judul}
+                  </TableCell>
+                  <TableCell className="border-2 border-gray-300">
+                    {item.mulai}
+                  </TableCell>
+                  <TableCell className="border-2 border-gray-300">
+                    {item.selesai}
+                  </TableCell>
+                  <TableCell className="border-2 border-gray-300">
+                    <a
+                      href={item.linkcsv}
+                      className="flex items-center justify-center"
+                    >
+                      <Image
+                        className="flex items-center justify-center"
+                        src={"/in-page/openlink.svg"}
+                        width={24}
+                        height={24}
+                        alt="open link icon"
+                      />
+                    </a>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
       <nav className="flex flex-row gap-3">
         <p>Total 85 Items</p>
         <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
