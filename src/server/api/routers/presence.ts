@@ -10,7 +10,7 @@ import {
   users,
 } from "@katitb2024/database";
 import { profile } from "console";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -520,33 +520,70 @@ export const presenceRouter = createTRPCRouter({
 
       return { message: "Presence successfully updated" };
     }),
+    // getEventsThatHasPresence: publicProcedure
+    // .input(
+    //   z.object({
+    //     page: z.number(),
+    //     dataPerPage: z.number(),
+    //   }),
+    // )
+    // .query(async ({ input: { page, dataPerPage } }) => {
+    //   const eventsWithPresence = await db
+    //     .selectDistinct({
+    //       eventId: events.id,
+    //       eventDay: events.day,
+    //       eventDate: events.eventDate ,
+    //       openingOpenPresenceTime: events.openingOpenPresenceTime,
+    //       openingClosePresenceTime: events.openingClosePresenceTime,
+    //       closingOpenPresenceTime: events.closingOpenPresenceTime,
+    //       closingClosePresenceTime: events.closingClosePresenceTime,
+    //     })
+    //     .from(events)
+    //     .leftJoin(eventPresences, eq(events.id, eventPresences.eventId))
+    //     .orderBy(asc(events.eventDate));
+    //   const paginatedData = eventsWithPresence.slice(
+    //     dataPerPage * (page - 1),
+    //     dataPerPage * page);
+      
 
+    //   return paginatedData;
+    // }),
   getEventsThatHasPresence: publicProcedure
-    .input(
-      z.object({
-        page: z.number(),
-        dataPerPage: z.number(),
-      }),
-    )
-    .query(async ({ input: { page, dataPerPage } }) => {
-      const eventsWithPresence = await db
-        .selectDistinct({
-          eventId: eventPresences.eventId,
-          eventDay: events.day,
-          eventOpeningOrClosing: eventPresences.presenceEvent,
-          eventDate: events.eventDate,
-          startTime: events.openingOpenPresenceTime,
-          endTime: events.openingClosePresenceTime,
-        })
-        .from(eventPresences)
-        .innerJoin(events, eq(events.id, eventPresences.eventId))
-        .orderBy(desc(events.eventDate), desc(events.openingOpenPresenceTime));
-
-      const paginatedData = eventsWithPresence.slice(
-        dataPerPage * (page - 1),
-        dataPerPage * page,
-      );
-
-      return paginatedData;
+  .input(
+    z.object({
+      page: z.number(),
+      dataPerPage: z.number(),
     }),
+  )
+  .query(async ({ input: { page, dataPerPage } }) => {
+    const eventsWithPresence = await db
+      .selectDistinct({
+        eventId: events.id,
+        eventDay: events.day,
+        eventDate: events.eventDate,
+        openingOpenPresenceTime: events.openingOpenPresenceTime,
+        openingClosePresenceTime: events.openingClosePresenceTime,
+        closingOpenPresenceTime: events.closingOpenPresenceTime,
+        closingClosePresenceTime: events.closingClosePresenceTime,
+      })
+      .from(events)
+      .leftJoin(eventPresences, eq(events.id, eventPresences.eventId))
+      .orderBy(asc(events.eventDate));
+
+    // Calculate total number of items (before slicing)
+    const totalItems = eventsWithPresence.length;
+
+    // Apply pagination
+    const paginatedData = eventsWithPresence.slice(
+      dataPerPage * (page - 1),
+      dataPerPage * page
+    );
+
+    // Return both paginated data and total item count
+    return {
+      paginatedData,
+      totalItems,
+    };
+  }),
+
 });
