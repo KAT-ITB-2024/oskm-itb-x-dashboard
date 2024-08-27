@@ -520,34 +520,6 @@ export const presenceRouter = createTRPCRouter({
 
       return { message: "Presence successfully updated" };
     }),
-    // getEventsThatHasPresence: publicProcedure
-    // .input(
-    //   z.object({
-    //     page: z.number(),
-    //     dataPerPage: z.number(),
-    //   }),
-    // )
-    // .query(async ({ input: { page, dataPerPage } }) => {
-    //   const eventsWithPresence = await db
-    //     .selectDistinct({
-    //       eventId: events.id,
-    //       eventDay: events.day,
-    //       eventDate: events.eventDate ,
-    //       openingOpenPresenceTime: events.openingOpenPresenceTime,
-    //       openingClosePresenceTime: events.openingClosePresenceTime,
-    //       closingOpenPresenceTime: events.closingOpenPresenceTime,
-    //       closingClosePresenceTime: events.closingClosePresenceTime,
-    //     })
-    //     .from(events)
-    //     .leftJoin(eventPresences, eq(events.id, eventPresences.eventId))
-    //     .orderBy(asc(events.eventDate));
-    //   const paginatedData = eventsWithPresence.slice(
-    //     dataPerPage * (page - 1),
-    //     dataPerPage * page);
-      
-
-    //   return paginatedData;
-    // }),
   getEventsThatHasPresence: publicProcedure
   .input(
     z.object({
