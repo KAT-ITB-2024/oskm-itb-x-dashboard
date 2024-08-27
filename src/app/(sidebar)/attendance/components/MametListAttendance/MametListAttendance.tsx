@@ -33,7 +33,7 @@ interface Event {
 
 export default function MametListAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 1; 
+  const itemsPerPage = 3; 
 
   const { data, isLoading } = api.presence.getEventsThatHasPresence.useQuery({
     page: currentPage,
