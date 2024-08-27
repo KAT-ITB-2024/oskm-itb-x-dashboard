@@ -70,25 +70,25 @@ export default function MentorAttendanceEdit() {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch data dari backend berdasarkan eventId
-  const {
-    data,
-    isLoading: queryLoading,
-    error: queryError,
-  } = api.presence.getPresensiPeserta.useQuery({
-    eventId: "EventId", // Ganti dengan ID event yang sesuai
-    group: "Keluarga-1", // Sesuaikan jika diperlukan
-  });
+  // const {
+  //   data,
+  //   isLoading: queryLoading,
+  //   error: queryError,
+  // } = api.presence.getPresensiPeserta.useQuery({
+  //   eventId: "EventId", // Ganti dengan ID event yang sesuai
+  //   group: "Keluarga-1", // Sesuaikan jika diperlukan
+  // });
 
-  useEffect(() => {
-    if (!queryLoading && data) {
-      const mappedParticipants = mapToParticipant(data);
-      setParticipants(mappedParticipants);
-      setIsLoading(false);
-    } else if (queryError) {
-      setError("Failed to fetch participants");
-      setIsLoading(false);
-    }
-  }, [queryLoading, data, queryError]);
+  // useEffect(() => {
+  //   if (!queryLoading && data) {
+  //     const mappedParticipants = mapToParticipant(data);
+  //     setParticipants(mappedParticipants);
+  //     setIsLoading(false);
+  //   } else if (queryError) {
+  //     setError("Failed to fetch participants");
+  //     setIsLoading(false);
+  //   }
+  // }, [queryLoading, data, queryError]);
 
   const filteredData = useMemo(
     () =>
@@ -125,47 +125,47 @@ export default function MentorAttendanceEdit() {
     handleInputChange(index, "status", value);
   };
 
-  const { mutate: updatePresence } =
-    api.presence.updatePresensiPeserta.useMutation();
+  // const { mutate: updatePresence } =
+  //   api.presence.updatePresensiPeserta.useMutation();
 
-  const handleSave = useCallback(() => {
-    if (
-      editIndex !== null &&
-      editIndex >= 0 &&
-      editIndex < participants.length
-    ) {
-      const participant = participants[editIndex];
-      if (participant) {
-        const apiStatus: "Hadir" | "Izin/Sakit" | "Alpha" =
-          participant.status === "Telat" ? "Alpha" : participant.status;
+  // const handleSave = useCallback(() => {
+  //   if (
+  //     editIndex !== null &&
+  //     editIndex >= 0 &&
+  //     editIndex < participants.length
+  //   ) {
+  //     const participant = participants[editIndex];
+  //     if (participant) {
+  //       const apiStatus: "Hadir" | "Izin/Sakit" | "Alpha" =
+  //         participant.status === "Telat" ? "Alpha" : participant.status;
 
-        updatePresence(
-          {
-            userNim: participant.nim,
-            eventId: "some-event-id", // Ganti dengan ID event yang sesuai
-            newPresenceType: apiStatus, // Pastikan status adalah salah satu dari enum yang didefinisikan
-          },
-          {
-            onSuccess: () => {
-              console.log("Presence updated successfully");
-              // Optionally, refresh data or redirect
-            },
-            onError: (err) => {
-              console.error("Failed to update presence:", err);
-              setError("Failed to update presence");
-            },
-          },
-        );
-        setEditIndex(null);
-      } else {
-        console.error("Participant is undefined");
-      }
-    }
-  }, [editIndex, participants, updatePresence]);
+  //       updatePresence(
+  //         {
+  //           userNim: participant.nim,
+  //           eventId: "some-event-id", // Ganti dengan ID event yang sesuai
+  //           newPresenceType: apiStatus, // Pastikan status adalah salah satu dari enum yang didefinisikan
+  //         },
+  //         {
+  //           onSuccess: () => {
+  //             console.log("Presence updated successfully");
+  //             // Optionally, refresh data or redirect
+  //           },
+  //           onError: (err) => {
+  //             console.error("Failed to update presence:", err);
+  //             setError("Failed to update presence");
+  //           },
+  //         },
+  //       );
+  //       setEditIndex(null);
+  //     } else {
+  //       console.error("Participant is undefined");
+  //     }
+  //   }
+  // }, [editIndex, participants, updatePresence]);
 
   const handleEditToggle = (index: number) => {
     if (editIndex === index) {
-      void handleSave();
+      // void handleSave();
     } else {
       setEditIndex(index);
     }
