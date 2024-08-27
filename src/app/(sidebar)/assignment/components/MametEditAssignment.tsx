@@ -6,7 +6,7 @@ import { IoMdClose } from "react-icons/io";
 import { MdUpload } from "react-icons/md";
 
 export default function MametEditAssignment() {
-  const [questStaus, setQuestStatus] = React.useState<string>("Side Quest");
+  const [questStaus] = React.useState<string>("Side Quest");
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
   const [file, setFile] = React.useState<File | null>(null);
 

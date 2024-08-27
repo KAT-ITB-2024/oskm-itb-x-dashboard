@@ -1,37 +1,123 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "~/components/ui/button";
+import Image from "next/image";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleForgotPasswordClick = () => {
+    router.push("/forgot-password");
+  };
+
+  const handleLogin = async () => {
+    const status = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    console.log(status);
+  };
 
   return (
-    <div className="flex h-screen w-screen flex-col items-center justify-center gap-2 bg-black">
-      <input
-        value={email}
-        onChange={(v) => setEmail(v.target.value)}
-        type="text"
-      />
-      <input
-        value={password}
-        onChange={(v) => setPassword(v.target.value)}
-        type="password"
-      />
-      <button
-        className="bg-white p-2"
-        onClick={async () => {
-          const status = await signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-          });
+    <div className="login-container flex h-screen items-center justify-center">
+      <div className="login-box text-center">
+        <div className="flex flex-col items-center">
+          <div className="flex justify-center">
+            <Image
+              src="/img/oskmlogo.png"
+              alt="OSKM Logo"
+              width={130}
+              height={130}
+            />
+          </div>
+          <h1
+            className="
+              text-shadow:
+              0
+              0
+              10px
+              #0010A4 mt-[-20px] font-mogula text-[42px] font-normal
+              text-[#0010A4]"
+          >
+            LOGIN
+          </h1>
+        </div>
+        <div className="mx-6 mt-4 flex flex-col items-start">
+          <p className="font-REM mb-1 mt-[-15px] text-sm font-normal text-[#0010A4]">
+            Email <span className="text-[#DC2522]">*</span>
+          </p>
+          <div className="mb-4 w-full">
+            <label htmlFor="Email" className="font-REM sr-only">
+              Email
+            </label>
+            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
+              <input
+                id="Email"
+                type="text"
+                value={email}
+                onChange={(v) => setEmail(v.target.value)}
+                className="font-REM h-full w-full bg-white pl-3 pr-3 text-sm text-black placeholder-gray-500 focus:outline-none"
+                placeholder="Masukkan Email Anda"
+              />
+            </div>
+          </div>
 
-          console.log(status);
-        }}
-      >
-        Sign In
-      </button>
+          <p className="font-REM mb-1 text-sm font-normal text-[#0010A4]">
+            Kata Sandi <span className="text-[#DC2522]">*</span>
+          </p>
+          <div className="relative mb-4 w-full">
+            <label htmlFor="Kata Sandi" className="font-REM sr-only">
+              Kata Sandi
+            </label>
+            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
+              <input
+                id="Kata Sandi"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(v) => setPassword(v.target.value)}
+                className="font-REM h-full w-full bg-white pl-3 pr-10 text-sm text-black placeholder-gray-500 focus:outline-none"
+                placeholder="Masukkan Sandi Anda"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center pr-5"
+                onClick={handleTogglePassword}
+              >
+                {showPassword ? (
+                  <FaEye className="h-5 w-5 text-[#9EA2AD]" />
+                ) : (
+                  <FaEyeSlash className="h-5 w-5 text-[#9EA2AD]" />
+                )}
+              </button>
+            </div>
+          </div>
+          <Button
+            className="font-REM w-full rounded-lg bg-[#0010A4] text-[17px] text-sm text-white"
+            variant={"link"}
+            onClick={handleLogin}
+          >
+            Login
+          </Button>
+          <p
+            className="font-REM mt-3 w-full cursor-pointer text-center text-sm text-[#0010A4] underline"
+            onClick={handleForgotPasswordClick}
+          >
+            Lupa kata sandi?
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
