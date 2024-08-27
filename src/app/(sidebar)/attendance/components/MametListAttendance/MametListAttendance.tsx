@@ -33,14 +33,14 @@ interface Event {
 
 export default function MametListAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; 
+  const itemsPerPage = 3;
 
   const { data, isLoading } = api.presence.getEventsThatHasPresence.useQuery({
     page: currentPage,
     dataPerPage: itemsPerPage,
   });
 
-  const events = data?.paginatedData ??  [];
+  const events = data?.paginatedData ?? [];
   const totalItems = data?.totalItems ?? 0;
 
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -67,7 +67,6 @@ export default function MametListAttendance() {
 
   const handleConfirmDelete = () => {
     if (eventToDelete) {
-      setEvents(events.filter((e) => e.id !== eventToDelete.id));
       setShowConfirmDelete(false);
       setEventToDelete(null);
     }
@@ -87,7 +86,7 @@ export default function MametListAttendance() {
       );
     }
 
-    let rowIndex = (currentPage - 1) * (itemsPerPage*2);
+    let rowIndex = (currentPage - 1) * (itemsPerPage * 2);
 
     return events.flatMap((event) => {
       const rows = [];
@@ -95,7 +94,9 @@ export default function MametListAttendance() {
         return [];
       }
       const eventDate: Date =
-        event.eventDate instanceof Date ? event.eventDate : new Date(event.eventDate);
+        event.eventDate instanceof Date
+          ? event.eventDate
+          : new Date(event.eventDate);
       const formattedDate = format(eventDate, "dd/MM/yyyy");
 
       if (event.openingOpenPresenceTime !== "00:00:00") {
@@ -103,15 +104,15 @@ export default function MametListAttendance() {
         rowIndex += 1;
         rows.push(
           <TableRow
-            key={`opening-${event.id}`}
+            key={`opening-${event.eventId}`}
             className="border-b border-gray-200 bg-white"
           >
             <TableCell className="border-l border-r border-gray-200">
               {rowIndex}
             </TableCell>
-            <TableCell className="border-r border-gray-200">{`Opening Day ${dayNumber}`}</TableCell>
+            <TableCell className="border-r border-gray-200">{`Opening Day ${event.eventDay}`}</TableCell>
             <TableCell className="border-r border-gray-200">
-              {event.eventDate}
+              {event.eventDate.toDateString()}
             </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.openingOpenPresenceTime}
@@ -120,7 +121,7 @@ export default function MametListAttendance() {
               {event.openingClosePresenceTime}
             </TableCell>
             <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
-              <Link href={`/attendance/edit/opening-${event.id}`}>
+              <Link href={`/attendance/edit/opening-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
               <Button
@@ -141,17 +142,24 @@ export default function MametListAttendance() {
       if (event.closingOpenPresenceTime !== null) {
         rowIndex += 1;
         rows.push(
-          <TableRow key={`closing-${event.eventId}`} className="border-b border-gray-200 bg-white">
-            <TableCell className="border-l border-r border-gray-200">{rowIndex}</TableCell>
+          <TableRow
+            key={`closing-${event.eventId}`}
+            className="border-b border-gray-200 bg-white"
+          >
+            <TableCell className="border-l border-r border-gray-200">
+              {rowIndex}
+            </TableCell>
             <TableCell className="border-r border-gray-200">{`Closing ${event.eventDay}`}</TableCell>
-            <TableCell className="border-r border-gray-200">{formattedDate}</TableCell>
+            <TableCell className="border-r border-gray-200">
+              {formattedDate}
+            </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.closingOpenPresenceTime}
             </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.closingClosePresenceTime}
             </TableCell>
-            <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
+            <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
               <Link href={`/attendance/edit/closing-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
