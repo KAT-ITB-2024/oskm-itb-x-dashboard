@@ -15,5 +15,4 @@ const s3Client = new S3({
   },
 });
 
-
 export { s3Client };
