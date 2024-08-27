@@ -19,16 +19,18 @@ export default async function Page({
   }
 
   return (
-    <div style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      <div style={{
-        backgroundImage: 'url(/img/background.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        width: '100vw',
-        height: '100vh',
-      }}>
-        <div className="flex items-center justify-center h-full w-full">
+    <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
+      <div
+        style={{
+          backgroundImage: "url(/img/background.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          width: "100vw",
+          height: "100vh",
+        }}
+      >
+        <div className="flex h-full w-full items-center justify-center">
           <div className="container mx-auto p-4">
             <ForgotForm />
           </div>

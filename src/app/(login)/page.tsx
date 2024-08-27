@@ -19,7 +19,7 @@ export default async function Page() {
   return (
     <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
       <div style={backgroundStyle}>
-        <div className="flex items-center justify-center h-full w-full">
+        <div className="flex h-full w-full items-center justify-center">
           <div className="container mx-auto p-4">
             <LoginForm />
           </div>
