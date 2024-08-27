@@ -4,7 +4,13 @@ import { Button } from "~/components/ui/button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { api } from "~/trpc/react";
 
-export default function NewPassword({ email, token }: { email: string; token: string }) {
+export default function NewPassword({
+  email,
+  token,
+}: {
+  email: string;
+  token: string;
+}) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const resetPassword = api.user.resetPassword.useMutation();
@@ -27,26 +33,29 @@ export default function NewPassword({ email, token }: { email: string; token: st
   };
 
   return (
-    <div className="flex items-center justify-center h-screen w-screen bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/img/background.png)' }}>
+    <div
+      className="flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url(/img/background.png)" }}
+    >
       <div className="text-center">
-        <h1 className="text-[42px] font-mogula font-normal text-[#0010A4] text-shadow: 0 0 10px #0010A4">
+        <h1 className="text-shadow: 0 0 10px #0010A4 font-mogula text-[42px] font-normal text-[#0010A4]">
           Ganti Password
         </h1>
-        <div className="flex flex-col items-start mx-6 mt-4">
-          <p className="text-[#0010A4] font-REM font-normal mb-1 text-sm">
+        <div className="mx-6 mt-4 flex flex-col items-start">
+          <p className="font-REM mb-1 text-sm font-normal text-[#0010A4]">
             Password Baru <span className="text-[#DC2522]">*</span>
           </p>
-          <div className="relative w-full mb-4">
-            <label htmlFor="password" className="sr-only font-REM">
+          <div className="relative mb-4 w-full">
+            <label htmlFor="password" className="font-REM sr-only">
               Password Baru
             </label>
-            <div className="flex items-center border border-[#9EA2AD] rounded-lg px-11 py-2 bg-white">
+            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(v) => setPassword(v.target.value)}
-                className="w-full h-full focus:outline-none font-REM text-sm pl-3 pr-10 text-black bg-white placeholder-gray-500"
+                className="font-REM h-full w-full bg-white pl-3 pr-10 text-sm text-black placeholder-gray-500 focus:outline-none"
                 placeholder="Masukkan password baru"
               />
               <button
@@ -55,15 +64,15 @@ export default function NewPassword({ email, token }: { email: string; token: st
                 onClick={handleTogglePassword}
               >
                 {showPassword ? (
-                  <FaEye className="w-5 h-5 text-[#9EA2AD]" />
+                  <FaEye className="h-5 w-5 text-[#9EA2AD]" />
                 ) : (
-                  <FaEyeSlash className="w-5 h-5 text-[#9EA2AD]" />
+                  <FaEyeSlash className="h-5 w-5 text-[#9EA2AD]" />
                 )}
               </button>
             </div>
           </div>
           <Button
-            className="w-full bg-[#0010A4] text-white font-REM rounded-lg text-sm text-[17px]"
+            className="font-REM w-full rounded-lg bg-[#0010A4] text-[17px] text-sm text-white"
             variant={"link"}
             onClick={handleChangePassword}
           >

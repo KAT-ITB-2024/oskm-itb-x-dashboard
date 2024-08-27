@@ -17,23 +17,27 @@ export default function ForgotForm() {
   };
 
   return (
-    <div className="forgot-container flex items-center justify-center h-screen">
+    <div className="forgot-container flex h-screen items-center justify-center">
       <div className="forgot-box text-center">
         <div className="flex flex-col items-center">
-          <h1 className="text-[42px] font-mogula font-normal text-[#0010A4] leading-none">
-            LUPA<br/>KATA SANDI?
+          <h1 className="font-mogula text-[42px] font-normal leading-none text-[#0010A4]">
+            LUPA
+            <br />
+            KATA SANDI?
           </h1>
-          <p className="text-[15px] font-REM font-normal text-[#0010A4] mt-[20px]">
+          <p className="font-REM mt-[20px] text-[15px] font-normal text-[#0010A4]">
             Tenang saja, Aqualings!
           </p>
         </div>
-        <div className="flex flex-col items-start mx-6 mt-10">
-          <p className="text-[#0010A4] font-REM font-normal mb-1 mt-[-15px] text-sm">
+        <div className="mx-6 mt-10 flex flex-col items-start">
+          <p className="font-REM mb-1 mt-[-15px] text-sm font-normal text-[#0010A4]">
             Email <span className="text-[#DC2522]">*</span>
           </p>
-          <div className="w-full mb-4">
-            <label htmlFor="email" className="sr-only font-REM">Email</label>
-            <div className="flex items-center border border-[#9EA2AD] rounded-lg px-11 py-2 bg-white">
+          <div className="mb-4 w-full">
+            <label htmlFor="email" className="font-REM sr-only">
+              Email
+            </label>
+            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
               <input
                 id="email"
                 type="text"
@@ -42,13 +46,13 @@ export default function ForgotForm() {
                   setEmail(e.target.value);
                   console.log("Email updated:", e.target.value);
                 }}
-                className="w-full h-full focus:outline-none font-REM text-sm pl-3 pr-3 text-black bg-white placeholder-gray-500"
+                className="font-REM h-full w-full bg-white pl-3 pr-3 text-sm text-black placeholder-gray-500 focus:outline-none"
                 placeholder="Masukkan Email Anda"
               />
             </div>
           </div>
           <Button
-            className="w-full bg-[#0010A4] text-white font-REM rounded-lg text-sm text-[17px]"
+            className="font-REM w-full rounded-lg bg-[#0010A4] text-[17px] text-sm text-white"
             variant={"link"}
             onClick={handleForgotPassword}
           >
