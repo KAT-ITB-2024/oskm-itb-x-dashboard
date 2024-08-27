@@ -338,6 +338,33 @@ export const assignmentRouter = createTRPCRouter({
         });
       }
     }),
+  deleteAssignmentMamet: publicProcedure
+    .input(
+      z.object({
+        assignmentId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { assignmentId } = input;
+
+      try {
+        await ctx.db
+          .delete(assignments)
+          .where(eq(assignments.id, assignmentId));
+
+        return {
+          message: "Assignment deletion attempted",
+          deletedId: assignmentId,
+        };
+      } catch (error) {
+        console.error("Error deleting assignment:", error);
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `An error occurred while deleting the assignment`,
+        });
+      }
+    }),
   editAssignmentMamet: publicProcedure
     .input(
       z.object({

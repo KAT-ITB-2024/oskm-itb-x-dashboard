@@ -11,9 +11,8 @@ const s3Client = new S3({
   endpoint: env.NEXT_PUBLIC_DO_ORIGIN_ENDPOINT,
   credentials: {
     accessKeyId: env.NEXT_PUBLIC_DO_ACCESS_KEY ?? "",
-    secretAccessKey: env.NEXT_PUBLIC_DO_SECRET_KEY ?? "",
+    secretAccessKey: env.NEXT_PUBLIC_DO_ACCESS_KEY ?? "",
   },
 });
-
 
 export { s3Client };

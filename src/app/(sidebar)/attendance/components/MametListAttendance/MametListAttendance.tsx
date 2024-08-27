@@ -67,7 +67,7 @@ export default function MametListAttendance() {
 
   const handleConfirmDelete = () => {
     if (eventToDelete) {
-      //  delete operation here 
+      setEvents(events.filter((e) => e.id !== eventToDelete.id));
       setShowConfirmDelete(false);
       setEventToDelete(null);
     }
@@ -98,32 +98,42 @@ export default function MametListAttendance() {
         event.eventDate instanceof Date ? event.eventDate : new Date(event.eventDate);
       const formattedDate = format(eventDate, "dd/MM/yyyy");
 
-      // Render row for Opening event
-      if (event.openingOpenPresenceTime !== null) {
+      if (event.openingOpenPresenceTime !== "00:00:00") {
+        //00:00:00 assumed as default//
         rowIndex += 1;
         rows.push(
-          <TableRow key={`opening-${event.eventId}`} className="border-b border-gray-200 bg-white">
-            <TableCell className="border-r border-l border-gray-200">{rowIndex}</TableCell>
-            <TableCell className="border-r border-gray-200">{`Opening ${event.eventDay}`}</TableCell>
-            <TableCell className="border-r border-gray-200">{formattedDate}</TableCell>
+          <TableRow
+            key={`opening-${event.id}`}
+            className="border-b border-gray-200 bg-white"
+          >
+            <TableCell className="border-l border-r border-gray-200">
+              {rowIndex}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">{`Opening Day ${dayNumber}`}</TableCell>
+            <TableCell className="border-r border-gray-200">
+              {event.eventDate}
+            </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.openingOpenPresenceTime}
             </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.openingClosePresenceTime}
             </TableCell>
-            <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
-              <Link href={`/attendance/edit/opening-${event.eventId}`}>
+            <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
+              <Link href={`/attendance/edit/opening-${event.id}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button className="bg-transparent text-2xl" onClick={() => handleDeleteClick(event)}>
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDeleteClick(event)}
+              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
               <Link href="#" onClick={handleDownload}>
                 <MdDownload className="text-[#3678FF]" />
               </Link>
             </TableCell>
-          </TableRow>
+          </TableRow>,
         );
       }
 
@@ -145,14 +155,17 @@ export default function MametListAttendance() {
               <Link href={`/attendance/edit/closing-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button className="bg-transparent text-2xl" onClick={() => handleDeleteClick(event)}>
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDeleteClick(event)}
+              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
               <Link href="#" onClick={handleDownload}>
                 <MdDownload className="text-[#3678FF]" />
               </Link>
             </TableCell>
-          </TableRow>
+          </TableRow>,
         );
       }
 
@@ -171,12 +184,24 @@ export default function MametListAttendance() {
       <Table className="border-spacing-0 rounded-lg text-center">
         <TableHeader className="bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
           <TableRow>
-            <TableHead className="rounded-tl-lg border-r border-white text-white">No</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Event</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Tanggal</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Mulai</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Selesai</TableHead>
-            <TableHead className="rounded-tr-lg border-b border-white text-white">Action</TableHead>
+            <TableHead className="rounded-tl-lg border-r border-white text-white">
+              No
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Event
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Tanggal
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Mulai
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Selesai
+            </TableHead>
+            <TableHead className="rounded-tr-lg border-b border-white text-white">
+              Action
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>{renderTableRows()}</TableBody>
