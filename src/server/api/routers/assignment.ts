@@ -9,6 +9,7 @@ import {
   groups,
   profiles,
   users,
+  Assignment,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -21,6 +22,7 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
+import { title } from "process";
 
 type MenteeAssignment = {
   nama: string;
@@ -386,21 +388,44 @@ export const assignmentRouter = createTRPCRouter({
   uploadNewAssignmentMamet: publicProcedure
     .input(
       z.object({
-        file: z.string().optional(),
-        judul: z.string(),
+        filename: z.string(),
+        title: z.string(),
         assignmentType: z.enum(assignmentTypeEnum.enumValues),
         point: z.number(),
-        waktuMulai: z.date(),
-        waktuSelesai: z.date(),
-        deskripsi: z.string(),
+        startTime: z.date(),
+        deadline: z.date(),
+        description: z.string(),
+        downloadUrl:z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { judul } = input;
+
+        const { filename,
+          title,
+          assignmentType,
+          point,
+          startTime,
+          deadline,
+          description,
+          downloadUrl
+        } = input;
+
+        await ctx.db.insert(assignments).values({
+          title,
+          assignmentType,
+          point,
+          startTime,
+          deadline,
+          description,
+          downloadUrl,
+          filename,
+          updatedAt: new Date(),
+          createdAt: new Date(),
+        });
 
         // add into notification
-        const content = `Ada tugas baru nih - ${judul}, jangan lupa dikerjain ya!`;
+        const content = `Ada tugas baru nih - ${title}, jangan lupa dikerjain ya!`;
 
         await ctx.db.insert(notifications).values({
           content,
