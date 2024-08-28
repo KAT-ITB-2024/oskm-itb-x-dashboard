@@ -69,13 +69,15 @@ export const storageRouter = createTRPCRouter({
           Bucket: process.env.NEXT_PUBLIC_DO_BUCKET_NAME,
           Key: key,
         });
-    
-        const presignedUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600*24*7 }); // 1 week expiration
+
+        const presignedUrl = await getSignedUrl(s3Client, getObjectCommand, {
+          expiresIn: 3600 * 24 * 7,
+        }); // 1 week expiration
 
         return {
           key,
-          presignedUrl
-        }
+          presignedUrl,
+        };
       } catch (error) {
         console.error(error);
         throw new TRPCError({

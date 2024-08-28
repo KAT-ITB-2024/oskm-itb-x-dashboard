@@ -14,7 +14,7 @@ export const appRouter = createTRPCRouter({
   // uncomment the following lines to enable the routers
   user: userRouter,
   assignment: assignmentRouter,
-  storage:storageRouter,
+  storage: storageRouter,
   presence: presenceRouter,
   utility: utilityRouter,
 });
