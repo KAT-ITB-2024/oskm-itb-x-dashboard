@@ -12,7 +12,7 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, gt, asc, or, ilike, count, desc } from "drizzle-orm";
+import { eq, and, inArray, asc, or, ilike, count, desc } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -144,7 +144,7 @@ export const assignmentRouter = createTRPCRouter({
         if(error instanceof TRPCError){
           throw new TRPCError({
             code:"INTERNAL_SERVER_ERROR",
-            message: `An error occurred: ${error}`,
+            message: `An error occurred: ${String(error)}`,
           });
         }
         console.log(error);
@@ -301,7 +301,7 @@ export const assignmentRouter = createTRPCRouter({
       if(error instanceof TRPCError){
         throw new TRPCError({
           code:"INTERNAL_SERVER_ERROR",
-          message: `An error occurred: ${error}`,
+          message: `An error occurred: ${String(error)}`,
         });
       }
       throw new TRPCError({
@@ -399,28 +399,8 @@ export const assignmentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         const {
-          file,
           judul,
-          assignmentType,
-          point,
-          waktuMulai,
-          waktuSelesai,
-          deskripsi,
         } = input;
-
-        // const inst = {
-        //   point: point ? point : null,
-        //   file: file ? file : null,
-        //   title: judul,
-        //   description: deskripsi,
-        //   startTime: waktuMulai ? waktuMulai : null,
-        //   deadline: waktuSelesai,
-        //   assignmentType,
-        //   createdAt: new Date(),
-        //   updatedAt: new Date(),
-        // };
-
-        // await ctx.db.insert(assignments).values(inst).returning();
 
         // add into notification
         const content = `Ada tugas baru nih - ${judul}, jangan lupa dikerjain ya!`;

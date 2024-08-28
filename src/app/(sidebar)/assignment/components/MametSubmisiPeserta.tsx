@@ -4,21 +4,11 @@ import { IoMdSearch } from "react-icons/io";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "~/components/ui/table"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup
-} from "~/components/ui/select"
-
 
 // Anggap udah dimasukin be
 

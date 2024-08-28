@@ -1,6 +1,4 @@
 "use client";
-import { api } from "~/trpc/server";
-import { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import {
   Table,
@@ -22,14 +20,15 @@ import {
 
 export default function MentorListAssignment() {
   // const assignmentData = await api.assignment.getAllMainAssignmentMentor();
-  const [assignmentData, setAssignmentData] = useState([
+
+  const assignmentData = [
     {
       judulTugas: "Lorem",
       waktuMulai: "00:00:00",
       waktuSelesai: "00:00:00",
       file: "/#",
     },
-  ]);
+  ]
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4">
