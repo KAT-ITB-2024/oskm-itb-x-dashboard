@@ -75,7 +75,10 @@ export default function MametAddAssignment() {
     }
   };
 
-  const createAssignment = async (filename?: string | undefined, presignedUrl?: string | undefined) => {
+  const createAssignment = async (
+    filename?: string | undefined,
+    presignedUrl?: string | undefined,
+  ) => {
     try {
       const newFilename = filename ?? "";
       const downloadUrl = presignedUrl ?? "";
@@ -126,7 +129,9 @@ export default function MametAddAssignment() {
         const reader = new FileReader();
         reader.onload = async (e) => {
           if (e.target?.result) {
-            const base64Content = (e.target.result as string).toString().split(',')[1];
+            const base64Content = (e.target.result as string)
+              .toString()
+              .split(",")[1];
             const { presignedUrl } = await fileUploadMutation.mutateAsync({
               folder: FolderEnum.ASSIGNMENT_MAMET,
               fileName: file.name,
