@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 export default function NewPassword({
   email,
@@ -14,6 +15,7 @@ export default function NewPassword({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const resetPassword = api.user.resetPassword.useMutation();
+  const router = useRouter();
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -26,6 +28,7 @@ export default function NewPassword({
         password,
         token,
       });
+      router.push("/");
       console.log("Password changed successfully");
     } catch (error) {
       console.log("Error changing password:", error);

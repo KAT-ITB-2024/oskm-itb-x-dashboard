@@ -5,12 +5,10 @@ import {
   type PresenceType,
   eventPresences,
   events,
-  groups,
   profiles,
   users,
 } from "@katitb2024/database";
-import { profile } from "console";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -62,12 +62,11 @@ export default function MentorListAttendance() {
   const handleEdit = useCallback(
     (id: number) => {
       // Misalnya kita dapat eventId dari data yang ada
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const eventId =
         data.find((item) => item.eventId === id)?.eventId ?? "default-event-id";
       router.push(`/attendance/edit/${eventId}`);
     },
-    [router, data],
+    [router],
   );
 
   const handlePageChange = useCallback(
