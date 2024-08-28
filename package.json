@@ -53,7 +53,12 @@
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
+<<<<<<< HEAD
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+=======
     "zod": "^3.23.3"
+>>>>>>> origin/development
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

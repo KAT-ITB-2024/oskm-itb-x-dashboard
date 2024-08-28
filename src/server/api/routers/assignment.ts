@@ -37,52 +37,65 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         assignmentId: z.string(),
         groupName: z.string(),
-        lastNim:z.string().nullable(),
-        limit:z.number().min(1).max(100).default(8),
-        searchString:z.string().optional(),
+        page:z.number().optional().default(1),
+        pageSize:z.number().optional().default(10),
+        searchString:z.string().optional().default(""),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
 
+        const {
+          assignmentId, 
+          groupName, 
+          page,
+          pageSize, 
+          searchString} = input;
 
-        const {assignmentId, groupName, limit, lastNim, searchString} = input;
-        
-        // uncomment this when testing because trpc panel couldn't handle null value
-        // let {lastNim} = input;
-        // if(lastNim == "null"){
-        //   lastNim = null;
-        // }
+          const offset = (page-1)*pageSize;
 
-
-        const allMentee = await ctx.db.select({
+          const allMentee = await ctx.db.select({
             nama:profiles.name,
             nim:users.nim
-        }).from(profiles)
-        .innerJoin(users, eq(users.id, profiles.userId))
-        .where(
-          and(
-            eq(profiles.group, groupName),
-            lastNim ? gt(users.nim,lastNim) : eq(users.id,users.id),
-            searchString ?or(
-              ilike(users.nim, `%${searchString}%`),
-              ilike(profiles.name, `%${searchString}%`)
-            ) :eq(users.id,users.id),
-          )
-        ).orderBy(asc(users.nim))
-        .limit(limit);
+          }).from(profiles)
+          .innerJoin(users, eq(users.id, profiles.userId))
+          .where(
+            and(
+              eq(profiles.group, groupName),    
+              or(
+                ilike(profiles.name,`%${searchString}%`),
+                ilike(users.nim,`%${searchString}%`)
+              )
+            )
+          ).orderBy(asc(users.nim))
+          .offset(offset)
+          .limit(pageSize);
+
+          const countRows = (await ctx.db.select({
+            count:count()
+          }).from(profiles)
+          .innerJoin(users, eq(users.id, profiles.userId))
+          .where(
+            and(
+              eq(profiles.group, groupName),    
+              or(
+                ilike(profiles.name,`%${searchString}%`),
+                ilike(users.nim,`%${searchString}%`)
+              )
+            )
+          ))[0] ?? { count: 0 };
+          
 
         if(allMentee.length === 0){
           throw new TRPCError({
-           code:"NOT_FOUND",
-           message:"There is no such mentee with that groupName or lastNim"
+            code:"NOT_FOUND",
+            message:"THERE IS NO MENTEE"
           })
-       }
+        }
 
-       const menteeNims = allMentee.map(mentee => mentee.nim);
+        const menteeNims = allMentee.map(mentee => mentee.nim);
 
        const menteeAssignment = allMentee as MenteeAssignment[];
-
        const submissions = await ctx.db
        .select({
          nama: profiles.name,
@@ -109,8 +122,6 @@ export const assignmentRouter = createTRPCRouter({
          ),
        );
 
-
-
        menteeAssignment.forEach((mentee)=>{
          const find = submissions.find((s)=>s.nim == mentee.nim);
          mentee.keterlambatan = calculateOverDueTime(find?.deadline, find?.updatedAt);
@@ -119,9 +130,23 @@ export const assignmentRouter = createTRPCRouter({
          mentee.nilai = find?.nilai ?? 0;
        })
 
-       return menteeAssignment;
+       return {
+          data:menteeAssignment,
+          meta:{
+            totalCount:countRows.count,
+              page,
+              pageSize,
+              totalPages:Math.ceil(countRows.count/pageSize)
+          }
 
+       };
       } catch (error) {
+        if(error instanceof TRPCError){
+          throw new TRPCError({
+            code:"INTERNAL_SERVER_ERROR",
+            message: `An error occurred: ${error}`,
+          });
+        }
         console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
