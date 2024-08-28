@@ -19,6 +19,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.1.0",
     "@aws-sdk/client-s3": "^3.637.0",
+    "@aws-sdk/s3-request-presigner": "^3.637.0",
     "@katitb2024/database": "git+https://github.com/KAT-ITB-2024/database-oskm.git#master",
     "@metamorph/trpc-panel": "^1.0.5",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -51,6 +52,7 @@
     "sanitize-filename": "^1.6.3",
     "server-only": "^0.0.1",
     "superjson": "^2.2.1",
+    "t3-template-app": "file:",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0",

@@ -531,6 +531,20 @@
     "@smithy/util-middleware" "^3.0.3"
     tslib "^2.6.2"
 
+"@aws-sdk/s3-request-presigner@^3.637.0":
+  version "3.637.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/s3-request-presigner/-/s3-request-presigner-3.637.0.tgz#7dda8becd71413601c408ae7f06cb71c35a539a9"
+  integrity sha512-URRiEDZEICyfAXmXcXREQCsvZrapITAymvg46p1Xjnuv7PTnUB0SF18B2omPL0E5d/X+T3O9NKdtot+BqJbIWw==
+  dependencies:
+    "@aws-sdk/signature-v4-multi-region" "3.635.0"
+    "@aws-sdk/types" "3.609.0"
+    "@aws-sdk/util-format-url" "3.609.0"
+    "@smithy/middleware-endpoint" "^3.1.0"
+    "@smithy/protocol-http" "^4.1.0"
+    "@smithy/smithy-client" "^3.2.0"
+    "@smithy/types" "^3.3.0"
+    tslib "^2.6.2"
+
 "@aws-sdk/signature-v4-multi-region@3.635.0":
   version "3.635.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.635.0.tgz#76e8eb66bfd9b661b4f9768b18aca2e04dd781a2"
@@ -577,6 +591,16 @@
     "@aws-sdk/types" "3.609.0"
     "@smithy/types" "^3.3.0"
     "@smithy/util-endpoints" "^2.0.5"
+    tslib "^2.6.2"
+
+"@aws-sdk/util-format-url@3.609.0":
+  version "3.609.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/util-format-url/-/util-format-url-3.609.0.tgz#f53907193bb636b52b61c81bbe6d7bd5ddc76c68"
+  integrity sha512-fuk29BI/oLQlJ7pfm6iJ4gkEpHdavffAALZwXh9eaY1vQ0ip0aKfRTiNudPoJjyyahnz5yJ1HkmlcDitlzsOrQ==
+  dependencies:
+    "@aws-sdk/types" "3.609.0"
+    "@smithy/querystring-builder" "^3.0.3"
+    "@smithy/types" "^3.3.0"
     tslib "^2.6.2"
 
 "@aws-sdk/util-locate-window@^3.0.0":
@@ -1111,7 +1135,7 @@
     "@paralleldrive/cuid2" "^2.2.2"
     bcrypt "^5.1.1"
     csv-parser "^3.0.0"
-    database-oskm "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-1bbdc6744d6bf1b6d0aada36db8ba2041662783a/node_modules/@katitb2024/database"
+    database-oskm "file:E:/YarnCache/v6/npm-@katitb2024-database-1.0.0-1bbdc6744d6bf1b6d0aada36db8ba2041662783a/node_modules/@katitb2024/database"
     drizzle-dbml-generator "^0.8.0"
     drizzle-orm "^0.31.2"
     postgres "^3.4.4"
@@ -2995,6 +3019,7 @@ data-view-byte-offset@^1.0.0:
   dependencies:
     "@auth/drizzle-adapter" "^1.1.0"
     "@aws-sdk/client-s3" "^3.637.0"
+    "@aws-sdk/s3-request-presigner" "^3.637.0"
     "@katitb2024/database" "git+https://github.com/KAT-ITB-2024/database-oskm.git#master"
     "@metamorph/trpc-panel" "^1.0.5"
     "@radix-ui/react-dialog" "^1.1.1"
@@ -3027,6 +3052,7 @@ data-view-byte-offset@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
+    t3-template-app "file:E:/YarnCache/v6/npm-database-oskm-0.1.0-bfc2daec-70fc-4464-b569-19e754cf0fe8-1724845136062/node_modules/database-oskm"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
@@ -5638,6 +5664,50 @@ supports-preserve-symlinks-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
+
+"t3-template-app@file:.":
+  version "0.1.0"
+  dependencies:
+    "@auth/drizzle-adapter" "^1.1.0"
+    "@aws-sdk/client-s3" "^3.637.0"
+    "@aws-sdk/s3-request-presigner" "^3.637.0"
+    "@katitb2024/database" "git+https://github.com/KAT-ITB-2024/database-oskm.git#master"
+    "@metamorph/trpc-panel" "^1.0.5"
+    "@radix-ui/react-dialog" "^1.1.1"
+    "@radix-ui/react-label" "^2.1.0"
+    "@radix-ui/react-popover" "^1.1.1"
+    "@radix-ui/react-select" "^2.1.1"
+    "@radix-ui/react-slot" "^1.1.0"
+    "@t3-oss/env-nextjs" "^0.10.1"
+    "@tanstack/react-query" "^5.39.0"
+    "@trpc/client" next
+    "@trpc/react-query" next
+    "@trpc/server" next
+    bcrypt "^5.1.1"
+    class-variance-authority "^0.7.0"
+    clsx "^2.1.1"
+    cmdk "^1.0.0"
+    dotenv "^16.4.5"
+    drizzle-orm "^0.31.2"
+    geist "^1.3.0"
+    googleapis "^140.0.1"
+    lucide-react "^0.424.0"
+    next "^14.2.1"
+    next-auth "^4.24.7"
+    nodemailer "^6.9.14"
+    postgres "^3.4.4"
+    react "^18.3.0"
+    react-dom "^18.3.0"
+    react-hook-form "^7.53.0"
+    react-icons "^5.2.1"
+    sanitize-filename "^1.6.3"
+    server-only "^0.0.1"
+    superjson "^2.2.1"
+    t3-template-app "file:E:/YarnCache/v6/npm-t3-template-app-0.1.0-9ccc2a81-e6a3-42b4-8163-9af0f132e3af-1724845136086/node_modules/t3-template-app"
+    tailwind-merge "^2.4.0"
+    tailwindcss-animate "^1.0.7"
+    uuid "^10.0.0"
+    zod "^3.23.8"
 
 tailwind-merge@^2.4.0:
   version "2.5.2"

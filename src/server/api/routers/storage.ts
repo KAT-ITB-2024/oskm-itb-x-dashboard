@@ -8,6 +8,7 @@ import { FolderEnum } from "~/server/bucket";
 import { TRPCError } from "@trpc/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getContentType } from "~/utils/fileUtils";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const storageRouter = createTRPCRouter({
   deleteFile: publicProcedure
@@ -64,7 +65,17 @@ export const storageRouter = createTRPCRouter({
 
         await s3Client.send(putObjectCommand);
 
-        return key;
+        const getObjectCommand = new GetObjectCommand({
+          Bucket: process.env.NEXT_PUBLIC_DO_BUCKET_NAME,
+          Key: key,
+        });
+    
+        const presignedUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600*24*7 }); // 1 week expiration
+
+        return {
+          key,
+          presignedUrl
+        }
       } catch (error) {
         console.error(error);
         throw new TRPCError({
