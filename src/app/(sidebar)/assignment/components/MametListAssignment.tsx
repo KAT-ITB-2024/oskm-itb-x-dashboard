@@ -27,6 +27,7 @@ interface MametAssignmentListProps {
     waktuMulai: Date;
     waktuSelesai: Date;
     assignmentId: string;
+    downloadUrl: string;
   }[];
   meta: {
     totalCount: number;
@@ -45,10 +46,7 @@ export default function MametListAssignment({
   const router = useRouter();
 
   const handleDownload = (downloadUrl: string, judulTugas: string) => {
-    /* Sample file */
-    const blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
-    
-    saveAs(blob, "Tugas_" + judulTugas + ".pdf");
+    saveAs(downloadUrl, "Tugas_" + judulTugas + ".pdf");
   }
 
   const deleteAssignment = async (assignmentId: string) => {
@@ -171,7 +169,7 @@ export default function MametListAssignment({
                       </Button>
                       <Button
                         className="bg-transparent text-2xl hover:bg-transparent"
-                        onClick={() => handleDownload("https://example.com/files/myfile.pdf", item.judulTugas)}
+                        onClick={() => handleDownload(item.downloadUrl, item.judulTugas)}
                       >
                         <MdDownload className="text-[#3678FF]" />
                       </Button>

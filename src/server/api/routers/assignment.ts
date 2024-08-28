@@ -33,46 +33,46 @@ type MenteeAssignment = {
 
 export const assignmentRouter = createTRPCRouter({
   getAssignmentDetail: publicProcedure
-  .input(
-    z.object({
-      assignmentId: z.string(),
-    }),
-  )
-  .query(async ({ ctx, input }) => {
-    try {
-      const { assignmentId } = input;
+    .input(
+      z.object({
+        assignmentId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { assignmentId } = input;
 
-      const [assignment] = await ctx.db
-        .select({
-          judulTugas: assignments.title,
-          waktuMulai: assignments.startTime,
-          waktuSelesai: assignments.deadline,
-          deskripsi: assignments.description,
-          assignmentType: assignments.assignmentType,
-          point: assignments.point,
-        })
-        .from(assignments)
-        .where(eq(assignments.id, assignmentId));
+        const [assignment] = await ctx.db
+          .select({
+            judulTugas: assignments.title,
+            waktuMulai: assignments.startTime,
+            waktuSelesai: assignments.deadline,
+            deskripsi: assignments.description,
+            assignmentType: assignments.assignmentType,
+            point: assignments.point,
+          })
+          .from(assignments)
+          .where(eq(assignments.id, assignmentId));
 
-      if (!assignment) {
+        if (!assignment) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Assignment not found",
+          });
+        }
+
+        return {
+          data: assignment,
+        };
+      } catch (error) {
+        console.error(error);
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Assignment not found",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error when fetching assignment detail",
         });
       }
+    }),
 
-      return {
-        data: assignment,
-      };
-    } catch (error) {
-      console.error(error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Error when fetching assignment detail",
-      });
-    }
-  }),
-  
   getMenteeAssignmentSubmission: publicProcedure
     .input(
       z.object({
@@ -294,7 +294,7 @@ export const assignmentRouter = createTRPCRouter({
             waktuMulai: assignments.startTime,
             waktuSelesai: assignments.deadline,
             assignmentId: assignments.id,
-            downloadUrl:assignments.downloadUrl,
+            downloadUrl: assignments.downloadUrl,
           })
           .from(assignments)
           .where(

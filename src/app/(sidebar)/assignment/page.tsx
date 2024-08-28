@@ -11,6 +11,7 @@ interface Assignments {
   waktuMulai: Date;
   waktuSelesai: Date;
   assignmentId: string;
+  downloadUrl: string;
 }
 
 export default async function Page({
