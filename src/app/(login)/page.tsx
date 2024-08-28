@@ -5,7 +5,6 @@ import { getServerAuthSession } from "~/server/auth";
 export default async function Page() {
   const session = await getServerAuthSession();
   const user = session?.user;
-  console.log(user);
 
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: "url(/img/background.png)",

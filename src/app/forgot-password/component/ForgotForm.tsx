@@ -10,7 +10,6 @@ export default function ForgotForm() {
   const handleForgotPassword = async () => {
     try {
       await generateForgotPassword.mutateAsync({ email });
-      console.log("Check email (or server log)");
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +43,6 @@ export default function ForgotForm() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  console.log("Email updated:", e.target.value);
                 }}
                 className="font-REM h-full w-full bg-white pl-3 pr-3 text-sm text-black placeholder-gray-500 focus:outline-none"
                 placeholder="Masukkan Email Anda"

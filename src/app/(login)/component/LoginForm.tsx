@@ -27,8 +27,6 @@ export default function LoginForm() {
       redirect: false,
     });
 
-    console.log(status);
-
     if (status?.ok) {
       router.push("/assignment");
     }
