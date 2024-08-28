@@ -12,7 +12,7 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, count, asc, or, ilike } from "drizzle-orm";
+import { eq, and, inArray, gt, asc, or, ilike, count, desc } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -44,6 +44,7 @@ export const assignmentRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
+
         const {
           assignmentId, 
           groupName, 
@@ -139,8 +140,6 @@ export const assignmentRouter = createTRPCRouter({
           }
 
        };
-
-
       } catch (error) {
         if(error instanceof TRPCError){
           throw new TRPCError({
@@ -232,20 +231,79 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getAllMainAssignmentMentor: publicProcedure.query(async ({ ctx }) => {
+  getAllMainAssignmentMentor: publicProcedure.
+  input(z.object({
+    searchString:z.string().optional().default(""),
+    sortOrder:z.enum(["asc","desc"]).optional().default("asc"),
+    page:z.number().optional().default(1),
+    pageSize:z.number().optional().default(10)
+  })).
+  query(async ({ ctx ,input}) => {
     try {
-      const compare: AssignmentType = "Main";
+      const {
+        searchString,
+        sortOrder,
+        page,
+        pageSize
+      } = input;
+
+      const compare:AssignmentType = "Main";
+      const offset = (page-1)*pageSize;
       const res = await ctx.db
         .select({
-          judulTugas: assignments.title,
+          judulTugas:assignments.title,
           waktuMulai: assignments.startTime,
           waktuSelesai: assignments.deadline,
+          assignmentId:assignments.id,
         })
         .from(assignments)
-        .where(eq(assignments.assignmentType, compare));
+        .where(
+          and(
+            eq(assignments.assignmentType, compare),
+            or(
+              ilike(assignments.title, `%${searchString}%`),
+              ilike(assignments.description, `%${searchString}%`)
+            )
+          )
+        )
+        .limit(pageSize)
+        .offset(offset)
+        .orderBy(
+          sortOrder === "asc" 
+          ? asc(assignments.startTime) :
+            desc(assignments.startTime)
+        )
 
-      return res;
+        if(res.length == 0){
+          throw new TRPCError({
+            code:"NOT_FOUND",
+            message:"THERE IS NO SUCH ASSIGNMENT"
+          })
+        }
+
+        const countRows = (
+          await ctx.db.select({
+            count:count()
+          }).from(assignments)
+        )[0] ?? {count:0};
+        
+        return {
+          data:res,
+          meta:{
+            totalCount:countRows.count,
+            page,
+            pageSize,
+            totalPages:Math.ceil(countRows.count/pageSize)
+          }
+        }
+
     } catch (error) {
+      if(error instanceof TRPCError){
+        throw new TRPCError({
+          code:"INTERNAL_SERVER_ERROR",
+          message: `An error occurred: ${error}`,
+        });
+      }
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured while getting all main assignment ",
@@ -383,6 +441,7 @@ export const assignmentRouter = createTRPCRouter({
         });
       }
     }),
+
   deleteAssignmentMamet: publicProcedure
     .input(
       z.object({
