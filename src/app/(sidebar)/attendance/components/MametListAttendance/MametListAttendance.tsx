@@ -21,8 +21,6 @@ import { MdDownload } from "react-icons/md";
 import { api } from "~/trpc/react";
 import { format } from "date-fns";
 
-
-
 interface Event {
   eventId: string;
   eventDay: "Day 1" | "Day 2" | "Day 3" | "Day 4";
@@ -151,10 +149,6 @@ export default function MametListAttendance() {
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
               >
-              <Button
-                className="bg-transparent text-2xl"
-                onClick={() => handleDeleteClick(event)}
-              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
               <Button
@@ -164,7 +158,6 @@ export default function MametListAttendance() {
                 <MdDownload className="text-[#3678FF]" />
               </Button>
             </TableCell>
-          </TableRow>,
           </TableRow>,
         );
       }
@@ -198,10 +191,6 @@ export default function MametListAttendance() {
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
               >
-              <Button
-                className="bg-transparent text-2xl"
-                onClick={() => handleDeleteClick(event)}
-              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
               <Button
@@ -211,7 +200,6 @@ export default function MametListAttendance() {
                 <MdDownload className="text-[#3678FF]" />
               </Button>
             </TableCell>
-          </TableRow>,
           </TableRow>,
         );
       }
@@ -226,29 +214,11 @@ export default function MametListAttendance() {
       <MametNavigation
         onSelectDay={handleDayChange}
         onAddEvent={handleAddEvent}
-        onDownload={handleAddEvent}
+        onDownload ={handleAddEvent}
       />
       <Table className="border-spacing-0 rounded-lg text-center">
         <TableHeader className="bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
           <TableRow>
-            <TableHead className="rounded-tl-lg border-r border-white text-white">
-              No
-            </TableHead>
-            <TableHead className="border-b border-r border-white text-white">
-              Event
-            </TableHead>
-            <TableHead className="border-b border-r border-white text-white">
-              Tanggal
-            </TableHead>
-            <TableHead className="border-b border-r border-white text-white">
-              Mulai
-            </TableHead>
-            <TableHead className="border-b border-r border-white text-white">
-              Selesai
-            </TableHead>
-            <TableHead className="rounded-tr-lg border-b border-white text-white">
-              Action
-            </TableHead>
             <TableHead className="rounded-tl-lg border-r border-white text-white">
               No
             </TableHead>
@@ -284,16 +254,9 @@ export default function MametListAttendance() {
             onConfirm={handleConfirmDelete}
             onCancel={handleCancelDelete}
             onClose={handleCancelDelete}
-          <ConfirmDeleteEvent
-            onConfirm={handleConfirmDelete}
-            onCancel={handleCancelDelete}
-            onClose={handleCancelDelete}
           />
         </div>
       )}
     </div>
-  );
-}
-
   );
 }
