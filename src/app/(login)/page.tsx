@@ -1,10 +1,10 @@
 import React from "react";
 import LoginForm from "./component/LoginForm";
-import { getServerAuthSession } from "~/server/auth";
+// import { getServerAuthSession } from "~/server/auth";
 
 export default async function Page() {
-  const session = await getServerAuthSession();
-  const user = session?.user;
+  // const session = await getServerAuthSession();
+  // const user = session?.user;
 
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: "url(/img/background.png)",
