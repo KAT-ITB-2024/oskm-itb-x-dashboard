@@ -25,14 +25,28 @@ export default async function Page({
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page) || 1;
 
-  const response = await api.assignment.getAllMainAssignmentMentor({
-    page: currentPage,
-    searchString: query,
-    sortOrder: "asc",
-  });
+  let assignments: Assignments[] = [];
+  let meta = { 
+    page: currentPage, 
+    totalPages: 1,
+    pageSize: 10,
+    totalCount: 0,
+  };
 
-  const assignments: Assignments[] = response.data;
-  const meta = response.meta;
+  try {
+    const response = await api.assignment.getAllMainAssignmentMentor({
+      page: currentPage,
+      searchString: query,
+      sortOrder: "asc",
+    });
+
+    if (response?.data) {
+      assignments = response.data;
+      meta = response.meta || meta;
+    }
+  } catch (error) {
+    console.error("Failed to fetch assignments:", error);
+  }
   return (
     <div>
       <div className="flex flex-col gap-4">

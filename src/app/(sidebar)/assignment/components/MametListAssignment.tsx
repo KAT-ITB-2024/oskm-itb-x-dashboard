@@ -46,7 +46,7 @@ export default function MametListAssignment({
   const router = useRouter();
 
   const handleDownload = (downloadUrl: string, judulTugas: string) => {
-    saveAs(downloadUrl, "Tugas_" + judulTugas + ".pdf");
+    if (downloadUrl) saveAs(downloadUrl, "Tugas_" + judulTugas + ".pdf");
   }
 
   const deleteAssignment = async (assignmentId: string) => {
@@ -168,8 +168,9 @@ export default function MametListAssignment({
                         <MdDelete className="text-[#DC2522]" />
                       </Button>
                       <Button
-                        className="bg-transparent text-2xl hover:bg-transparent"
+                        className={`bg-transparent text-2xl hover:bg-transparent`}
                         onClick={() => handleDownload(item.downloadUrl, item.judulTugas)}
+                        disabled={!item.downloadUrl}
                       >
                         <MdDownload className="text-[#3678FF]" />
                       </Button>
