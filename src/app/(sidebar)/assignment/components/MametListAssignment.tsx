@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
+import { saveAs } from "file-saver";
 
 import {
   Table,
@@ -42,6 +43,13 @@ export default function MametListAssignment({
   const assignmentDeleteMutation =
     api.assignment.deleteAssignmentMamet.useMutation();
   const router = useRouter();
+
+  const handleDownload = (downloadUrl: string, judulTugas: string) => {
+    /* Sample file */
+    const blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
+    
+    saveAs(blob, "Tugas_" + judulTugas + ".pdf");
+  }
 
   const deleteAssignment = async (assignmentId: string) => {
     try {
@@ -161,9 +169,12 @@ export default function MametListAssignment({
                       >
                         <MdDelete className="text-[#DC2522]" />
                       </Button>
-                      <Link href="">
+                      <Button
+                        className="bg-transparent text-2xl hover:bg-transparent"
+                        onClick={() => handleDownload("https://example.com/files/myfile.pdf", item.judulTugas)}
+                      >
                         <MdDownload className="text-[#3678FF]" />
-                      </Link>
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
