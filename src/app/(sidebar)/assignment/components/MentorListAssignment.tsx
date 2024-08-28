@@ -1,5 +1,5 @@
+"use client";
 import { IoMdSearch } from "react-icons/io";
-
 import {
   Table,
   TableBody,
@@ -18,82 +18,18 @@ import {
   SelectGroup,
 } from "~/components/ui/select";
 
-// Anggap sudah ada data daftar tugasnya
+export default function MentorListAssignment() {
+  // const assignmentData = await api.assignment.getAllMainAssignmentMentor();
 
-const listAssigment = [
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 2,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 2,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 2,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-];
+  const assignmentData = [
+    {
+      judulTugas: "Lorem",
+      waktuMulai: "00:00:00",
+      waktuSelesai: "00:00:00",
+      file: "/#",
+    },
+  ];
 
-export default function MametListAssignment() {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4">
       <div className="flex w-full flex-row justify-between">
@@ -125,8 +61,8 @@ export default function MametListAssignment() {
           </Select>
         </div>
       </div>
-      <div className="flex w-full flex-col items-center justify-center gap-4">
-        <div className="mt-5 w-full">
+      <div className="flex w-full flex-col items-center justify-center">
+        <div className="mt-1 w-full">
           <Table className="border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
             <TableHeader className="h-[56px]">
               <TableRow>
@@ -163,23 +99,23 @@ export default function MametListAssignment() {
               </TableRow>
             </TableHeader>
             <TableBody className="bg-white">
-              {listAssigment.map((item, index) => (
-                <TableRow key={item.no} className="border-2 border-gray-500 ">
+              {assignmentData.map((item, index) => (
+                <TableRow key={index} className="border-2 border-gray-500 ">
                   <TableCell className="border-2 border-gray-300 text-center">
                     {index + 1}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300 text-[16px]">
-                    {item.judul}
+                    {item.judulTugas}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    {item.mulai}
+                    {item.waktuMulai}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    {item.selesai}
+                    {item.waktuSelesai}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
                     <a
-                      href={item.linkcsv}
+                      href={item.file}
                       className="flex items-center justify-center"
                     >
                       <Image

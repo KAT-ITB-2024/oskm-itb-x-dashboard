@@ -151,6 +151,10 @@ export default function MametListAttendance() {
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
               >
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDeleteClick(event)}
+              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
               <Button
@@ -160,6 +164,7 @@ export default function MametListAttendance() {
                 <MdDownload className="text-[#3678FF]" />
               </Button>
             </TableCell>
+          </TableRow>,
           </TableRow>,
         );
       }
@@ -193,6 +198,10 @@ export default function MametListAttendance() {
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
               >
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDeleteClick(event)}
+              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
               <Button
@@ -202,6 +211,7 @@ export default function MametListAttendance() {
                 <MdDownload className="text-[#3678FF]" />
               </Button>
             </TableCell>
+          </TableRow>,
           </TableRow>,
         );
       }
@@ -239,6 +249,24 @@ export default function MametListAttendance() {
             <TableHead className="rounded-tr-lg border-b border-white text-white">
               Action
             </TableHead>
+            <TableHead className="rounded-tl-lg border-r border-white text-white">
+              No
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Event
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Tanggal
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Mulai
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Selesai
+            </TableHead>
+            <TableHead className="rounded-tr-lg border-b border-white text-white">
+              Action
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>{renderTableRows()}</TableBody>
@@ -256,9 +284,16 @@ export default function MametListAttendance() {
             onConfirm={handleConfirmDelete}
             onCancel={handleCancelDelete}
             onClose={handleCancelDelete}
+          <ConfirmDeleteEvent
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            onClose={handleCancelDelete}
           />
         </div>
       )}
     </div>
+  );
+}
+
   );
 }

@@ -3,9 +3,19 @@
 import React, { useState } from "react";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { Popover, PopoverTrigger, PopoverContent } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "~/components/ui/popover";
 import { ChevronsUpDown, Check } from "lucide-react";
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
 import { cn } from "~/lib/utils";
 import { MdDownload } from "react-icons/md";
 import { MdAdd } from "react-icons/md";
@@ -34,12 +44,16 @@ interface SearchAndFilterBarProps {
   onAddEvent: () => void;
   onDownload: () => void;
 }
-export default function MametNavigation({ onSelectDay,onAddEvent,onDownload}: SearchAndFilterBarProps) {
+export default function MametNavigation({
+  onSelectDay,
+  onAddEvent,
+  onDownload,
+}: SearchAndFilterBarProps) {
   const [open, setOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
-  const handleSelectDay = (day: string) => {  
-    if (day === selectedDay) {  
+  const handleSelectDay = (day: string) => {
+    if (day === selectedDay) {
       // Jika hari yang dipilih sudah aktif, hapus filter
       setSelectedDay(null);
       onSelectDay(null); // Mengirimkan null untuk menghapus filter
@@ -52,14 +66,10 @@ export default function MametNavigation({ onSelectDay,onAddEvent,onDownload}: Se
   };
 
   return (
-    <div className="flex items-center gap-4 w-full">
+    <div className="flex w-full items-center gap-4">
       {/* Search Input */}
-      <div className="relative flex items-center w-full">
-        <Input
-          type="text"
-          placeholder="Cari Event..."
-          className="pr-10"
-        />
+      <div className="relative flex w-full items-center">
+        <Input type="text" placeholder="Cari Event..." className="pr-10" />
         <svg
           className="absolute right-3 h-5 w-5 text-gray-400"
           xmlns="http://www.w3.org/2000/svg"
@@ -77,13 +87,13 @@ export default function MametNavigation({ onSelectDay,onAddEvent,onDownload}: Se
       </div>
 
       {/* Combobox for Day Filter */}
-      <Popover open={open} onOpenChange={setOpen} >
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="flex justify-between w-[226px] h-[48px]"
+            className="flex h-[48px] w-[226px] justify-between"
           >
             {selectedDay ?? "Filter Hari"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -103,7 +113,7 @@ export default function MametNavigation({ onSelectDay,onAddEvent,onDownload}: Se
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selectedDay === day.value ? "opacity-100" : "opacity-0"
+                        selectedDay === day.value ? "opacity-100" : "opacity-0",
                       )}
                     />
                     {day.label}
@@ -117,20 +127,20 @@ export default function MametNavigation({ onSelectDay,onAddEvent,onDownload}: Se
 
       {/* Recap Button */}
       <Button
-        className="bg-[#0010A4] text-white h-[46px] w-[180px] rounded-md "
+        className="h-[46px] w-[180px] rounded-md bg-[#0010A4] text-white "
         onClick={onDownload}
       >
-        <MdDownload className="text-[#3678FF] w-[20px]" color="white"  />
+        <MdDownload className="w-[20px] text-[#3678FF]" color="white" />
         Recap
       </Button>
 
       {/* Add Event Button */}
       <Button
-        className="bg-[#EE1192] text-white h-[46px] w-[180px] rounded-md"
+        className="h-[46px] w-[180px] rounded-md bg-[#EE1192] text-white"
         onClick={onAddEvent}
       >
-        <MdAdd className="text-[#3678FF] w-[20px]" color="white"/>
-       Event
+        <MdAdd className="w-[20px] text-[#3678FF]" color="white" />
+        Event
       </Button>
     </div>
   );

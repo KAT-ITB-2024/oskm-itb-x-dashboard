@@ -3,7 +3,6 @@ import { utilityRouter } from "./routers/utility";
 import { assignmentRouter } from "./routers/assignment";
 import { presenceRouter } from "./routers/presence";
 import { userRouter } from "./routers/user";
-import { storageRouter } from "./routers/storage";
 
 /**
  * This is the primary router for your server.
@@ -13,12 +12,9 @@ import { storageRouter } from "./routers/storage";
 export const appRouter = createTRPCRouter({
   // uncomment the following lines to enable the routers
   user: userRouter,
-  // assignment: assignmentRouter,
-  presence: presenceRouter,
   assignment: assignmentRouter,
-  storage: storageRouter,
-  // presence: presenceRouter,
-  // utility: utilityRouter,
+  presence: presenceRouter,
+  utility: utilityRouter,
 });
 
 // export type definition of API

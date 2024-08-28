@@ -5,7 +5,6 @@ import {
   type PresenceType,
   eventPresences,
   events,
-  groups,
   profiles,
   users,
 } from "@katitb2024/database";
@@ -360,7 +359,7 @@ export const presenceRouter = createTRPCRouter({
             nim: row.nim,
             name: row.name,
             group: row.group,
-            presence: row.presence as "Hadir" | "Izin/Sakit" | "Alpha",
+            presence: row.presence,
           }));
 
           return {
