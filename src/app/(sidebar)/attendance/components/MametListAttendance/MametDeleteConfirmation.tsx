@@ -13,7 +13,7 @@ export default function ConfirmDeleteEvent({
   onClose,
 }: ConfirmDeleteEventProps) {
   return (
-    <div className="relative flex min-h-[456px] w-full max-w-[300px] max-w-md flex-col items-center gap-8 rounded-bl-lg rounded-br-lg rounded-tl-lg rounded-tr-lg bg-[#0010A4] p-8 py-12">
+    <div className="relative flex min-h-[456px] w-full max-w-[300px] flex-col items-center gap-8 rounded-bl-lg rounded-br-lg rounded-tl-lg rounded-tr-lg bg-[#0010A4] p-8 py-12">
       {/* Tombol Close */}
       <div className="absolute right-4 top-4 cursor-pointer" onClick={onClose}>
         <svg
@@ -49,7 +49,7 @@ export default function ConfirmDeleteEvent({
       </h3>
 
       {/* Deskripsi */}
-      <p className="font-REM text-center text-base font-normal leading-6 text-white text-yellow-400">
+      <p className="font-REM text-center text-base font-normal leading-6 text-yellow-400">
         Apakah Anda yakin ingin menghapus event ini?
       </p>
 

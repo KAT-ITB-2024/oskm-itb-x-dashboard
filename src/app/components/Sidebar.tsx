@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -40,6 +41,10 @@ const sidebarItems = [
 export default function Sidebar() {
   const pathname = usePathname();
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <div className="relative flex h-[87vh] w-[6rem] flex-col items-center justify-between overflow-hidden rounded-2xl bg-[#0010A4] p-5 transition-all duration-500 ease-in-out hover:w-[20rem]">
       <div className="relative h-[3.5rem] w-[3.5rem] self-start">
@@ -75,7 +80,7 @@ export default function Sidebar() {
       </div>
 
       <div className="flex w-[20rem] cursor-pointer flex-col gap-4 self-start">
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-10" onClick={handleSignOut}>
           <div className="flex h-14 w-14 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-pink-50 bg-gradient-to-r from-[#f7eab6] to-[#fcc5c1]">
             <BiLogOut
               size={32}
