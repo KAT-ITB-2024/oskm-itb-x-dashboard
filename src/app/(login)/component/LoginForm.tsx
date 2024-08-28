@@ -8,7 +8,7 @@ import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [nim, setNim] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
@@ -22,12 +22,16 @@ export default function LoginForm() {
 
   const handleLogin = async () => {
     const status = await signIn("credentials", {
-      email,
+      nim,
       password,
       redirect: false,
     });
 
     console.log(status);
+
+    if (status?.ok) {
+      router.push("/assignment");
+    }
   };
 
   return (
@@ -56,20 +60,20 @@ export default function LoginForm() {
         </div>
         <div className="mx-6 mt-4 flex flex-col items-start">
           <p className="font-REM mb-1 mt-[-15px] text-sm font-normal text-[#0010A4]">
-            Email <span className="text-[#DC2522]">*</span>
+            NIM <span className="text-[#DC2522]">*</span>
           </p>
           <div className="mb-4 w-full">
             <label htmlFor="Email" className="font-REM sr-only">
-              Email
+              Nim
             </label>
             <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
               <input
-                id="Email"
+                id="Nim"
                 type="text"
-                value={email}
-                onChange={(v) => setEmail(v.target.value)}
+                value={nim}
+                onChange={(v) => setNim(v.target.value)}
                 className="font-REM h-full w-full bg-white pl-3 pr-3 text-sm text-black placeholder-gray-500 focus:outline-none"
-                placeholder="Masukkan Email Anda"
+                placeholder="Masukkan NIM Anda"
               />
             </div>
           </div>

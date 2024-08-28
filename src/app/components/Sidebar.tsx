@@ -41,7 +41,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="relative flex w-[6rem] flex-col items-center justify-between overflow-hidden rounded-2xl bg-[#0010A4] p-5 transition-all duration-500 ease-in-out hover:w-[20rem]">
+    <div className="relative flex h-[87vh] w-[6rem] flex-col items-center justify-between overflow-hidden rounded-2xl bg-[#0010A4] p-5 transition-all duration-500 ease-in-out hover:w-[20rem]">
       <div className="relative h-[3.5rem] w-[3.5rem] self-start">
         <Image
           src={"/sidebar/logo-sidebar.svg"}
