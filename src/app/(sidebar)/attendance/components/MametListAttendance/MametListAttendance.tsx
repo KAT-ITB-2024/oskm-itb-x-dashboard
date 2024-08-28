@@ -21,6 +21,8 @@ import { MdDownload } from "react-icons/md";
 import { api } from "~/trpc/react";
 import { format } from "date-fns";
 
+
+
 interface Event {
   eventId: string;
   eventDay: "Day 1" | "Day 2" | "Day 3" | "Day 4";
@@ -33,19 +35,20 @@ interface Event {
 
 export default function MametListAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; 
+  const itemsPerPage = 3;
 
   const { data, isLoading } = api.presence.getEventsThatHasPresence.useQuery({
     page: currentPage,
     dataPerPage: itemsPerPage,
   });
 
-  const events = data?.paginatedData ??  [];
+  const events = data?.paginatedData ?? [];
   const totalItems = data?.totalItems ?? 0;
 
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+  const [downloadParams, setDownloadParams] = useState<{ eventId: string; openingOrClosing: "Opening" | "Closing" } | null>(null);
   const router = useRouter();
 
   const handleDayChange = (day: string | null) => {
@@ -56,10 +59,6 @@ export default function MametListAttendance() {
     return router.push("/attendance/tambah");
   };
 
-  const handleDownload = () => {
-    //  CSV download logic
-  };
-
   const handleDeleteClick = (event: Event) => {
     setEventToDelete(event);
     setShowConfirmDelete(true);
@@ -67,7 +66,6 @@ export default function MametListAttendance() {
 
   const handleConfirmDelete = () => {
     if (eventToDelete) {
-      //  delete operation here 
       setShowConfirmDelete(false);
       setEventToDelete(null);
     }
@@ -76,6 +74,31 @@ export default function MametListAttendance() {
   const handleCancelDelete = () => {
     setShowConfirmDelete(false);
     setEventToDelete(null);
+  };
+
+  // Fetch data for download when downloadParams is set
+  const { data: downloadData, error: downloadError } = api.presence.getPresenceOfAnEventCSV.useQuery(
+    downloadParams ?? { eventId: '', openingOrClosing: 'Opening' }, // Fallback to default values to prevent errors
+    {
+      enabled: !!downloadParams, // Only run query if downloadParams is set
+    }
+  );
+
+  useEffect(() => {
+    if (downloadData?.ok && downloadData.data) {
+      const link = document.createElement("a");
+      link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(downloadData.data.content);
+      link.download = downloadData.data.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (downloadError) {
+      console.error("An error occurred during download:", downloadError);
+    }
+  }, [downloadData, downloadError]);
+
+  const handleDownload = (eventId: string, openingOrClosing: "Opening" | "Closing") => {
+    setDownloadParams({ eventId, openingOrClosing });
   };
 
   const renderTableRows = () => {
@@ -87,7 +110,7 @@ export default function MametListAttendance() {
       );
     }
 
-    let rowIndex = (currentPage - 1) * (itemsPerPage*2);
+    let rowIndex = (currentPage - 1) * (itemsPerPage * 2);
 
     return events.flatMap((event) => {
       const rows = [];
@@ -95,64 +118,91 @@ export default function MametListAttendance() {
         return [];
       }
       const eventDate: Date =
-        event.eventDate instanceof Date ? event.eventDate : new Date(event.eventDate);
+        event.eventDate instanceof Date
+          ? event.eventDate
+          : new Date(event.eventDate);
       const formattedDate = format(eventDate, "dd/MM/yyyy");
 
-      // Render row for Opening event
-      if (event.openingOpenPresenceTime !== null) {
+      if (event.openingOpenPresenceTime !== "00:00:00") {
         rowIndex += 1;
         rows.push(
-          <TableRow key={`opening-${event.eventId}`} className="border-b border-gray-200 bg-white">
-            <TableCell className="border-r border-l border-gray-200">{rowIndex}</TableCell>
+          <TableRow
+            key={`opening-${event.eventId}`}
+            className="border-b border-gray-200 bg-white"
+          >
+            <TableCell className="border-l border-r border-gray-200">
+              {rowIndex}
+            </TableCell>
             <TableCell className="border-r border-gray-200">{`Opening ${event.eventDay}`}</TableCell>
-            <TableCell className="border-r border-gray-200">{formattedDate}</TableCell>
+            <TableCell className="border-r border-gray-200">
+              {formattedDate}
+            </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.openingOpenPresenceTime}
             </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.openingClosePresenceTime}
             </TableCell>
-            <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
+            <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
               <Link href={`/attendance/edit/opening-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button className="bg-transparent text-2xl" onClick={() => handleDeleteClick(event)}>
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDeleteClick(event)}
+              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
-              <Link href="#" onClick={handleDownload}>
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDownload(event.eventId, "Opening")}
+              >
                 <MdDownload className="text-[#3678FF]" />
-              </Link>
+              </Button>
             </TableCell>
-          </TableRow>
+          </TableRow>,
         );
       }
 
       // Render row for Closing event
-      if (event.closingOpenPresenceTime !== null) {
+      if (event.closingOpenPresenceTime !== "00:00:00") {
         rowIndex += 1;
         rows.push(
-          <TableRow key={`closing-${event.eventId}`} className="border-b border-gray-200 bg-white">
-            <TableCell className="border-l border-r border-gray-200">{rowIndex}</TableCell>
+          <TableRow
+            key={`closing-${event.eventId}`}
+            className="border-b border-gray-200 bg-white"
+          >
+            <TableCell className="border-l border-r border-gray-200">
+              {rowIndex}
+            </TableCell>
             <TableCell className="border-r border-gray-200">{`Closing ${event.eventDay}`}</TableCell>
-            <TableCell className="border-r border-gray-200">{formattedDate}</TableCell>
+            <TableCell className="border-r border-gray-200">
+              {formattedDate}
+            </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.closingOpenPresenceTime}
             </TableCell>
             <TableCell className="border-r border-gray-200">
               {event.closingClosePresenceTime}
             </TableCell>
-            <TableCell className="border-r border-gray-200 flex items-center justify-center gap-2 text-2xl">
+            <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
               <Link href={`/attendance/edit/closing-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button className="bg-transparent text-2xl" onClick={() => handleDeleteClick(event)}>
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDeleteClick(event)}
+              >
                 <MdDelete className="text-[#DC2522]" />
               </Button>
-              <Link href="#" onClick={handleDownload}>
+              <Button
+                className="bg-transparent text-2xl"
+                onClick={() => handleDownload(event.eventId, "Closing")}
+              >
                 <MdDownload className="text-[#3678FF]" />
-              </Link>
+              </Button>
             </TableCell>
-          </TableRow>
+          </TableRow>,
         );
       }
 
@@ -166,17 +216,29 @@ export default function MametListAttendance() {
       <MametNavigation
         onSelectDay={handleDayChange}
         onAddEvent={handleAddEvent}
-        onDownload={handleDownload}
+        onDownload={handleAddEvent}
       />
       <Table className="border-spacing-0 rounded-lg text-center">
         <TableHeader className="bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
           <TableRow>
-            <TableHead className="rounded-tl-lg border-r border-white text-white">No</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Event</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Tanggal</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Mulai</TableHead>
-            <TableHead className="border-r border-b border-white text-white">Selesai</TableHead>
-            <TableHead className="rounded-tr-lg border-b border-white text-white">Action</TableHead>
+            <TableHead className="rounded-tl-lg border-r border-white text-white">
+              No
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Event
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Tanggal
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Mulai
+            </TableHead>
+            <TableHead className="border-b border-r border-white text-white">
+              Selesai
+            </TableHead>
+            <TableHead className="rounded-tr-lg border-b border-white text-white">
+              Action
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>{renderTableRows()}</TableBody>

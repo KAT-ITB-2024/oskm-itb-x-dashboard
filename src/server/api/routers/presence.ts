@@ -437,6 +437,9 @@ export const presenceRouter = createTRPCRouter({
         };
       }
     }),
+
+
+
   // mendapat list presensi peserta pada sesuai keluarga dan event
   getPresensiPeserta: publicProcedure
     .input(
