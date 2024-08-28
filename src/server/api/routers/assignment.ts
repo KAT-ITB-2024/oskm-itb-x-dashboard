@@ -34,6 +34,47 @@ type MenteeAssignment = {
 };
 
 export const assignmentRouter = createTRPCRouter({
+  getAssignmentDetail: publicProcedure
+  .input(
+    z.object({
+      assignmentId: z.string(),
+    }),
+  )
+  .query(async ({ ctx, input }) => {
+    try {
+      const { assignmentId } = input;
+
+      const [assignment] = await ctx.db
+        .select({
+          judulTugas: assignments.title,
+          waktuMulai: assignments.startTime,
+          waktuSelesai: assignments.deadline,
+          deskripsi: assignments.description,
+          assignmentType: assignments.assignmentType,
+          point: assignments.point,
+        })
+        .from(assignments)
+        .where(eq(assignments.id, assignmentId));
+
+      if (!assignment) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Assignment not found",
+        });
+      }
+
+      return {
+        data: assignment,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error when fetching assignment detail",
+      });
+    }
+  }),
+  
   getMenteeAssignmentSubmission: publicProcedure
     .input(
       z.object({
@@ -444,33 +485,6 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  deleteAssignmentMamet: publicProcedure
-    .input(
-      z.object({
-        assignmentId: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { assignmentId } = input;
-
-      try {
-        await ctx.db
-          .delete(assignments)
-          .where(eq(assignments.id, assignmentId));
-
-        return {
-          message: "Assignment deletion attempted",
-          deletedId: assignmentId,
-        };
-      } catch (error) {
-        console.error("Error deleting assignment:", error);
-
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `An error occurred while deleting the assignment`,
-        });
-      }
-    }),
   editAssignmentMamet: publicProcedure
     .input(
       z.object({
@@ -522,6 +536,34 @@ export const assignmentRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Error when updating  an assignment",
+        });
+      }
+    }),
+
+  deleteAssignmentMamet: publicProcedure
+    .input(
+      z.object({
+        assignmentId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { assignmentId } = input;
+
+      try {
+        await ctx.db
+          .delete(assignments)
+          .where(eq(assignments.id, assignmentId));
+
+        return {
+          message: "Assignment deletion attempted",
+          deletedId: assignmentId,
+        };
+      } catch (error) {
+        console.error("Error deleting assignment:", error);
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `An error occurred while deleting the assignment`,
         });
       }
     }),
