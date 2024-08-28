@@ -1106,12 +1106,12 @@
 
 "@katitb2024/database@git+https://github.com/KAT-ITB-2024/database-oskm.git#master":
   version "1.0.0"
-  resolved "git+https://github.com/KAT-ITB-2024/database-oskm.git#1bbdc6744d6bf1b6d0aada36db8ba2041662783a"
+  resolved "git+https://github.com/KAT-ITB-2024/database-oskm.git#cb9f07de3d4344948289f9ccf48afa9a3748e2a0"
   dependencies:
     "@paralleldrive/cuid2" "^2.2.2"
     bcrypt "^5.1.1"
     csv-parser "^3.0.0"
-    database-oskm "file:E:/YarnCache/v6/npm-@katitb2024-database-1.0.0-1bbdc6744d6bf1b6d0aada36db8ba2041662783a/node_modules/@katitb2024/database"
+    database-oskm "file:E:/YarnCache/v6/npm-@katitb2024-database-1.0.0-cb9f07de3d4344948289f9ccf48afa9a3748e2a0/node_modules/@katitb2024/database"
     drizzle-dbml-generator "^0.8.0"
     drizzle-orm "^0.31.2"
     postgres "^3.4.4"
