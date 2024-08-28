@@ -253,6 +253,7 @@ export const assignmentRouter = createTRPCRouter({
             waktuMulai: assignments.startTime,
             waktuSelesai: assignments.deadline,
             assignmentId: assignments.id,
+            downloadUrl:assignments.downloadUrl,
           })
           .from(assignments)
           .where(
