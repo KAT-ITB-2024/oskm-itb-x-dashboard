@@ -497,8 +497,8 @@ export const assignmentRouter = createTRPCRouter({
           deadline,
           description,
           downloadUrl,
-          updatedAt:new Date(),
-        }
+          updatedAt: new Date(),
+        };
 
         await ctx.db
           .update(assignments)
