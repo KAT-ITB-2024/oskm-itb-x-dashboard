@@ -121,6 +121,11 @@ export default function MametAddAssignment() {
           if (key === "Poin" && assignmentType === "Main") continue;
           alert(`Kolom ${key} harus diisi`);
           return;
+        } else {
+          if (key === "Waktu Selesai" && setTime(startTime, jamMulai) >= setTime(deadline, jamSelesai)) {
+            alert("Waktu selesai tidak boleh lebih kecil dari waktu mulai");
+            return;
+          }
         }
       }
     }
