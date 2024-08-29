@@ -1,4 +1,9 @@
-import { IoMdSearch } from "react-icons/io";
+"use client";
+import React from "react";
+import Link from "next/link";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
+import { saveAs } from "file-saver";
 
 import {
   Table,
@@ -8,125 +13,83 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from "~/components/ui/select";
+import { Button } from "~/components/ui/button";
+import { RiPencilFill } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
+import { MdDownload } from "react-icons/md";
+import Search from "./Search";
+import Pagination from "./Pagination";
+import ConfirmationModal from "./ConfirmationModal";
 
-// Anggap sudah ada data daftar tugasnya
+interface MametAssignmentListProps {
+  assignments: {
+    judulTugas: string;
+    waktuMulai: Date;
+    waktuSelesai: Date;
+    assignmentId: string;
+    downloadUrl: string;
+  }[];
+  meta: {
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
+}
 
-const listAssigment = [
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 2,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 2,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 2,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-  {
-    no: 1,
-    judul: "Judul",
-    mulai: "Day, 00/00/00 00.00",
-    selesai: "Day, 00/00/00 00.00",
-    linkcsv: "#",
-  },
-];
+export default function MametListAssignment({
+  assignments,
+  meta,
+}: MametAssignmentListProps) {
+  const assignmentDeleteMutation =
+    api.assignment.deleteAssignmentMamet.useMutation();
+  const router = useRouter();
 
-export default function MametListAssignment() {
+  const handleDownload = (downloadUrl: string, judulTugas: string) => {
+    if (downloadUrl) saveAs(downloadUrl, "Tugas_" + judulTugas + ".pdf");
+  };
+
+  const deleteAssignment = async (assignmentId: string) => {
+    try {
+      await assignmentDeleteMutation.mutateAsync({
+        assignmentId,
+      });
+      alert("Assignment deleted successfully");
+      router.refresh();
+    } catch (err) {
+      alert("Error deleting assignment");
+      console.error("Error deleting assignment : ", err);
+    }
+  };
+
+  const [showConfirmationModal, setShowConfirmationModal] =
+    React.useState<boolean>(false);
+  const [assignmentToDelete, setAssignmentToDelete] = React.useState<
+    string | null
+  >(null);
+  const handleDeleteClick = (assignmentId: string) => {
+    setAssignmentToDelete(assignmentId);
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (assignmentToDelete) {
+      await deleteAssignment(assignmentToDelete);
+      setShowConfirmationModal(false);
+      setAssignmentToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmationModal(false);
+    setAssignmentToDelete(null);
+  };
+
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4">
-      <div className="flex w-full flex-row justify-between">
-        <div className="flex h-[48px] w-5/6 items-start justify-between rounded-lg border-2 border-input bg-white px-4 py-3">
-          <input
-            type="text"
-            placeholder="Cari Tugas"
-            className="w-full bg-transparent outline-none"
-          />
-          <IoMdSearch className="text-xl text-gray-400" />
-        </div>
-
-        <div>
-          <Select>
-            <SelectTrigger className="bg-whitepx-4 ml-4 flex h-[48px] w-[226px] items-center justify-between rounded-lg border-2 border-input py-3 text-gray-400">
-              <SelectValue placeholder="Filter Hari" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="senin">Senin</SelectItem>
-                <SelectItem value="selasa">Selasa</SelectItem>
-                <SelectItem value="rabu">Rabu</SelectItem>
-                <SelectItem value="kamis">Kamis</SelectItem>
-                <SelectItem value="jumat">Jumat</SelectItem>
-                <SelectItem value="sabtu">Sabtu</SelectItem>
-                <SelectItem value="minggu">Minggu</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+    <div className="flex w-full flex-col items-center justify-center gap-4 overflow-y-auto">
       <div className="flex w-full flex-col items-center justify-center gap-4">
-        <div className="mt-5 w-full">
+        <Search placeholder="Cari Tugas..." />
+        <div className="mt-1 h-56 w-full overflow-y-auto">
           <Table className="border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
             <TableHeader className="h-[56px]">
               <TableRow>
@@ -163,33 +126,57 @@ export default function MametListAssignment() {
               </TableRow>
             </TableHeader>
             <TableBody className="bg-white">
-              {listAssigment.map((item, index) => (
-                <TableRow key={item.no} className="border-2 border-gray-500 ">
+              {assignments.map((item, index) => (
+                <TableRow key={index + 1} className="border-2 border-gray-500 ">
                   <TableCell className="border-2 border-gray-300 text-center">
                     {index + 1}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300 text-[16px]">
-                    {item.judul}
+                    {item.judulTugas}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    {item.mulai}
+                    {Intl.DateTimeFormat("en-US", {
+                      hour12: false,
+                      timeZone: "Asia/Jakarta",
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(item.waktuMulai) + " WIB"}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    {item.selesai}
+                    {Intl.DateTimeFormat("en-US", {
+                      hour12: false,
+                      timeZone: "Asia/Jakarta",
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(item.waktuSelesai) + " WIB"}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    <a
-                      href={item.linkcsv}
-                      className="flex items-center justify-center"
-                    >
-                      <Image
-                        className="flex items-center justify-center"
-                        src={"/in-page/openlink.svg"}
-                        width={24}
-                        height={24}
-                        alt="open link icon"
-                      />
-                    </a>
+                    <div className="flex items-center justify-center gap-2 text-2xl">
+                      <Link href={`/assignment/edit/${item.assignmentId}`}>
+                        <RiPencilFill className="text-[#0010A4]" />
+                      </Link>
+                      <Button
+                        className="bg-transparent text-2xl hover:bg-transparent"
+                        onClick={() => handleDeleteClick(item.assignmentId)}
+                      >
+                        <MdDelete className="text-[#DC2522]" />
+                      </Button>
+                      <Button
+                        className={`bg-transparent text-2xl hover:bg-transparent`}
+                        onClick={() =>
+                          handleDownload(item.downloadUrl, item.judulTugas)
+                        }
+                        disabled={!item.downloadUrl}
+                      >
+                        <MdDownload className="text-[#3678FF]" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -197,101 +184,16 @@ export default function MametListAssignment() {
           </Table>
         </div>
       </div>
-
-      <nav className="flex flex-row gap-3">
-        <p>Total 85 Items</p>
-        <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
-          <li>
-            <a
-              href="#"
-              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              <span className="sr-only">Previous</span>
-              <svg
-                className="h-2 w-2 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              1
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              2
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="z-10 flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              3
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              4
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              5
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex h-6 items-center justify-center rounded-md bg-[#EE1192] px-2 text-white"
-            >
-              <span className="sr-only">Next</span>
-              <svg
-                className="h-2 w-2 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-            </a>
-          </li>
-        </ul>
-        <p className="rounded-md border px-3.5 text-center">
-          <span className="text-gray-500">20</span> / page
-        </p>
-      </nav>
+      <Pagination meta={meta} />
+      {showConfirmationModal && (
+        <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
+          <ConfirmationModal
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            onClose={handleCancelDelete}
+          />
+        </div>
+      )}
     </div>
   );
 }

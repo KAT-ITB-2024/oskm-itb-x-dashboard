@@ -437,20 +437,20 @@ export const assignmentRouter = createTRPCRouter({
         startTime: z.date(),
         deadline: z.date(),
         description: z.string(),
-        downloadUrl:z.string(),
+        downloadUrl: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-
-        const { filename,
+        const {
+          filename,
           title,
           assignmentType,
           point,
           startTime,
           deadline,
           description,
-          downloadUrl
+          downloadUrl,
         } = input;
 
         await ctx.db.insert(assignments).values({
