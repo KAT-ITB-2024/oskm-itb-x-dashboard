@@ -21,7 +21,6 @@ import Pagination from "./paginationTable";
 import SearchBar from "./searchBarTable";
 import { FiEdit, FiCheck } from "react-icons/fi";
 import { FiArrowLeft } from "react-icons/fi";
-import { api } from "~/trpc/react";
 
 // Data peserta interface
 interface Participant {
@@ -34,28 +33,28 @@ interface Participant {
 }
 
 // Map data dari query ke tipe Participant
-const mapToParticipant = (
-  data: {
-    nim: string | null;
-    nama: string | null;
-    status: "Hadir" | "Izin/Sakit" | "Alpha";
-    updatedAt: Date;
-  }[],
-): Participant[] => {
-  return data.map((item, index) => ({
-    id: index + 1, // Misalnya ID di-generate dari index
-    nim: item.nim ?? "",
-    name: item.nama ?? "",
-    time: item.updatedAt.toISOString(), // Sesuaikan jika format waktu berbeda
-    status:
-      item.status === "Izin/Sakit"
-        ? "Izin/Sakit"
-        : item.status === "Alpha"
-          ? "Telat"
-          : "Hadir",
-    remarks: "", // Tambahkan jika ada data keterangan
-  }));
-};
+// const mapToParticipant = (
+//   data: {
+//     nim: string | null;
+//     nama: string | null;
+//     status: "Hadir" | "Izin/Sakit" | "Alpha";
+//     updatedAt: Date;
+//   }[],
+// ): Participant[] => {
+//   return data.map((item, index) => ({
+//     id: index + 1, // Misalnya ID di-generate dari index
+//     nim: item.nim ?? "",
+//     name: item.nama ?? "",
+//     time: item.updatedAt.toISOString(), // Sesuaikan jika format waktu berbeda
+//     status:
+//       item.status === "Izin/Sakit"
+//         ? "Izin/Sakit"
+//         : item.status === "Alpha"
+//           ? "Telat"
+//           : "Hadir",
+//     remarks: "", // Tambahkan jika ada data keterangan
+//   }));
+// };
 
 const itemsPerPage = 10;
 
