@@ -65,7 +65,9 @@ export default function MametEditAssignment({
     assignment.waktuSelesai.toTimeString().slice(0, 5),
   );
 
-  const [existFile, setExistFile] = React.useState<string | null>(assignment.filename);
+  const [existFile, setExistFile] = React.useState<string | null>(
+    assignment.filename,
+  );
 
   const setTime = (date: Date, time: string) => {
     const newDate = new Date(date);
@@ -98,8 +100,7 @@ export default function MametEditAssignment({
     presignedUrl?: string | undefined,
   ) => {
     try {
-      const newFilename = filename ?? "existFile;"
-      const downloadUrl = presignedUrl ?? "";
+      const newFilename = filename ?? "existFile;";
       await editAssignmentMutation.mutateAsync({
         id: assignment.assignmentId,
         filename: newFilename ?? existFile,
@@ -272,15 +273,14 @@ export default function MametEditAssignment({
               <p className="text-nowrap text-[10px] font-light">
                 {file?.size
                   ? parseFloat(file.size.toPrecision(3)) / 1000000 + " MB"
-                  : ""
-                }
+                  : ""}
               </p>
             </div>
             <IoMdClose
               className="cursor-pointer text-lg"
               onClick={() => {
-                setFile(null)
-                setExistFile(null)
+                setFile(null);
+                setExistFile(null);
               }}
             />
           </div>
