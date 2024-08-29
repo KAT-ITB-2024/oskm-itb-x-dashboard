@@ -125,7 +125,7 @@ export const presenceRouter = createTRPCRouter({
           group: profiles.group,
           presence: eventPresences.presenceType,
           day: events.day,
-          openingOrClosing: eventPresences.presenceEvent,
+          openingOrClosing: eventPresences.presenceEvent, 
         })
         .from(events)
         .innerJoin(eventPresences, eq(events.id, eventPresences.eventId))
@@ -423,7 +423,7 @@ export const presenceRouter = createTRPCRouter({
           ok: true,
           message: "Success get presence",
           data: {
-            filename: `presence_${eventId}_${openingOrClosing}.csv`,
+            filename: `presence_${eventId}_${openingOrClosing}_.csv`,
             mimeType: "text/csv",
             content: csvContent,
           },
