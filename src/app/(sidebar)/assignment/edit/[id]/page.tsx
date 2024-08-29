@@ -11,15 +11,12 @@ import { AssignmentType } from "@katitb2024/database";
 
 interface Assignment {
   data: {
-    assignmentId: string;
-    judulTugas: string; 
-    deskripsi: string; 
-    waktuMulai: Date; 
-    waktuSelesai: Date; 
+    judulTugas: string;
+    deskripsi: string;
+    waktuMulai: Date;
+    waktuSelesai: Date;
     assignmentType: AssignmentType;
     point: number;
-    downloadUrl: string;
-    filename: string;
   };
 }
 

@@ -13,15 +13,15 @@ import { FolderEnum } from "~/server/bucket";
 
 interface MametEditAssignmentProps {
   assignment: {
-    assignmentId: string;
-    judulTugas: string; 
-    deskripsi: string; 
-    waktuMulai: Date; 
-    waktuSelesai: Date; 
+    // assignmentId: string;
+    judulTugas: string;
+    deskripsi: string;
+    waktuMulai: Date;
+    waktuSelesai: Date;
     assignmentType: AssignmentType;
     point: number;
-    downloadUrl: string;
-    filename: string;
+    // downloadUrl: string;
+    // filename: string;
   };
 }
 
@@ -56,7 +56,9 @@ export default function MametEditAssignment({
     assignment.waktuSelesai.toTimeString().slice(0, 5),
   );
 
-  const [existFile, setExistFile] = React.useState<string | null>(assignment.filename);
+  const [existFile, setExistFile] = React.useState<string | null>(
+    // assignment.filename,
+  );
 
   const setTime = (date: Date, time: string) => {
     const newDate = new Date(date);
@@ -73,15 +75,15 @@ export default function MametEditAssignment({
 
   const updateAssignment = async (file?: string) => {
     try {
-      await editAssignmentMutation.mutateAsync({
-        assignmentId: assignment.assignmentId,
-        file,
-        title: judul,
-        description: deskripsi,
-        startTime: setTime(waktuMulai, jamMulai),
-        deadline: setTime(waktuSelesai, jamSelesai),
-        point,
-      });
+      // await editAssignmentMutation.mutateAsync({
+      //   assignmentId: assignment.assignmentId,
+      //   file,
+      //   title: judul,
+      //   description: deskripsi,
+      //   startTime: setTime(waktuMulai, jamMulai),
+      //   deadline: setTime(waktuSelesai, jamSelesai),
+      //   point,
+      // });
       router.push("/assignment");
     } catch (err) {
       alert("Error updating assignment. Please try again.");
@@ -229,7 +231,7 @@ export default function MametEditAssignment({
           </div>
           <div
             className={`my-3 flex w-1/3 items-center justify-between gap-2 rounded-sm border-2 border-[#0010A4] px-4 py-2 text-xs font-bold text-[#0010A4]  ${
-              file ?? existFile ? "block" : "hidden"
+              (file ?? existFile) ? "block" : "hidden"
             }`}
           >
             <input

@@ -46,14 +46,11 @@ export const assignmentRouter = createTRPCRouter({
 
         const [assignment] = await ctx.db
           .select({
-            assignmentId: assignments.id,
             judulTugas: assignments.title,
             waktuMulai: assignments.startTime,
             waktuSelesai: assignments.deadline,
             deskripsi: assignments.description,
             assignmentType: assignments.assignmentType,
-            filename: assignments.filename,
-            downloadUrl: assignments.downloadUrl,
             point: assignments.point,
           })
           .from(assignments)
@@ -492,44 +489,45 @@ export const assignmentRouter = createTRPCRouter({
   editAssignmentMamet: publicProcedure
     .input(
       z.object({
-        assignmentId: z.string(),
-        file: z.string().optional(),
-        title: z.string().optional(),
-        point: z.number().optional(),
-        startTime: z.date().optional(),
-        deadline: z.date().optional(),
-        description: z.string().optional(),
+        id: z.string(),
+        filename: z.string(),
+        title: z.string(),
+        point: z.number(),
+        startTime: z.date(),
+        deadline: z.date(),
+        description: z.string(),
+        downloadUrl: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { assignmentId, ...updateData } = input;
+        const {
+          id,
+          filename,
+          title,
+          point,
+          startTime,
+          deadline,
+          description,
+          downloadUrl,
+        } = input;
 
-        const [data] = await ctx.db
-          .select()
-          .from(assignments)
-          .where(eq(assignments.id, assignmentId));
-
-        if (!data) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "There is no assignment with such id",
-          });
-        }
-
-        // manually update each
-        data.deadline = updateData.deadline ?? data.deadline;
-        data.description = updateData.description ?? data.description;
-        data.downloadUrl = updateData.file ?? data.downloadUrl;
-        data.point = updateData.point ?? data.point;
-        data.startTime = updateData.startTime ?? data.startTime;
-        data.title = updateData.title ?? data.title;
-        data.updatedAt = new Date();
+        const data = {
+          id,
+          filename,
+          title,
+          point,
+          startTime,
+          deadline,
+          description,
+          downloadUrl,
+          updatedAt: new Date(),
+        };
 
         await ctx.db
           .update(assignments)
           .set(data)
-          .where(eq(assignments.id, assignmentId));
+          .where(eq(assignments.id, id));
 
         return {
           success: true,
