@@ -8,14 +8,6 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 
 import Search from "./Search";

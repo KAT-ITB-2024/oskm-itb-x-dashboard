@@ -91,10 +91,10 @@ export default function MametListAssignment({
   };
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 overflow-y-auto">
-      <div className="flex w-full flex-col items-center justify-center gap-4">
+    <div className="flex w-full flex-col items-center justify-center gap-4 ">
+      <div className="flex w-full flex-col items-center justify-center ">
         <Search placeholder="Cari Tugas..." />
-        <div className="mt-1 h-56 w-full overflow-y-auto">
+        <div className="mt-3 w-full">
           <Table className="border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
             <TableHeader className="h-[56px]">
               <TableRow>

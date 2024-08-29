@@ -51,18 +51,16 @@ export default async function Page({
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-4">
-        <DashboardHeader title="Assignment List" />
-        {session?.user.role === "Mamet" ? (
-          <div>
-            <MametNavigationAssignment title="Assignment List" />
-            <MametListAssignment assignments={assignments} meta={meta} />
-          </div>
-        ) : (
-          <MentorListAssignment assignments={assignments} meta={meta} />
-        )}
-      </div>
+    <div className="flex flex-col gap-3">
+      <DashboardHeader title="Assignment List" />
+      {session?.user.role === "Mamet" ? (
+        <div className="flex flex-col gap-3">
+          <MametNavigationAssignment title="Assignment List" />
+          <MametListAssignment assignments={assignments} meta={meta} />
+        </div>
+      ) : (
+        <MentorListAssignment assignments={assignments} meta={meta} />
+      )}
     </div>
   );
 }
