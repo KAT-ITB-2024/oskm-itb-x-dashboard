@@ -16,7 +16,7 @@ import {
   publicProcedure,
   //   mametProcedure,
   //   mentorProcedure,
-  //   mametMentorProcedure,
+  //   mentorMametProcedure,
 } from "~/server/api/trpc";
 
 export const utilityRouter = createTRPCRouter({

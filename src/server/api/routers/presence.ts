@@ -17,7 +17,7 @@ import {
   publicProcedure,
   //   mametProcedure,
   //   mentorProcedure,
-  //   mametMentorProcedure,
+  //   mentorMametProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
