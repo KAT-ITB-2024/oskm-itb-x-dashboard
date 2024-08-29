@@ -9,7 +9,6 @@ import {
   groups,
   profiles,
   users,
-  Assignment,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -22,7 +21,6 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
-import { title } from "process";
 
 type MenteeAssignment = {
   nama: string;
@@ -46,12 +44,15 @@ export const assignmentRouter = createTRPCRouter({
 
         const [assignment] = await ctx.db
           .select({
+            assignmentId: assignments.id,
             judulTugas: assignments.title,
             waktuMulai: assignments.startTime,
             waktuSelesai: assignments.deadline,
             deskripsi: assignments.description,
             assignmentType: assignments.assignmentType,
             point: assignments.point,
+            filename: assignments.filename,
+            downloadUrl: assignments.downloadUrl,
           })
           .from(assignments)
           .where(eq(assignments.id, assignmentId));
