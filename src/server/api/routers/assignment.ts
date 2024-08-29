@@ -3,7 +3,6 @@
 import {
   assignments,
   notifications,
-  type AssignmentType,
   assignmentTypeEnum,
   assignmentSubmissions,
   groups,
@@ -16,7 +15,6 @@ import { eq, and, inArray, asc, or, ilike, count, desc } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
-  publicProcedure,
   mametProcedure,
   mentorProcedure,
   mentorMametProcedure,
@@ -281,7 +279,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getAllMainAssignment: publicProcedure
+  getAllMainAssignment: mentorMametProcedure
     .input(
       z.object({
         searchString: z.string().optional().default(""),
@@ -350,7 +348,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getMainQuestAssignmentCsv: publicProcedure
+  getMainQuestAssignmentCsv: mentorMametProcedure
     .input(
       z.object({
         assignmentId: z.string(),
@@ -423,7 +421,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  uploadNewAssignmentMamet: publicProcedure
+  uploadNewAssignmentMamet: mametProcedure
     .input(
       z.object({
         filename: z.string(),
@@ -482,7 +480,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  editAssignmentMamet: publicProcedure
+  editAssignmentMamet: mametProcedure
     .input(
       z.object({
         id: z.string(),
@@ -538,7 +536,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  deleteAssignmentMamet: publicProcedure
+  deleteAssignmentMamet: mametProcedure
     .input(
       z.object({
         assignmentId: z.string(),
