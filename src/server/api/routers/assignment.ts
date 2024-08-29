@@ -8,6 +8,7 @@ import {
   groups,
   profiles,
   users,
+  type AssignmentType,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -315,6 +316,8 @@ export const assignmentRouter = createTRPCRouter({
               ? asc(assignments.startTime)
               : desc(assignments.startTime),
           );
+
+        const compare: AssignmentType = "Main";
 
         const countRows = (
           await ctx.db
