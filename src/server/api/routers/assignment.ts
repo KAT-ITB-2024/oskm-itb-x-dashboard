@@ -3,12 +3,12 @@
 import {
   assignments,
   notifications,
-  type AssignmentType,
   assignmentTypeEnum,
   assignmentSubmissions,
   groups,
   profiles,
   users,
+  type AssignmentType,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -16,7 +16,6 @@ import { eq, and, inArray, asc, or, ilike, count, desc } from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
-  publicProcedure,
   mametProcedure,
   mentorProcedure,
   mentorMametProcedure,
@@ -131,10 +130,15 @@ export const assignmentRouter = createTRPCRouter({
         )[0] ?? { count: 0 };
 
         if (allMentee.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "THERE IS NO MENTEE",
-          });
+          return {
+            data: [],
+            meta: {
+              totalCount: countRows.count,
+              page,
+              pageSize,
+              totalPages: Math.ceil(countRows.count / pageSize),
+            },
+          };
         }
 
         const menteeNims = allMentee.map((mentee) => mentee.nim);
@@ -276,7 +280,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getAllMainAssignmentMentor: publicProcedure
+  getAllMainAssignment: mentorMametProcedure
     .input(
       z.object({
         searchString: z.string().optional().default(""),
@@ -289,7 +293,6 @@ export const assignmentRouter = createTRPCRouter({
       try {
         const { searchString, sortOrder, page, pageSize } = input;
 
-        const compare: AssignmentType = "Main";
         const offset = (page - 1) * pageSize;
         const res = await ctx.db
           .select({
@@ -301,12 +304,9 @@ export const assignmentRouter = createTRPCRouter({
           })
           .from(assignments)
           .where(
-            and(
-              eq(assignments.assignmentType, compare),
-              or(
-                ilike(assignments.title, `%${searchString}%`),
-                ilike(assignments.description, `%${searchString}%`),
-              ),
+            or(
+              ilike(assignments.title, `%${searchString}%`),
+              ilike(assignments.description, `%${searchString}%`),
             ),
           )
           .limit(pageSize)
@@ -316,13 +316,6 @@ export const assignmentRouter = createTRPCRouter({
               ? asc(assignments.startTime)
               : desc(assignments.startTime),
           );
-
-        if (res.length == 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "THERE IS NO SUCH ASSIGNMENT",
-          });
-        }
 
         const countRows = (
           await ctx.db
@@ -355,7 +348,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getMainQuestAssignmentCsv: publicProcedure
+  getMainQuestAssignmentCsv: mentorMametProcedure
     .input(
       z.object({
         assignmentId: z.string(),
@@ -428,7 +421,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  uploadNewAssignmentMamet: publicProcedure
+  uploadNewAssignmentMamet: mametProcedure
     .input(
       z.object({
         filename: z.string(),
@@ -487,7 +480,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  editAssignmentMamet: publicProcedure
+  editAssignmentMamet: mametProcedure
     .input(
       z.object({
         id: z.string(),
@@ -543,7 +536,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  deleteAssignmentMamet: publicProcedure
+  deleteAssignmentMamet: mametProcedure
     .input(
       z.object({
         assignmentId: z.string(),

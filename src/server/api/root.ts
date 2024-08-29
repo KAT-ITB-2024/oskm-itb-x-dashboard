@@ -4,6 +4,7 @@ import { assignmentRouter } from "./routers/assignment";
 import { presenceRouter } from "./routers/presence";
 import { userRouter } from "./routers/user";
 import { storageRouter } from "./routers/storage";
+import { eventRouter } from "./routers/event";
 
 /**
  * This is the primary router for your server.
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   assignment: assignmentRouter,
   storage: storageRouter,
+  event: eventRouter,
   presence: presenceRouter,
   utility: utilityRouter,
 });

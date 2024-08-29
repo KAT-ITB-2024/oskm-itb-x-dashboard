@@ -36,6 +36,7 @@
     "@types/date-fns": "^2.6.0",
     "@types/uuid": "^10.0.0",
     "@types/file-saver": "^2.0.7",
+    "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

@@ -31,13 +31,14 @@ export default async function Page({
   let meta = {
     page: currentPage,
     totalPages: 1,
-    pageSize: 10,
+    pageSize: 5,
     totalCount: 0,
   };
 
   try {
-    const response = await api.assignment.getAllMainAssignmentMentor({
+    const response = await api.assignment.getAllMainAssignment({
       page: currentPage,
+      pageSize: 5,
       searchString: query,
       sortOrder: "asc",
     });
@@ -51,15 +52,16 @@ export default async function Page({
   }
 
   return (
-    <div>
-      {session?.user.role === "Mamet" ?
-        <div className="flex flex-col gap-4">
-          <DashboardHeader title="Assignment List" />
+    <div className="flex flex-col gap-3">
+      <DashboardHeader title="Assignment List" />
+      {session?.user.role === "Mamet" ? (
+        <div className="flex flex-col gap-3">
           <MametNavigationAssignment title="Assignment List" />
           <MametListAssignment assignments={assignments} meta={meta} />
-        </div> :
-        <MentorListAssignment />
-      }
+        </div>
+      ) : (
+        <MentorListAssignment assignments={assignments} meta={meta} />
+      )}
     </div>
   );
 }

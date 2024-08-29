@@ -41,12 +41,10 @@ const days = [
 
 interface SearchAndFilterBarProps {
   onSelectDay: (day: string | null) => void;
-  onAddEvent: () => void;
   onDownload: () => void;
 }
 export default function MametNavigation({
   onSelectDay,
-  onAddEvent,
   onDownload,
 }: SearchAndFilterBarProps) {
   const [open, setOpen] = useState(false);
@@ -124,24 +122,6 @@ export default function MametNavigation({
           </Command>
         </PopoverContent>
       </Popover>
-
-      {/* Recap Button */}
-      <Button
-        className="h-[46px] w-[180px] rounded-md bg-[#0010A4] text-white "
-        onClick={onDownload}
-      >
-        <MdDownload className="w-[20px] text-[#3678FF]" color="white" />
-        Recap
-      </Button>
-
-      {/* Add Event Button */}
-      <Button
-        className="h-[46px] w-[180px] rounded-md bg-[#EE1192] text-white"
-        onClick={onAddEvent}
-      >
-        <MdAdd className="w-[20px] text-[#3678FF]" color="white" />
-        Event
-      </Button>
     </div>
   );
 }

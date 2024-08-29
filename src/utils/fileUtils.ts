@@ -1,3 +1,5 @@
+import axios, { type AxiosProgressEvent } from "axios";
+
 export const getContentType = (fileName: string): string => {
   const extension = fileName.split(".").pop()?.toLowerCase();
   switch (extension) {
@@ -13,4 +15,18 @@ export const getContentType = (fileName: string): string => {
     default:
       return "application/octet-stream";
   }
+};
+
+export const downloadFile = async (
+  url: string,
+  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void,
+) => {
+  const axiosInstance = axios.create();
+
+  const response = await axiosInstance.get<Blob>(url, {
+    responseType: "blob",
+    onDownloadProgress,
+  });
+
+  return response.data;
 };

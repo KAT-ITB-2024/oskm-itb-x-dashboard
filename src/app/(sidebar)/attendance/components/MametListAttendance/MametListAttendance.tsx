@@ -85,6 +85,10 @@ export default function MametListAttendance() {
     return router.push("/attendance/tambah");
   };
 
+  const handleDownload = () => {
+    // Your CSV download logic
+  };
+
   const handleDeleteClick = (event: Event) => {
     setEventToDelete(event);
     setShowConfirmDelete(true);
@@ -207,6 +211,7 @@ export default function MametListAttendance() {
               <Link href={`/attendance/edit/opening-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
+              <Link href="#" onClick={handleDownload}>
               <Button
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
@@ -249,6 +254,7 @@ export default function MametListAttendance() {
               <Link href={`/attendance/edit/closing-${event.eventId}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
+              <Link href="#" onClick={handleDownload}>
               <Button
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
@@ -275,6 +281,7 @@ export default function MametListAttendance() {
       <div className="py-3"></div>
       <MametNavigation
         onSelectDay={handleDayChange}
+        onDownload={handleDownload}
         onAddEvent={handleAddEvent}
         onDownload ={handleDownloadRecap}
       />
@@ -301,6 +308,40 @@ export default function MametListAttendance() {
             </TableHead>
           </TableRow>
         </TableHeader>
+        <TableBody>
+          {/* A Row Layout Example */}
+          <TableRow
+            key={`closing-${0}`}
+            className="border-b border-gray-200 bg-white"
+          >
+            <TableCell className="border-l border-r border-gray-200">
+              {0}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">
+              {"Contoh Layout"}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">
+              {"HH:MM:YY"}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">
+              {"23:59:59"}
+            </TableCell>
+            <TableCell className="border-r border-gray-200">
+              {"23:59:59"}
+            </TableCell>
+            <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
+              <Link href={`/attendance/edit/closing-${0}`}>
+                <RiPencilFill className="text-[#0010A4]" />
+              </Link>
+              <Link href="#" onClick={handleDownload}>
+                <MdDownload className="text-[#3678FF]" />
+              </Link>
+            </TableCell>
+          </TableRow>
+
+          {/* Rows from render table function Examples */}
+          {renderTableRows()}
+        </TableBody>
         <TableBody>{renderTableRows()}</TableBody>
       </Table>
       <MametPagination
