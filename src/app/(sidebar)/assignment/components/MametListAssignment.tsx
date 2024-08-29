@@ -4,6 +4,7 @@ import Link from "next/link";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { saveAs } from "file-saver";
+import { downloadFile } from "~/utils/fileUtils";
 
 import {
   Table,
@@ -20,6 +21,7 @@ import { MdDownload } from "react-icons/md";
 import Search from "./Search";
 import Pagination from "./Pagination";
 import ConfirmationModal from "./ConfirmationModal";
+import { dateWIB } from "~/utils/timeUtils";
 
 interface MametAssignmentListProps {
   assignments: {
@@ -45,8 +47,11 @@ export default function MametListAssignment({
     api.assignment.deleteAssignmentMamet.useMutation();
   const router = useRouter();
 
-  const handleDownload = (downloadUrl: string, judulTugas: string) => {
-    if (downloadUrl) saveAs(downloadUrl, "Tugas_" + judulTugas + ".pdf");
+  const handleDownload = async (downloadUrl: string, judulTugas: string) => {
+    if (downloadUrl) {
+      const fileBlob = await downloadFile(downloadUrl);
+      saveAs(fileBlob, judulTugas);
+    }
   };
 
   const deleteAssignment = async (assignmentId: string) => {
@@ -86,10 +91,10 @@ export default function MametListAssignment({
   };
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 overflow-y-auto">
-      <div className="flex w-full flex-col items-center justify-center gap-4">
+    <div className="flex w-full flex-col items-center justify-center gap-4 ">
+      <div className="flex w-full flex-col items-center justify-center ">
         <Search placeholder="Cari Tugas..." />
-        <div className="mt-1 h-56 w-full overflow-y-auto">
+        <div className="mt-3 w-full">
           <Table className="border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
             <TableHeader className="h-[56px]">
               <TableRow>
@@ -135,28 +140,10 @@ export default function MametListAssignment({
                     {item.judulTugas}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    <p>
-                      {Intl.DateTimeFormat("en-US", {
-                        timeZone: "Asia/Jakarta",
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(item.waktuMulai) + " WIB"}
-                    </p>
+                    {dateWIB(item.waktuMulai)}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    <p>
-                      {Intl.DateTimeFormat("en-US", {
-                        timeZone: "Asia/Jakarta",
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(item.waktuSelesai) + " WIB"}
-                    </p>
+                    {dateWIB(item.waktuSelesai)}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
                     <div className="flex items-center justify-center gap-2 text-2xl">
