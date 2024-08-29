@@ -11,17 +11,11 @@ import { TRPCError } from "@trpc/server";
 import { count, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  publicProcedure,
-  //   mametProcedure,
-  //   mentorProcedure,
-  //   mametMentorProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, itbxProcedure } from "~/server/api/trpc";
 
 export const utilityRouter = createTRPCRouter({
   // GET All Merchandise + limit, offset, search query
-  getAllMerchandise: publicProcedure
+  getAllMerchandise: itbxProcedure
     .input(
       z.object({
         limit: z.number().optional(),
@@ -76,7 +70,7 @@ export const utilityRouter = createTRPCRouter({
     }),
 
   // PUT Edit Quantity Merchandise
-  updateQuantity: publicProcedure
+  updateQuantity: itbxProcedure
     .input(
       z.object({
         id: z.string(),
@@ -115,7 +109,7 @@ export const utilityRouter = createTRPCRouter({
     }),
 
   // GET All Exchange Merchandise + limit, offset, search query
-  getMerchandiseExchange: publicProcedure
+  getMerchandiseExchange: itbxProcedure
     .input(
       z.object({
         limit: z.number().optional(),
@@ -171,7 +165,7 @@ export const utilityRouter = createTRPCRouter({
     }),
 
   // Get Details Exchange Merchandise
-  getDetailsExchange: publicProcedure
+  getDetailsExchange: itbxProcedure
     .input(
       z.object({
         id: z.string(),
@@ -223,7 +217,7 @@ export const utilityRouter = createTRPCRouter({
     }),
 
   // PUT Change Exchange Status
-  editExchangeStatus: publicProcedure
+  editExchangeStatus: itbxProcedure
     .input(
       z.object({
         id: z.string(),

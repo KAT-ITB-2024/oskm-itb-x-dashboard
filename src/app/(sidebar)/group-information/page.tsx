@@ -1,11 +1,14 @@
-import DashboardHeader from "~/app/components/DashboardHeader";
+import { getServerAuthSession } from "~/server/auth";
+import MentorPage from "./components/MentorPage";
+import MametPage from "./components/MametPage";
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerAuthSession();
+
   return (
     <div>
-      <DashboardHeader title="Group Information" />
-
-      <p>Page</p>
+      {session?.user.role === "Mentor" && <MentorPage />}
+      {session?.user.role === "Mamet" && <MametPage />}
     </div>
   );
 }

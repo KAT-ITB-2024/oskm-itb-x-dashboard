@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
+import { roleEnum, type UserRole } from "@katitb2024/database";
 
 /**
  * 1. CONTEXT
@@ -87,16 +88,12 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-/**
- * Protected (authenticated) procedure
+/** Reusable middleware that enforces users are logged in before running the procedure.
  *
- * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
- * the session is valid and guarantees `ctx.session.user` is not null.
- *
- * @see https://trpc.io/docs/procedures
+ * @see https://trpc.io/docs/middleware
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx?.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -106,3 +103,117 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+/** Reusable middleware that enforces users have Mentor role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isMentor = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  const userRole: UserRole = ctx.session.user.role;
+
+  if (userRole !== roleEnum.enumValues[1]) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+
+/** Reusable middleware that enforces users have Mamet role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isMamet = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  const userRole: UserRole = ctx.session.user.role;
+
+  if (userRole !== roleEnum.enumValues[2]) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+
+/** Reusable middleware that enforces users have Mentor or Mamet role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isMentorOrMamet = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  const userRole: UserRole = ctx.session.user.role;
+
+  // roleEnum.enumValues[1] is Mentor, roleEnum.enumValues[2] is Mamet
+  if (
+    userRole !== roleEnum.enumValues[1] &&
+    userRole !== roleEnum.enumValues[2]
+  ) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+
+/** Reusable middleware that enforces users have ITBX role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isITBX = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  const userRole: UserRole = ctx.session.user.role;
+
+  if (userRole !== roleEnum.enumValues[3]) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
+ * the session is valid and guarantees `ctx.session.user` is not null.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+/**
+ * Protected (mentor) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to mentor role users, use this. It verifies
+ * the session is valid dan guarantees that the role is admin.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const mentorProcedure = t.procedure.use(isMentor);
+
+/**
+ * Protected (mamet) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to mamet role users, use this. It verifies
+ * the session is valid dan guarantees that the role is admin.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const mametProcedure = t.procedure.use(isMamet);
+
+/**
+ * Protected (mentor and mamet) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to peserta and mamet role users, use this. It verifies
+ * the session is valid dan guarantees that the role is admin.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const mentorMametProcedure = t.procedure.use(isMentorOrMamet);
+
+/**
+ * Protected (ITBX) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to ITB-X role users, use this. It verifies
+ * the session is valid dan guarantees that the role is admin.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const itbxProcedure = t.procedure.use(isITBX);

@@ -17,9 +17,9 @@ import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
   publicProcedure,
-  //   mametProcedure,
-  //   mentorProcedure,
-  // mametMentorProcedure,
+  mametProcedure,
+  mentorProcedure,
+  mentorMametProcedure,
 } from "~/server/api/trpc";
 
 type MenteeAssignment = {
@@ -32,7 +32,7 @@ type MenteeAssignment = {
 };
 
 export const assignmentRouter = createTRPCRouter({
-  getAssignmentDetail: publicProcedure
+  getAssignmentDetail: mentorMametProcedure
     .input(
       z.object({
         assignmentId: z.string(),
@@ -44,12 +44,15 @@ export const assignmentRouter = createTRPCRouter({
 
         const [assignment] = await ctx.db
           .select({
+            assignmentId: assignments.id,
             judulTugas: assignments.title,
             waktuMulai: assignments.startTime,
             waktuSelesai: assignments.deadline,
             deskripsi: assignments.description,
             assignmentType: assignments.assignmentType,
             point: assignments.point,
+            filename: assignments.filename,
+            downloadUrl: assignments.downloadUrl,
           })
           .from(assignments)
           .where(eq(assignments.id, assignmentId));
@@ -73,7 +76,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getMenteeAssignmentSubmission: publicProcedure
+  getMenteeAssignmentSubmission: mentorProcedure
     .input(
       z.object({
         assignmentId: z.string(),
@@ -203,7 +206,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  editMenteeAssignmentPoint: publicProcedure
+  editMenteeAssignmentPoint: mentorProcedure
     .input(
       z.object({
         assignmentId: z.string(),
