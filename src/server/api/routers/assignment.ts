@@ -276,7 +276,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getAllMainAssignmentMentor: publicProcedure
+  getAllMainAssignment: publicProcedure
     .input(
       z.object({
         searchString: z.string().optional().default(""),
@@ -289,7 +289,6 @@ export const assignmentRouter = createTRPCRouter({
       try {
         const { searchString, sortOrder, page, pageSize } = input;
 
-        const compare: AssignmentType = "Main";
         const offset = (page - 1) * pageSize;
         const res = await ctx.db
           .select({
@@ -301,12 +300,9 @@ export const assignmentRouter = createTRPCRouter({
           })
           .from(assignments)
           .where(
-            and(
-              eq(assignments.assignmentType, compare),
-              or(
-                ilike(assignments.title, `%${searchString}%`),
-                ilike(assignments.description, `%${searchString}%`),
-              ),
+            or(
+              ilike(assignments.title, `%${searchString}%`),
+              ilike(assignments.description, `%${searchString}%`),
             ),
           )
           .limit(pageSize)
