@@ -9,7 +9,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-4">
-      <DashboardHeader title="Attendance List" />
+      <DashboardHeader title="Events List" />
 
       {session?.user.role === "Mamet" && <MametListAttendance />}
 

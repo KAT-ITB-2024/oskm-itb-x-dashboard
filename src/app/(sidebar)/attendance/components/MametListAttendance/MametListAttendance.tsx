@@ -69,11 +69,6 @@ export default function MametListAttendance() {
     // Your CSV download logic
   };
 
-  const handleDeleteClick = (event: Event) => {
-    setEventToDelete(event);
-    setShowConfirmDelete(true);
-  };
-
   const handleConfirmDelete = () => {
     if (eventToDelete) {
       setEvents(events.filter((e) => e.id !== eventToDelete.id));
@@ -124,12 +119,6 @@ export default function MametListAttendance() {
               <Link href={`/attendance/edit/opening-${event.id}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button
-                className="bg-transparent text-2xl"
-                onClick={() => handleDeleteClick(event)}
-              >
-                <MdDelete className="text-[#DC2522]" />
-              </Button>
               <Link href="#" onClick={handleDownload}>
                 <MdDownload className="text-[#3678FF]" />
               </Link>
@@ -162,12 +151,6 @@ export default function MametListAttendance() {
               <Link href={`/attendance/edit/closing-${event.id}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button
-                className="bg-transparent text-2xl"
-                onClick={() => handleDeleteClick(event)}
-              >
-                <MdDelete className="text-[#DC2522]" />
-              </Button>
               <Link href="#" onClick={handleDownload}>
                 <MdDownload className="text-[#3678FF]" />
               </Link>
@@ -185,7 +168,6 @@ export default function MametListAttendance() {
       <div className="py-3"></div>
       <MametNavigation
         onSelectDay={handleDayChange}
-        onAddEvent={handleAddEvent}
         onDownload={handleDownload}
       />
       <Table className="border-spacing-0 rounded-lg text-center">
@@ -236,9 +218,6 @@ export default function MametListAttendance() {
               <Link href={`/attendance/edit/closing-${0}`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Button className="bg-transparent text-2xl">
-                <MdDelete className="text-[#DC2522]" />
-              </Button>
               <Link href="#" onClick={handleDownload}>
                 <MdDownload className="text-[#3678FF]" />
               </Link>
