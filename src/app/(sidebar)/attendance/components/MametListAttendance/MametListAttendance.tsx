@@ -52,18 +52,6 @@ type TCompletePresenceResponse = {
   data: TAttendance[];
 };
 
-type TPresenceOfAnEventCSVResponse = {
-  ok: boolean;
-  message: string;
-  data: {
-    filename: string;
-    mimeType: string;
-    content: string;
-  };
-};
-
-// interface MametListAttendanceProps {}
-
 interface DownloadParams {
   eventId: string;
   openingOrClosing: "Opening" | "Closing";
@@ -114,10 +102,6 @@ export default function MametListAttendance() {
     setEventToDelete(null);
   };
 
-  // Query untuk download per baris recap
-  // const { data: rowData, error: rowError } = api.presence.getPresenceOfAnEventCSV.useQuery(downloadParams, {
-  //   enabled: !!downloadParams,
-  // }) as { data: TPresenceOfAnEventCSVResponse | undefined; error: unknown };
 
 
   const { data: rowData, error: rowError } = api.presence.getPresenceOfAnEventCSV.useQuery(
