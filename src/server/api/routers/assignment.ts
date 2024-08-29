@@ -131,10 +131,15 @@ export const assignmentRouter = createTRPCRouter({
         )[0] ?? { count: 0 };
 
         if (allMentee.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "THERE IS NO MENTEE",
-          });
+          return {
+            data: [],
+            meta: {
+              totalCount: countRows.count,
+              page,
+              pageSize,
+              totalPages: Math.ceil(countRows.count / pageSize),
+            },
+          };
         }
 
         const menteeNims = allMentee.map((mentee) => mentee.nim);
@@ -317,19 +322,13 @@ export const assignmentRouter = createTRPCRouter({
               : desc(assignments.startTime),
           );
 
-        if (res.length == 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "THERE IS NO SUCH ASSIGNMENT",
-          });
-        }
-
         const countRows = (
           await ctx.db
             .select({
               count: count(),
             })
             .from(assignments)
+            .where(eq(assignments.assignmentType, compare))
         )[0] ?? { count: 0 };
 
         return {
