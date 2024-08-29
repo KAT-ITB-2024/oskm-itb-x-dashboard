@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 
@@ -7,7 +6,33 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import MametEditAssignment from "../../components/MametEditAssignment";
 
-export default function Page() {
+import { api } from "~/trpc/server";
+import type { AssignmentType } from "@katitb2024/database";
+
+interface Assignment {
+  data: {
+    assignmentId: string;
+    judulTugas: string;
+    deskripsi: string;
+    waktuMulai: Date;
+    waktuSelesai: Date;
+    assignmentType: AssignmentType;
+    point: number;
+    filename: string;
+    downloadUrl: string;
+  };
+}
+
+export default async function Page({
+  params,
+}: {
+  params: {
+    id: string;
+  };
+}) {
+  const assignment: Assignment = await api.assignment.getAssignmentDetail({
+    assignmentId: params.id,
+  });
   return (
     <>
       <DashboardHeader title="Edit Assignment" />
@@ -17,7 +42,7 @@ export default function Page() {
           Edit Tugas
         </h1>
       </Link>
-      <MametEditAssignment />
+      <MametEditAssignment assignment={assignment.data} />
     </>
   );
 }
