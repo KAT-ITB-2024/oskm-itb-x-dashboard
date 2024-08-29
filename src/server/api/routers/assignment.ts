@@ -317,7 +317,7 @@ export const assignmentRouter = createTRPCRouter({
               : desc(assignments.startTime),
           );
 
-        const compare: AssignmentType = "Main";
+        
 
         const countRows = (
           await ctx.db
@@ -325,7 +325,6 @@ export const assignmentRouter = createTRPCRouter({
               count: count(),
             })
             .from(assignments)
-            .where(eq(assignments.assignmentType, compare))
         )[0] ?? { count: 0 };
 
         return {

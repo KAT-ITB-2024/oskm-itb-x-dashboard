@@ -31,13 +31,14 @@ export default async function Page({
   let meta = {
     page: currentPage,
     totalPages: 1,
-    pageSize: 10,
+    pageSize: 5,
     totalCount: 0,
   };
 
   try {
     const response = await api.assignment.getAllMainAssignment({
       page: currentPage,
+      pageSize: 5,
       searchString: query,
       sortOrder: "asc",
     });
