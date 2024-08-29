@@ -44,12 +44,15 @@ export const assignmentRouter = createTRPCRouter({
 
         const [assignment] = await ctx.db
           .select({
+            assignmentId: assignments.id,
             judulTugas: assignments.title,
             waktuMulai: assignments.startTime,
             waktuSelesai: assignments.deadline,
             deskripsi: assignments.description,
             assignmentType: assignments.assignmentType,
             point: assignments.point,
+            filename: assignments.filename,
+            downloadUrl: assignments.downloadUrl,
           })
           .from(assignments)
           .where(eq(assignments.id, assignmentId));
