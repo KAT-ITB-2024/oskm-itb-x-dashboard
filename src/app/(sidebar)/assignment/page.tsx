@@ -2,9 +2,10 @@ import React from "react";
 import MametNavigationAssignment from "./components/MametNavigationAssignment";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import MametListAssignment from "./components/MametListAssignment";
-// import MentorListAssignment from "./components/MentorListAssignment";
+import MentorListAssignment from "./components/MentorListAssignment";
 
 import { api } from "~/trpc/server";
+import { getServerAuthSession } from "~/server/auth";
 
 interface Assignments {
   judulTugas: string;
@@ -22,6 +23,7 @@ export default async function Page({
     page?: string;
   };
 }) {
+  const session = await getServerAuthSession();
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page) || 1;
 
@@ -47,14 +49,17 @@ export default async function Page({
   } catch (error) {
     console.error("Failed to fetch assignments:", error);
   }
+
   return (
     <div>
-      <div className="flex flex-col gap-4">
-        <DashboardHeader title="Assignment List" />
-        <MametNavigationAssignment title="Assignment List" />
-        <MametListAssignment assignments={assignments} meta={meta} />
-      </div>
-      {/* <MentorListAssignment /> */}
+      {session?.user.role === "Mamet" ?
+        <div className="flex flex-col gap-4">
+          <DashboardHeader title="Assignment List" />
+          <MametNavigationAssignment title="Assignment List" />
+          <MametListAssignment assignments={assignments} meta={meta} />
+        </div> :
+        <MentorListAssignment />
+      }
     </div>
   );
 }
