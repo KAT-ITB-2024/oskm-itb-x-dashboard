@@ -23,6 +23,7 @@
     "@katitb2024/database": "git+https://github.com/KAT-ITB-2024/database-oskm.git#master",
     "@metamorph/trpc-panel": "^1.0.5",
     "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-select": "^2.1.1",

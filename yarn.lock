@@ -1135,7 +1135,7 @@
     "@paralleldrive/cuid2" "^2.2.2"
     bcrypt "^5.1.1"
     csv-parser "^3.0.0"
-    database-oskm "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-866e11497cc02bc34e637ad4bca991461a6c85b8/node_modules/@katitb2024/database"
+    database-oskm "file:../../Users/Ahmad Naufal Ramadan/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-866e11497cc02bc34e637ad4bca991461a6c85b8/node_modules/@katitb2024/database"
     drizzle-dbml-generator "^0.8.0"
     drizzle-orm "^0.31.2"
     postgres "^3.4.4"
@@ -1400,6 +1400,19 @@
     "@radix-ui/react-use-callback-ref" "1.1.0"
     "@radix-ui/react-use-escape-keydown" "1.1.0"
 
+"@radix-ui/react-dropdown-menu@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-dropdown-menu/-/react-dropdown-menu-2.1.1.tgz#3dc578488688250dbbe109d9ff2ca28a9bca27ec"
+  integrity sha512-y8E+x9fBq9qvteD2Zwa4397pUVhYsh9iq44b5RD5qu1GMJWBCBuVg1hMyItbc6+zH00TxGRqd9Iot4wzf3OoBQ==
+  dependencies:
+    "@radix-ui/primitive" "1.1.0"
+    "@radix-ui/react-compose-refs" "1.1.0"
+    "@radix-ui/react-context" "1.1.0"
+    "@radix-ui/react-id" "1.1.0"
+    "@radix-ui/react-menu" "2.1.1"
+    "@radix-ui/react-primitive" "2.0.0"
+    "@radix-ui/react-use-controllable-state" "1.1.0"
+
 "@radix-ui/react-focus-guards@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-focus-guards/-/react-focus-guards-1.0.1.tgz#1ea7e32092216b946397866199d892f71f7f98ad"
@@ -1452,6 +1465,30 @@
   integrity sha512-peLblDlFw/ngk3UWq0VnYaOLy6agTZZ+MUO/WhVfm14vJGML+xH4FAl2XQGLqdefjNb7ApRg6Yn7U42ZhmYXdw==
   dependencies:
     "@radix-ui/react-primitive" "2.0.0"
+
+"@radix-ui/react-menu@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-menu/-/react-menu-2.1.1.tgz#bd623ace0e1ae1ac78023a505fec0541d59fb346"
+  integrity sha512-oa3mXRRVjHi6DZu/ghuzdylyjaMXLymx83irM7hTxutQbD+7IhPKdMdRHD26Rm+kHRrWcrUkkRPv5pd47a2xFQ==
+  dependencies:
+    "@radix-ui/primitive" "1.1.0"
+    "@radix-ui/react-collection" "1.1.0"
+    "@radix-ui/react-compose-refs" "1.1.0"
+    "@radix-ui/react-context" "1.1.0"
+    "@radix-ui/react-direction" "1.1.0"
+    "@radix-ui/react-dismissable-layer" "1.1.0"
+    "@radix-ui/react-focus-guards" "1.1.0"
+    "@radix-ui/react-focus-scope" "1.1.0"
+    "@radix-ui/react-id" "1.1.0"
+    "@radix-ui/react-popper" "1.2.0"
+    "@radix-ui/react-portal" "1.1.1"
+    "@radix-ui/react-presence" "1.1.0"
+    "@radix-ui/react-primitive" "2.0.0"
+    "@radix-ui/react-roving-focus" "1.1.0"
+    "@radix-ui/react-slot" "1.1.0"
+    "@radix-ui/react-use-callback-ref" "1.1.0"
+    aria-hidden "^1.1.1"
+    react-remove-scroll "2.5.7"
 
 "@radix-ui/react-popover@^1.1.1":
   version "1.1.1"
@@ -1537,6 +1574,21 @@
   integrity sha512-ZSpFm0/uHa8zTvKBDjLFWLo8dkr4MBsiDLz0g3gMUwqgLHz9rTaRRGYDgvZPtBJgYCBKXkS9fzmoySgr8CO6Cw==
   dependencies:
     "@radix-ui/react-slot" "1.1.0"
+
+"@radix-ui/react-roving-focus@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-roving-focus/-/react-roving-focus-1.1.0.tgz#b30c59daf7e714c748805bfe11c76f96caaac35e"
+  integrity sha512-EA6AMGeq9AEeQDeSH0aZgG198qkfHSbvWTf1HvoDmOB5bBG/qTxjYMWUKMnYiV6J/iP/J8MEFSuB2zRU2n7ODA==
+  dependencies:
+    "@radix-ui/primitive" "1.1.0"
+    "@radix-ui/react-collection" "1.1.0"
+    "@radix-ui/react-compose-refs" "1.1.0"
+    "@radix-ui/react-context" "1.1.0"
+    "@radix-ui/react-direction" "1.1.0"
+    "@radix-ui/react-id" "1.1.0"
+    "@radix-ui/react-primitive" "2.0.0"
+    "@radix-ui/react-use-callback-ref" "1.1.0"
+    "@radix-ui/react-use-controllable-state" "1.1.0"
 
 "@radix-ui/react-select@^2.1.1":
   version "2.1.1"
@@ -3019,38 +3071,15 @@ data-view-byte-offset@^1.0.0:
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
 
-"database-oskm@file:":
-  version "0.1.0"
+"database-oskm@file:../../Users/Ahmad Naufal Ramadan/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-866e11497cc02bc34e637ad4bca991461a6c85b8/node_modules/@katitb2024/database":
+  version "1.0.0"
   dependencies:
-    "@auth/drizzle-adapter" "^1.1.0"
-    "@aws-sdk/client-s3" "^3.637.0"
-    "@aws-sdk/s3-request-presigner" "^3.637.0"
-    "@katitb2024/database" "git+https://github.com/KAT-ITB-2024/database-oskm.git#master"
-    "@metamorph/trpc-panel" "^1.0.5"
-    "@radix-ui/react-dialog" "^1.1.1"
-    "@radix-ui/react-label" "^2.1.0"
-    "@radix-ui/react-popover" "^1.1.1"
-    "@radix-ui/react-select" "^2.1.1"
-    "@radix-ui/react-slot" "^1.1.0"
-    "@t3-oss/env-nextjs" "^0.10.1"
-    "@tanstack/react-query" "^5.39.0"
-    "@trpc/client" next
-    "@trpc/react-query" next
-    "@trpc/server" next
-    "@types/file-saver" "^2.0.7"
+    "@paralleldrive/cuid2" "^2.2.2"
     bcrypt "^5.1.1"
-    class-variance-authority "^0.7.0"
-    clsx "^2.1.1"
-    cmdk "^1.0.0"
-    dotenv "^16.4.5"
+    csv-parser "^3.0.0"
+    database-oskm "file:../../Users/Ahmad Naufal Ramadan/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-866e11497cc02bc34e637ad4bca991461a6c85b8/node_modules/@katitb2024/database"
+    drizzle-dbml-generator "^0.8.0"
     drizzle-orm "^0.31.2"
-    file-saver "^2.0.5"
-    geist "^1.3.0"
-    googleapis "^140.0.1"
-    lucide-react "^0.424.0"
-    next "^14.2.1"
-    next-auth "^4.24.7"
-    nodemailer "^6.9.14"
     postgres "^3.4.4"
     react "^18.3.0"
     react-dom "^18.3.0"
@@ -3059,7 +3088,7 @@ data-view-byte-offset@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-database-oskm-0.1.0-8d300339-1296-4474-bc2c-b41cf42062c2-1724919763006/node_modules/database-oskm"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-database-oskm-0.1.0-94963f12-c377-4032-b889-4bd9096864b6-1724915512949/node_modules/database-oskm"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
@@ -5517,7 +5546,16 @@ streamsearch@^1.1.0:
   resolved "https://registry.yarnpkg.com/streamsearch/-/streamsearch-1.1.0.tgz#404dd1e2247ca94af554e841a8ef0eaa238da764"
   integrity sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==
 
-"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -5604,7 +5642,14 @@ string_decoder@^1.1.1:
   dependencies:
     safe-buffer "~5.2.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -5717,7 +5762,7 @@ supports-preserve-symlinks-flag@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-4c1d8ed7-3efb-4d52-899f-0bfbba7f40fe-1724919763021/node_modules/t3-template-app"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-04395fc9-4860-4250-a402-d97dbb5d754e-1724915512969/node_modules/t3-template-app"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
