@@ -2278,19 +2278,19 @@
     "@tanstack/query-core" "5.52.2"
 
 "@trpc/client@next":
-  version "11.0.0-rc.487"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-11.0.0-rc.487.tgz#e7c48ad0671777c98eca67e080224f1c504c1368"
-  integrity sha512-6M/DAqdABdYwkeRwKZZ5b2kApIL4QRTNKHljNWwvu62Bs/OPqXbdaGaIWVzMCU5TE798mWfPV8GKen3fNWWZHw==
+  version "11.0.0-rc.489"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-11.0.0-rc.489.tgz#2f0f446393e2fc2daa66a23996ec2e8ae905d8e5"
+  integrity sha512-qIhdk+SBZrbs2+e+FXSz0YwnZqvArKLn9t4JRBaXrzsZiWvMBZH8ryWxwJ65/FLbNouKebaHDi5xJadZoXPhyQ==
 
 "@trpc/react-query@next":
-  version "11.0.0-rc.487"
-  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-11.0.0-rc.487.tgz#14ffb171c3c64e400260d798cd6aecc024c9ca1e"
-  integrity sha512-pZmyC9vNMqBsOtEIqUE+qA9b0arYtHccMO9vWabhzEaN8mrQiCn7LUDvhE1p/AS3HBq0wff9h6hq5gNv8jcczg==
+  version "11.0.0-rc.489"
+  resolved "https://registry.yarnpkg.com/@trpc/react-query/-/react-query-11.0.0-rc.489.tgz#d95e81ecdc5ab5d95a81cc5cf951c02615d4333e"
+  integrity sha512-8h3oYqAagy1I+y/2RWBFg0B+HOmH4QlrBjRxuVnD79uyvfE5kGxWPUKI4vaU5bMASWwzLLp8TUdvU3+/3SeGTQ==
 
 "@trpc/server@next":
-  version "11.0.0-rc.487"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-11.0.0-rc.487.tgz#763fdc0caab7457a758c3127ff7d5f9efb99da2a"
-  integrity sha512-Hpoe23ct/bm9lIsAQ4wVqBvV3YyU/c7xT+rKIVM7rG+E+BOtCYugJKUKTOpKG5mZBqIEGBgZNacP3QyTrG3igg==
+  version "11.0.0-rc.489"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-11.0.0-rc.489.tgz#f43f9733cdf54104e04df3cec334a9abf7d574d3"
+  integrity sha512-dbD59LyEYgtxoAxMuNf15jnXgphLGc7/A53Y/D1v42r8WuSgez1BsS0bq3MYR7AUfiD9LHWEPZqnZxVCndpw0A==
 
 "@types/bcrypt@^5.0.2":
   version "5.0.2"
@@ -3059,7 +3059,7 @@ data-view-byte-offset@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-database-oskm-0.1.0-94963f12-c377-4032-b889-4bd9096864b6-1724915512949/node_modules/database-oskm"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-database-oskm-0.1.0-8d300339-1296-4474-bc2c-b41cf42062c2-1724919763006/node_modules/database-oskm"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
@@ -5717,7 +5717,7 @@ supports-preserve-symlinks-flag@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-04395fc9-4860-4250-a402-d97dbb5d754e-1724915512969/node_modules/t3-template-app"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-4c1d8ed7-3efb-4d52-899f-0bfbba7f40fe-1724919763021/node_modules/t3-template-app"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
