@@ -9,7 +9,6 @@ import {
   groups,
   profiles,
   users,
-  Assignment,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -22,7 +21,6 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
-import { title } from "process";
 
 type MenteeAssignment = {
   nama: string;
