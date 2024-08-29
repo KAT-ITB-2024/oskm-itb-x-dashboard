@@ -19,13 +19,13 @@ export const getContentType = (fileName: string): string => {
 
 export const downloadFile = async (
   url: string,
-  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void
+  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void,
 ) => {
   const axiosInstance = axios.create();
 
   const response = await axiosInstance.get<Blob>(url, {
     responseType: "blob",
-    onDownloadProgress
+    onDownloadProgress,
   });
 
   return response.data;
