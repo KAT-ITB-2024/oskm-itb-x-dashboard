@@ -13,23 +13,32 @@ import { FolderEnum } from "~/server/bucket";
 
 interface MametEditAssignmentProps {
   assignment: {
-    // assignmentId: string;
+    assignmentId: string;
     judulTugas: string;
     deskripsi: string;
     waktuMulai: Date;
     waktuSelesai: Date;
     assignmentType: AssignmentType;
     point: number;
-    // downloadUrl: string;
-    // filename: string;
+    downloadUrl: string;
+    filename: string;
   };
 }
+
+const ALLOWED_FORMATS = [
+  "image/jpeg",
+  "image/png",
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 export default function MametEditAssignment({
   assignment,
 }: MametEditAssignmentProps) {
   const router = useRouter();
 
+  const fileUploadMutation = api.storage.uploadFile.useMutation();
   const editAssignmentMutation =
     api.assignment.editAssignmentMamet.useMutation();
 
@@ -56,9 +65,7 @@ export default function MametEditAssignment({
     assignment.waktuSelesai.toTimeString().slice(0, 5),
   );
 
-  const [existFile, setExistFile] = React.useState<string | null>(
-    // assignment.filename,
-  );
+  const [existFile, setExistFile] = React.useState<string | null>(assignment.filename);
 
   const setTime = (date: Date, time: string) => {
     const newDate = new Date(date);
@@ -68,22 +75,41 @@ export default function MametEditAssignment({
     return newDate;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target?.files?.[0] ?? null);
-    setExistFile(null);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target?.files?.[0];
+    if (selectedFile) {
+      if (!ALLOWED_FORMATS.includes(selectedFile.type)) {
+        alert(
+          "Invalid file format. Please select a JPEG, PNG, PDF, or DOCX file.",
+        );
+        setFile(null);
+      } else if (selectedFile.size > MAX_FILE_SIZE) {
+        alert("File is too large. Maximum size is 20 MB.");
+        setFile(null);
+      } else {
+        setFile(selectedFile);
+        setExistFile(null);
+      }
+    }
   };
 
-  const updateAssignment = async (file?: string) => {
+  const updateAssignment = async (
+    filename?: string | undefined,
+    presignedUrl?: string | undefined,
+  ) => {
     try {
-      // await editAssignmentMutation.mutateAsync({
-      //   assignmentId: assignment.assignmentId,
-      //   file,
-      //   title: judul,
-      //   description: deskripsi,
-      //   startTime: setTime(waktuMulai, jamMulai),
-      //   deadline: setTime(waktuSelesai, jamSelesai),
-      //   point,
-      // });
+      const newFilename = filename ?? "existFile;"
+      const downloadUrl = presignedUrl ?? "";
+      await editAssignmentMutation.mutateAsync({
+        id: assignment.assignmentId,
+        filename: newFilename ?? existFile,
+        title: judul,
+        description: deskripsi,
+        startTime: setTime(waktuMulai, jamMulai),
+        deadline: setTime(waktuSelesai, jamSelesai),
+        point,
+        downloadUrl: presignedUrl ?? assignment.downloadUrl,
+      });
       router.push("/assignment");
     } catch (err) {
       alert("Error updating assignment. Please try again.");
@@ -99,28 +125,28 @@ export default function MametEditAssignment({
     e.preventDefault();
     setIsLoading(true);
     try {
-      // let fileKey = '';
       if (file) {
-        // const reader = new FileReader();
-        // reader.onload = async (e) => {
-        //   if (e.target?.result) {
-        //     const base64Content = (e.target.result as string).toString().split(',')[1];
-        //     const uploadResult = await fileUploadMutation.mutateAsync({
-        //       folder: FolderEnum.ASSIGNMENT_MAMET,
-        //       fileName: file.name,
-        //       fileContent: base64Content!,
-        //     });
-        //     fileKey = uploadResult;
-        //     await createAssignment(fileKey);
-        //   }
-        // };
-        // reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          if (e.target?.result) {
+            const base64Content = (e.target.result as string)
+              .toString()
+              .split(",")[1];
+            const { presignedUrl } = await fileUploadMutation.mutateAsync({
+              folder: FolderEnum.ASSIGNMENT_MAMET,
+              fileName: file.name,
+              fileContent: base64Content!,
+            });
+            await updateAssignment(file.name, presignedUrl);
+          }
+        };
+        reader.readAsDataURL(file);
       } else {
         await updateAssignment();
       }
     } catch (err) {
-      alert("Error submitting assignment. Please try again.");
-      console.error("Error submitting assignment:", err);
+      alert("Error updating assignment. Please try again.");
+      console.error("Error updating assignment:", err);
     }
   };
 
@@ -239,20 +265,23 @@ export default function MametEditAssignment({
               type="file"
               ref={hiddenFileInput}
               className="hidden"
-              onChange={handleChange}
+              onChange={handleFileChange}
             />
             <div className="flex gap-1">
               <p>{file?.name ?? existFile}</p>
               <p className="text-nowrap text-[10px] font-light">
                 {file?.size
-                  ? parseFloat(file.size.toPrecision(3)) / 1000000
-                  : 0}{" "}
-                MB{" "}
+                  ? parseFloat(file.size.toPrecision(3)) / 1000000 + " MB"
+                  : ""
+                }
               </p>
             </div>
             <IoMdClose
               className="cursor-pointer text-lg"
-              onClick={() => setFile(null)}
+              onClick={() => {
+                setFile(null)
+                setExistFile(null)
+              }}
             />
           </div>
         </div>
