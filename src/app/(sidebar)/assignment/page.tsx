@@ -26,8 +26,8 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
 
   let assignments: Assignments[] = [];
-  let meta = { 
-    page: currentPage, 
+  let meta = {
+    page: currentPage,
     totalPages: 1,
     pageSize: 10,
     totalCount: 0,
