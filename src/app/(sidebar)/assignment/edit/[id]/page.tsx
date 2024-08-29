@@ -7,7 +7,7 @@ import DashboardHeader from "~/app/components/DashboardHeader";
 import MametEditAssignment from "../../components/MametEditAssignment";
 
 import { api } from "~/trpc/server";
-import { AssignmentType } from "@katitb2024/database";
+import type { AssignmentType } from "@katitb2024/database";
 
 interface Assignment {
   data: {

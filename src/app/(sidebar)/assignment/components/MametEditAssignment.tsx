@@ -8,7 +8,7 @@ import { IoMdClose } from "react-icons/io";
 import { MdUpload } from "react-icons/md";
 
 import { api } from "~/trpc/react";
-import { AssignmentType } from "@katitb2024/database";
+import type { AssignmentType } from "@katitb2024/database";
 import { FolderEnum } from "~/server/bucket";
 
 interface MametEditAssignmentProps {
