@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, mentorMametProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -11,7 +11,7 @@ import { getContentType } from "~/utils/fileUtils";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const storageRouter = createTRPCRouter({
-  deleteFile: publicProcedure
+  deleteFile: mentorMametProcedure
     .input(
       z.object({
         key: z.string(),
@@ -39,7 +39,7 @@ export const storageRouter = createTRPCRouter({
         });
       }
     }),
-  uploadFile: publicProcedure
+  uploadFile: mentorMametProcedure
     .input(
       z.object({
         folder: z.nativeEnum(FolderEnum),
@@ -86,7 +86,7 @@ export const storageRouter = createTRPCRouter({
         });
       }
     }),
-  downloadFile: publicProcedure
+  downloadFile: mentorMametProcedure
     .input(
       z.object({
         key: z.string().min(1),

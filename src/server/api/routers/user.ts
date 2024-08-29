@@ -19,10 +19,10 @@ import {
   forgotPasswordURL,
   validateToken,
 } from "~/services/forgotToken";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, mentorMametProcedure } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
-  createForgotToken: publicProcedure
+  createForgotToken: mentorMametProcedure
     .input(
       z.object({
         email: z.string(),
@@ -59,7 +59,7 @@ export const userRouter = createTRPCRouter({
         });
       }
     }),
-  resetPassword: publicProcedure
+  resetPassword: mentorMametProcedure
     .input(
       z.object({
         email: z.string(),
@@ -86,7 +86,7 @@ export const userRouter = createTRPCRouter({
     }),
 
   // Procedure to get group details for Mentor
-  detailKelompokMentor: publicProcedure
+  detailKelompokMentor: mentorMametProcedure
     .input(
       z.object({
         userNim: z.string(), // NIM of the user making the request
@@ -164,7 +164,7 @@ export const userRouter = createTRPCRouter({
     }),
 
   // Procedure to get group details for Mamet
-  detailKelompokMamet: publicProcedure
+  detailKelompokMamet: mentorMametProcedure
     .input(
       z.object({
         groupName: z.string().optional(), // Group name for which details are requested

@@ -153,6 +153,21 @@ const isMentorOrMamet = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
   return next();
 });
 
+/** Reusable middleware that enforces users have ITBX role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isITBX = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  const userRole: UserRole = ctx.session.user.role;
+
+  if (userRole !== roleEnum.enumValues[3]) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -192,3 +207,13 @@ export const mametProcedure = t.procedure.use(isMamet);
  * @see https://trpc.io/docs/procedures
  */
 export const mentorMametProcedure = t.procedure.use(isMentorOrMamet);
+
+/**
+ * Protected (ITBX) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to ITB-X role users, use this. It verifies
+ * the session is valid dan guarantees that the role is admin.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const itbxProcedure = t.procedure.use(isITBX);
