@@ -135,26 +135,28 @@ export default function MametListAssignment({
                     {item.judulTugas}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    {Intl.DateTimeFormat("en-US", {
-                      hour12: false,
-                      timeZone: "Asia/Jakarta",
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(item.waktuMulai) + " WIB"}
+                    <p>
+                      {Intl.DateTimeFormat("en-US", {
+                        timeZone: "Asia/Jakarta",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(item.waktuMulai) + " WIB"}
+                    </p>
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
-                    {Intl.DateTimeFormat("en-US", {
-                      hour12: false,
-                      timeZone: "Asia/Jakarta",
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(item.waktuSelesai) + " WIB"}
+                    <p>
+                      {Intl.DateTimeFormat("en-US", {
+                        timeZone: "Asia/Jakarta",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(item.waktuSelesai) + " WIB"}
+                    </p>
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
                     <div className="flex items-center justify-center gap-2 text-2xl">
