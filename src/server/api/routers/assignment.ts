@@ -9,7 +9,6 @@ import {
   groups,
   profiles,
   users,
-  Assignment,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -22,7 +21,6 @@ import {
   //   mentorProcedure,
   // mametMentorProcedure,
 } from "~/server/api/trpc";
-import { title } from "process";
 
 type MenteeAssignment = {
   nama: string;
@@ -130,10 +128,15 @@ export const assignmentRouter = createTRPCRouter({
         )[0] ?? { count: 0 };
 
         if (allMentee.length === 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "THERE IS NO MENTEE",
-          });
+          return {
+            data: [],
+            meta: {
+              totalCount: countRows.count,
+              page,
+              pageSize,
+              totalPages: Math.ceil(countRows.count / pageSize),
+            },
+          };
         }
 
         const menteeNims = allMentee.map((mentee) => mentee.nim);
@@ -316,19 +319,13 @@ export const assignmentRouter = createTRPCRouter({
               : desc(assignments.startTime),
           );
 
-        if (res.length == 0) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "THERE IS NO SUCH ASSIGNMENT",
-          });
-        }
-
         const countRows = (
           await ctx.db
             .select({
               count: count(),
             })
             .from(assignments)
+            .where(eq(assignments.assignmentType, compare))
         )[0] ?? { count: 0 };
 
         return {
