@@ -317,8 +317,6 @@ export const assignmentRouter = createTRPCRouter({
               : desc(assignments.startTime),
           );
 
-        
-
         const countRows = (
           await ctx.db
             .select({
