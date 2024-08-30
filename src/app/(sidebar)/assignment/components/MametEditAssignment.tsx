@@ -125,6 +125,13 @@ export default function MametEditAssignment({
   ) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (setTime(waktuSelesai, jamSelesai) <= setTime(waktuMulai, jamMulai)) {
+      alert("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       if (file) {
         const reader = new FileReader();
@@ -296,6 +303,7 @@ export default function MametEditAssignment({
               className="w-1/3 rounded-lg border-2 border-gray-300 px-6 py-3"
               value={point}
               onChange={(e) => setPoint(parseInt(e.target.value))}
+              min={0}
             />
           </div>
         ) : null}

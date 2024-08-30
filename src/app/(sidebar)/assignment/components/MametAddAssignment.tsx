@@ -121,6 +121,14 @@ export default function MametAddAssignment() {
           if (key === "Poin" && assignmentType === "Main") continue;
           alert(`Kolom ${key} harus diisi`);
           return;
+        } else {
+          if (
+            key === "Waktu Selesai" &&
+            setTime(startTime, jamMulai) >= setTime(deadline, jamSelesai)
+          ) {
+            alert("Waktu selesai tidak boleh lebih kecil dari waktu mulai");
+            return;
+          }
         }
       }
     }
@@ -304,6 +312,7 @@ export default function MametAddAssignment() {
                 placeholder="Jumlah Poin"
                 className="w-1/3 rounded-lg border-2 border-gray-300 px-6 py-3"
                 value={point}
+                min={0}
                 onChange={(e) => setPoint(parseInt(e.target.value ?? "0"))}
               />
             </div>

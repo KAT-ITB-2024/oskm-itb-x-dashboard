@@ -17,11 +17,11 @@ export const eventRouter = createTRPCRouter({
   getEvents: mentorMametProcedure
     .input(
       z.object({
-        eventDay: z.string().optional(),
+        eventName: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { eventDay } = input ;
+      const { eventName } = input;
 
       const res = await ctx.db
         .select({
@@ -34,9 +34,9 @@ export const eventRouter = createTRPCRouter({
           closingClosePresenceTime: events.closingClosePresenceTime,
           createdAt: events.createdAt,
           updatedAt: events.updatedAt,
-        })  
+        })
         .from(events)
-        .where(like(events.day, eventDay ?? "" ));
+        .where(like(events.id, eventName ?? ""));
 
       return res;
     }),
