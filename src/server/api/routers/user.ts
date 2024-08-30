@@ -123,6 +123,7 @@ export const userRouter = createTRPCRouter({
             fakultas: profiles.faculty,
             tugasDikumpulkan: count(assignmentSubmissions.id),
             kehadiran: count(eventPresences.id),
+            activityPoints: users.activityPoints,
           })
           .from(users)
           .fullJoin(profiles, eq(users.id, profiles.userId))
@@ -139,7 +140,12 @@ export const userRouter = createTRPCRouter({
               ilike(profiles.name, `%${search}%`),
             ),
           )
-          .groupBy(users.nim, profiles.name, profiles.faculty)
+          .groupBy(
+            users.nim,
+            profiles.name,
+            profiles.faculty,
+            users.activityPoints,
+          )
           .offset(offset)
           .limit(pageSize);
 
@@ -150,6 +156,7 @@ export const userRouter = createTRPCRouter({
             fakultas: mentee.fakultas,
             tugasDikumpulkan: mentee.tugasDikumpulkan,
             kehadiran: mentee.kehadiran,
+            activityPoints: mentee.activityPoints,
           })),
           page,
           pageSize,
@@ -256,6 +263,31 @@ export const userRouter = createTRPCRouter({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to get group details." + String(error),
+          cause: error,
+        });
+      }
+    }),
+
+  // Procedure to edit activity points for a mentee
+  editActivityPoints: mentorMametProcedure
+    .input(
+      z.object({
+        userNim: z.string(),
+        activityPoints: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await db
+          .update(users)
+          .set({
+            activityPoints: input.activityPoints,
+          })
+          .where(eq(users.nim, input.userNim));
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to edit activity points." + String(error),
           cause: error,
         });
       }
