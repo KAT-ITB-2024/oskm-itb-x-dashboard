@@ -14,9 +14,10 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  mametProcedure,
-  mentorProcedure,
-  mentorMametProcedure,
+  publicProcedure,
+  //   mametProcedure,
+  //   mentorProcedure,
+  //   mentorMametProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
@@ -52,7 +53,7 @@ export const presenceRouter = createTRPCRouter({
    * @param dataPerPage The number of data per page
    * @returns TAttendanceOfAnEvent
    */
-  getPresenceOfAGroupInAnEvent: mentorMametProcedure
+  getPresenceOfAGroupInAnEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -113,7 +114,7 @@ export const presenceRouter = createTRPCRouter({
    * @WARNING This query is not recommended to be called for the front end as this is a heavy query
    * and no pagination is implemented
    */
-  getCompletePresence: mametProcedure.query<
+  getCompletePresence: publicProcedure.query<
     TPresenceBaseResponse<TAttendance[]>
   >(async () => {
     try {
@@ -182,7 +183,7 @@ export const presenceRouter = createTRPCRouter({
 
   // Mamet
   // Status: Tested
-  editPresence: mametProcedure
+  editPresence: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -228,7 +229,7 @@ export const presenceRouter = createTRPCRouter({
 
   // Mamet
   // Status: Tested
-  addPresence: mametProcedure
+  addPresence: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -277,7 +278,7 @@ export const presenceRouter = createTRPCRouter({
    * @param eventId The ID of the event
    * @param openingOrClosing The opening or closing event
    */
-  deletePresence: mametProcedure
+  deletePresence: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -320,7 +321,7 @@ export const presenceRouter = createTRPCRouter({
    * @param page The page number (1-indexed)
    * @param dataPerPage The number of data per page
    */
-  getPresenceOfAnEvent: mametProcedure
+  getPresenceOfAnEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -378,7 +379,7 @@ export const presenceRouter = createTRPCRouter({
 
   // Mamet
   // Status: Tested
-  getPresenceOfAnEventCSV: mametProcedure
+  getPresenceOfAnEventCSV: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -436,8 +437,10 @@ export const presenceRouter = createTRPCRouter({
       }
     }),
 
+
+
   // mendapat list presensi peserta pada sesuai keluarga dan event
-  getPresensiPeserta: mentorProcedure
+  getPresensiPeserta: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -467,7 +470,7 @@ export const presenceRouter = createTRPCRouter({
       return presensiPeserta;
     }),
 
-  updatePresensiPeserta: mentorProcedure
+  updatePresensiPeserta: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -519,32 +522,36 @@ export const presenceRouter = createTRPCRouter({
 
       return { message: "Presence successfully updated" };
     }),
+  getEventsThatHasPresence: publicProcedure
+  .input(
+    z.object({
+      page: z.number(),
+      dataPerPage: z.number(),
+    }),
+  )
+  .query(async ({ input: { page, dataPerPage } }) => {
+    const eventsWithPresence = await db
+      .selectDistinct({
+        eventId: events.id,
+        eventDay: events.day,
+        eventDate: events.eventDate,
+        openingOpenPresenceTime: events.openingOpenPresenceTime,
+        openingClosePresenceTime: events.openingClosePresenceTime,
+        closingOpenPresenceTime: events.closingOpenPresenceTime,
+        closingClosePresenceTime: events.closingClosePresenceTime,
+      })
+      .from(events)
+      .leftJoin(eventPresences, eq(events.id, eventPresences.eventId))
+      .orderBy(asc(events.eventDate));
 
-  getEventsThatHasPresence: mentorMametProcedure
-    .input(
-      z.object({
-        page: z.number(),
-        dataPerPage: z.number(),
-      }),
-    )
-    .query(async ({ input: { page, dataPerPage } }) => {
-      const eventsWithPresence = await db
-        .selectDistinct({
-          eventId: eventPresences.eventId,
-          eventDay: events.day,
-          eventOpeningOrClosing: eventPresences.presenceEvent,
-          eventDate: events.eventDate,
-          startTime: events.openingOpenPresenceTime,
-          endTime: events.openingClosePresenceTime,
-        })
-        .from(eventPresences)
-        .innerJoin(events, eq(events.id, eventPresences.eventId))
-        .orderBy(desc(events.eventDate), desc(events.openingOpenPresenceTime));
+    // Calculate total number of items (before slicing)
+    const totalItems = eventsWithPresence.length;
 
-      const paginatedData = eventsWithPresence.slice(
-        dataPerPage * (page - 1),
-        dataPerPage * page,
-      );
+    // Apply pagination
+    const paginatedData = eventsWithPresence.slice(
+      dataPerPage * (page - 1),
+      dataPerPage * page
+    );
 
     // Return both paginated data and total item count
     return {

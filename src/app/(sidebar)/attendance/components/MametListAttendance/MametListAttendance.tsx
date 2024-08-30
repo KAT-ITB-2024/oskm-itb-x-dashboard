@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import ConfirmDeleteEvent from "./MametDeleteConfirmation";
 import {
@@ -15,6 +14,7 @@ import {
 } from "~/components/ui/table";
 import MametNavigation from "./MametNavigation";
 import MametPagination from "./MametPagination";
+import SearchNotFound from "./MametSearchNotFound";
 import { RiPencilFill } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";
 import { MdDownload } from "react-icons/md";
@@ -72,21 +72,11 @@ export default function MametListAttendance() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
-  const [downloadParams, setDownloadParams] = useState<DownloadParams | null>(null);
-
+  const [downloadParams, setDownloadParams] = useState<DownloadParams | null>(null); 
   const [downloadRecapTriggered, setDownloadRecapTriggered] = useState(false);
-  const router = useRouter();
 
   const handleDayChange = (day: string | null) => {
     setSelectedDay(day);
-  };
-
-  const handleAddEvent = () => {
-    return router.push("/attendance/tambah");
-  };
-
-  const handleDownload = () => {
-    // Your CSV download logic
   };
 
   const handleDeleteClick = (event: Event) => {
@@ -154,6 +144,10 @@ export default function MametListAttendance() {
     }
   }, [rowData, rowError, downloadParams]);
 
+  if (rowError) {
+    return <SearchNotFound/>;
+  }
+
 
 
   const handleDownloadRecap = () => {
@@ -169,7 +163,7 @@ export default function MametListAttendance() {
     if (isLoading && events.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={6}>Loading...</TableCell>
+          <TableCell colSpan={6}>Loading guys...</TableCell>
         </TableRow>
       );
     }
@@ -208,10 +202,10 @@ export default function MametListAttendance() {
               {event.openingClosePresenceTime}
             </TableCell>
             <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
-              <Link href={`/attendance/edit/opening-${event.eventId}`}>
+              <Link href={`/attendance/edit/${event.eventId}?&type=Opening`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Link href="#" onClick={handleDownload}>
+
               <Button
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
@@ -251,10 +245,9 @@ export default function MametListAttendance() {
               {event.closingClosePresenceTime}
             </TableCell>
             <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
-              <Link href={`/attendance/edit/closing-${event.eventId}`}>
+              <Link href={`/attendance/edit/${event.eventId}?&type=Closing`}>
                 <RiPencilFill className="text-[#0010A4]" />
               </Link>
-              <Link href="#" onClick={handleDownload}>
               <Button
                 className="bg-transparent text-2xl"
                 onClick={() => handleDeleteClick(event)}
@@ -276,13 +269,13 @@ export default function MametListAttendance() {
     });
   };
 
+
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4">
       <div className="py-3"></div>
       <MametNavigation
         onSelectDay={handleDayChange}
-        onDownload={handleDownload}
-        onAddEvent={handleAddEvent}
         onDownload ={handleDownloadRecap}
       />
       <Table className="border-spacing-0 rounded-lg text-center">
@@ -308,40 +301,6 @@ export default function MametListAttendance() {
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {/* A Row Layout Example */}
-          <TableRow
-            key={`closing-${0}`}
-            className="border-b border-gray-200 bg-white"
-          >
-            <TableCell className="border-l border-r border-gray-200">
-              {0}
-            </TableCell>
-            <TableCell className="border-r border-gray-200">
-              {"Contoh Layout"}
-            </TableCell>
-            <TableCell className="border-r border-gray-200">
-              {"HH:MM:YY"}
-            </TableCell>
-            <TableCell className="border-r border-gray-200">
-              {"23:59:59"}
-            </TableCell>
-            <TableCell className="border-r border-gray-200">
-              {"23:59:59"}
-            </TableCell>
-            <TableCell className="flex items-center justify-center gap-2 border-r border-gray-200 text-2xl">
-              <Link href={`/attendance/edit/closing-${0}`}>
-                <RiPencilFill className="text-[#0010A4]" />
-              </Link>
-              <Link href="#" onClick={handleDownload}>
-                <MdDownload className="text-[#3678FF]" />
-              </Link>
-            </TableCell>
-          </TableRow>
-
-          {/* Rows from render table function Examples */}
-          {renderTableRows()}
-        </TableBody>
         <TableBody>{renderTableRows()}</TableBody>
       </Table>
       <MametPagination
