@@ -15,28 +15,8 @@ import { z_date, z_time } from "~/utils/dateUtils";
 
 export const eventRouter = createTRPCRouter({
   getEvents: mentorMametProcedure
-    .input(
-      z.object({
-        eventName: z.string().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { eventName } = input;
-
-      const res = await ctx.db
-        .select({
-          id: events.id,
-          day: events.day,
-          eventDate: events.eventDate,
-          openingOpenPresenceTime: events.openingOpenPresenceTime,
-          closingOpenPresenceTime: events.closingOpenPresenceTime,
-          openingClosePresenceTime: events.openingClosePresenceTime,
-          closingClosePresenceTime: events.closingClosePresenceTime,
-          createdAt: events.createdAt,
-          updatedAt: events.updatedAt,
-        })
-        .from(events)
-        .where(like(events.id, eventName ?? ""));
+    .query(async ({ ctx }) => {
+      const res = await ctx.db.select().from(events);
 
       return res;
     }),
