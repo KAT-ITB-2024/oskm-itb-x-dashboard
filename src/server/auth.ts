@@ -9,7 +9,7 @@ import { type Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "~/env";
 import { db } from "~/server/db";
-import { users, type UserRole } from "@katitb2024/database";
+import { roleEnum, users, type UserRole } from "@katitb2024/database";
 import { type DefaultJWT } from "next-auth/jwt";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
@@ -138,6 +138,16 @@ export const authOptions: NextAuthOptions = {
             throw new TRPCError({
               code: "NOT_FOUND",
               message: "User not found",
+            });
+          }
+
+          if (
+            user.role !== roleEnum.enumValues[1] &&
+            user.role !== roleEnum.enumValues[2]
+          ) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
+              message: "Only mentors and mamets are allowed to login",
             });
           }
 

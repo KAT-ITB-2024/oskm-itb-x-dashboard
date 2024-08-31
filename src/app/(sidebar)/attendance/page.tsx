@@ -1,12 +1,19 @@
+import React from "react";
+import MametListAttendance from "./components/MametListAttendance/MametListAttendance";
 import DashboardHeader from "~/app/components/DashboardHeader";
+import { getServerAuthSession } from "~/server/auth";
+import MentorListAttendance from "./components/MentorListAttendance";
 
-// all attendance list
-export default function Page() {
+export default async function Page() {
+  const session = await getServerAuthSession();
+
   return (
-    <div>
-      <DashboardHeader title="Attendance" />
+    <div className="flex flex-col gap-4">
+      <DashboardHeader title="Events List" />
 
-      <p>Page</p>
+      {session?.user.role === "Mamet" && <MametListAttendance />}
+
+      {session?.user.role === "Mentor" && <MentorListAttendance />}
     </div>
   );
 }
