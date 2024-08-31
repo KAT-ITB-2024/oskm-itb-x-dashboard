@@ -11,7 +11,7 @@ on:
 jobs:
   # Build job
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, oskm-itb-x-dashboard]
     environment: staging
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -21,6 +21,11 @@ jobs:
       MAILER_CLIENT_ID: ${{ secrets.MAILER_CLIENT_ID }}
       MAILER_CLIENT_SECRET: ${{ secrets.MAILER_CLIENT_SECRET }}
       MAILER_REFRESH_TOKEN: ${{ secrets.MAILER_REFRESH_TOKEN }}
+      NEXT_PUBLIC_DO_ACCESS_KEY: ${{ secrets.NEXT_PUBLIC_DO_ACCESS_KEY }}
+      NEXT_PUBLIC_DO_BUCKET_NAME: ${{ secrets.NEXT_PUBLIC_DO_BUCKET_NAME }}
+      NEXT_PUBLIC_DO_ORIGIN_ENDPOINT: ${{ secrets.NEXT_PUBLIC_DO_ORIGIN_ENDPOINT }}
+      NEXT_PUBLIC_DO_REGION: ${{ secrets.NEXT_PUBLIC_DO_REGION }}
+      NEXT_PUBLIC_DO_SECRET_KEY: ${{ secrets.NEXT_PUBLIC_DO_SECRET_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,6 +91,26 @@ jobs:
             echo "MAILER_REFRESH_TOKEN secret is missing"
             exit 1
           fi
+          if [ -z "${{ env.NEXT_PUBLIC_DO_ACCESS_KEY }}" ]; then
+            echo "NEXT_PUBLIC_DO_ACCESS_KEY secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ env.NEXT_PUBLIC_DO_BUCKET_NAME }}" ]; then
+            echo "NEXT_PUBLIC_DO_BUCKET_NAME secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ env.NEXT_PUBLIC_DO_ORIGIN_ENDPOINT }}" ]; then
+            echo "NEXT_PUBLIC_DO_ORIGIN_ENDPOINT secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ env.NEXT_PUBLIC_DO_REGION }}" ]; then
+            echo "NEXT_PUBLIC_DO_REGION secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ env.NEXT_PUBLIC_DO_SECRET_KEY }}" ]; then
+            echo "NEXT_PUBLIC_DO_SECRET_KEY secret is missing"
+            exit 1
+          fi
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
@@ -99,5 +124,10 @@ jobs:
           echo MAILER_CLIENT_ID=${{ env.MAILER_CLIENT_ID }} >> .env
           echo MAILER_CLIENT_SECRET=${{ env.MAILER_CLIENT_SECRET }} >> .env
           echo MAILER_REFRESH_TOKEN=${{ env.MAILER_REFRESH_TOKEN }} >> .env
+          echo NEXT_PUBLIC_DO_ACCESS_KEY=${{ env.NEXT_PUBLIC_DO_ACCESS_KEY }} >> .env
+          echo NEXT_PUBLIC_DO_BUCKET_NAME=${{ env.NEXT_PUBLIC_DO_BUCKET_NAME }} >> .env
+          echo NEXT_PUBLIC_DO_ORIGIN_ENDPOINT=${{ env.NEXT_PUBLIC_DO_ORIGIN_ENDPOINT }} >> .env
+          echo NEXT_PUBLIC_DO_REGION=${{ env.NEXT_PUBLIC_DO_REGION }} >> .env
+          echo NEXT_PUBLIC_DO_SECRET_KEY=${{ env.NEXT_PUBLIC_DO_SECRET_KEY }} >> .env
       - name: Restart pm2
         run: pm2 restart pm2.config.json
