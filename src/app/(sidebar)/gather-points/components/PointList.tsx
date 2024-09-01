@@ -12,54 +12,95 @@ import {
 } from "~/components/ui/table";
 import { RiPencilFill } from "react-icons/ri";
 import { FaCheck } from "react-icons/fa";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
-interface MenteePoints {
-  id: number;
-  nim: string;
-  name: string;
-  points: number;
+interface GroupInformationMentorProps {
+  groupInformations: {
+    mentees: {
+      nim: string | null;
+      nama: string | null;
+      fakultas:
+        | "FITB"
+        | "FMIPA"
+        | "FSRD"
+        | "FTMD"
+        | "FTTM"
+        | "FTSL"
+        | "FTI"
+        | "SAPPK"
+        | "SBM"
+        | "SF"
+        | "SITH"
+        | "STEI"
+        | null;
+      tugasDikumpulkan: number;
+      kehadiran: number;
+      activityPoints: number | null;
+    }[];
+    page: number;
+    pageSize: number;
+  } | null;
+  metaMentor: {
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    totalCount: number;
+  };
 }
 
-const dummyData: MenteePoints[] = [
-  { id: 1, nim: "18221157", name: "Cathleen Laureta", points: 100 },
-  { id: 2, nim: "18221158", name: "John Doe", points: 120 },
-  { id: 3, nim: "18221159", name: "Jane Smith", points: 90 },
-  // Add more dummy data as needed
-];
-
-export default function PointList() {
-  const [data, setData] = useState<MenteePoints[]>(dummyData);
-  const [editingId, setEditingId] = useState<number | null>(null);
+export default function PointList({
+  groupInformations,
+  metaMentor,
+}: GroupInformationMentorProps) {
+  const [data, setData] = useState(groupInformations?.mentees ?? []);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newPoints, setNewPoints] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
-  const totalItems = data.length;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(metaMentor.page);
+  const itemsPerPage = metaMentor.pageSize;
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const filteredData = data.filter(
+    (item) =>
+      item.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+      item.nim?.includes(searchQuery),
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      // Fetch or update your data based on the new page number
     }
   };
 
-  const handleEdit = (id: number) => {
-    setEditingId(id);
-    const currentItem = data.find((item) => item.id === id);
-    if (currentItem) {
-      setNewPoints(currentItem.points.toString());
-    }
-  };
+  const currentData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
 
-  const handleSave = (id: number) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.id === id ? { ...item, points: parseInt(newPoints) } : item,
-      ),
-    );
-    setEditingId(null);
-    setNewPoints("");
+  const router = useRouter();
+
+  const editPoints = api.user.editActivityPoints.useMutation();
+
+  const handleSave = async (nim: string) => {
+    const points = parseInt(newPoints);
+    try {
+      await editPoints.mutateAsync({
+        userNim: nim,
+        activityPoints: points,
+      });
+      setData((prevData) =>
+        prevData.map((item) =>
+          item.nim === nim ? { ...item, activityPoints: points } : item,
+        ),
+      );
+      setEditingId(null);
+      setNewPoints("");
+      router.refresh();
+    } catch (error) {
+      console.error("Error saving points:", error);
+    }
   };
 
   return (
@@ -68,6 +109,8 @@ export default function PointList() {
         <input
           type="text"
           placeholder="Cari Mentee"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full bg-transparent outline-none"
         />
         <IoMdSearch className="text-xl text-gray-400" />
@@ -83,13 +126,15 @@ export default function PointList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item, index) => (
-            <TableRow key={item.id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{item.nim}</TableCell>
-              <TableCell>{item.name}</TableCell>
+          {currentData.map((item, index) => (
+            <TableRow key={item.nim}>
               <TableCell>
-                {editingId === item.id ? (
+                {index + 1 + (currentPage - 1) * itemsPerPage}
+              </TableCell>
+              <TableCell>{item.nim}</TableCell>
+              <TableCell>{item.nama}</TableCell>
+              <TableCell>
+                {editingId === item.nim ? (
                   <input
                     type="text"
                     value={newPoints}
@@ -97,20 +142,23 @@ export default function PointList() {
                     className="w-full rounded-lg border border-gray-300 p-2 text-center"
                   />
                 ) : (
-                  item.points
+                  item.activityPoints
                 )}
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2 text-2xl">
-                  {editingId === item.id ? (
+                  {editingId === item.nim ? (
                     <FaCheck
                       className="cursor-pointer text-[#0010A4] hover:text-[#00A86B]"
-                      onClick={() => handleSave(item.id)}
+                      onClick={() => handleSave(item.nim ?? "")}
                     />
                   ) : (
                     <RiPencilFill
                       className="cursor-pointer text-[#0010A4]"
-                      onClick={() => handleEdit(item.id)}
+                      onClick={() => {
+                        setEditingId(item.nim);
+                        setNewPoints(item.activityPoints?.toString() ?? "");
+                      }}
                     />
                   )}
                 </div>
@@ -120,7 +168,7 @@ export default function PointList() {
         </TableBody>
       </Table>
       <nav className="flex flex-row items-center gap-3">
-        <p className="text-[#EE1192]">Total {totalItems} Items</p>
+        <p className="text-[#EE1192]">Total {filteredData.length} Items</p>
         <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
           <li>
             <button
