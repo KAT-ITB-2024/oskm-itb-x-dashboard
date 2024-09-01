@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { useRouter, useSearchParams,useParams} from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { api } from "~/trpc/react";
 import { format } from "date-fns";
 import SearchNotFound from "./MametListAttendance/MametSearchNotFound";
@@ -21,7 +21,11 @@ export default function MametFormAttendance() {
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
 
-  const { data: eventData, isLoading, error } = api.event.getEvent.useQuery({ id: eventId ?? ""});
+  const {
+    data: eventData,
+    isLoading,
+    error,
+  } = api.event.getEvent.useQuery({ id: eventId ?? "" });
   const updateEventMutation = api.event.updateEvent.useMutation();
 
   useEffect(() => {
@@ -40,23 +44,26 @@ export default function MametFormAttendance() {
 
   const formatTime = (time: string): string => {
     // Menambahkan detik jika tidak ada
-    return time.length === 5 ? `${time}:00` : time; 
+    return time.length === 5 ? `${time}:00` : time;
   };
-  
+
   const handleSubmit = async () => {
     try {
       const updateData = {
-        id: eventId?? "",
+        id: eventId ?? "",
         eventDate,
-        openingOpenPresenceTime: eventType === "Opening" ? formatTime(startTime) : undefined,
-        closingOpenPresenceTime: eventType === "Closing" ? formatTime(startTime) : undefined,
-        openingClosePresenceTime: eventType === "Opening" ? formatTime(endTime) : undefined,
-        closingClosePresenceTime: eventType === "Closing" ? formatTime(endTime) : undefined,
+        openingOpenPresenceTime:
+          eventType === "Opening" ? formatTime(startTime) : undefined,
+        closingOpenPresenceTime:
+          eventType === "Closing" ? formatTime(startTime) : undefined,
+        openingClosePresenceTime:
+          eventType === "Opening" ? formatTime(endTime) : undefined,
+        closingClosePresenceTime:
+          eventType === "Closing" ? formatTime(endTime) : undefined,
       };
-  
+
       updateEventMutation.mutate(updateData, {
         onSuccess: () => {
-          console.log("Event updated successfully");
           router.push("/attendance");
         },
         onError: (error) => {
@@ -65,13 +72,16 @@ export default function MametFormAttendance() {
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("An unknown error occurred during update:", error.message);
+        console.error(
+          "An unknown error occurred during update:",
+          error.message,
+        );
       } else {
         console.error("An unknown error occurred during update.");
       }
     }
   };
-  
+
   const handleCancel = () => {
     if (eventData) {
       setTitle(`${eventType} ${eventData.day}`);
@@ -91,7 +101,7 @@ export default function MametFormAttendance() {
   }
 
   if (error) {
-    return <SearchNotFound/>;
+    return <SearchNotFound />;
   }
 
   return (
@@ -152,7 +162,11 @@ export default function MametFormAttendance() {
         </div>
       </form>
       <div className="my-10 flex w-full justify-between px-28 py-20">
-        <Button variant="destructive" className="w-[110px]" onClick={handleCancel}>
+        <Button
+          variant="destructive"
+          className="w-[110px]"
+          onClick={handleCancel}
+        >
           Batal
         </Button>
         <Button className="w-[110px] bg-[#0010A4]" onClick={handleSubmit}>
