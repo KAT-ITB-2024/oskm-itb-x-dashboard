@@ -18,7 +18,6 @@ import {
 } from "~/components/ui/command";
 import { cn } from "~/lib/utils";
 import { MdDownload } from "react-icons/md";
-import { MdAdd } from "react-icons/md";
 
 const days = [
   {
@@ -122,6 +121,15 @@ export default function MametNavigation({
           </Command>
         </PopoverContent>
       </Popover>
+
+      {/* Recap Button */}
+      <Button
+        className="h-[46px] w-[180px] rounded-md bg-[#0010A4] text-white "
+        onClick={onDownload}
+      >
+        <MdDownload className="w-[20px] text-[#3678FF]" color="white" />
+        Recap
+      </Button>
     </div>
   );
 }

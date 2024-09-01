@@ -29,7 +29,6 @@ export default function NewPassword({
         token,
       });
       router.push("/");
-      console.log("Password changed successfully");
     } catch (error) {
       console.log("Error changing password:", error);
     }
