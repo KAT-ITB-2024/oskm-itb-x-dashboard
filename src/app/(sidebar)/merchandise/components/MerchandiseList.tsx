@@ -14,6 +14,7 @@ import { RiPencilFill } from "react-icons/ri";
 import { MdCheck } from "react-icons/md";
 import Link from "next/link";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface Merchandise {
   id: number;
@@ -60,6 +61,8 @@ export default function MerchandiseList() {
         item.id === id ? { ...item, quantity: quantity! } : item,
       ),
     );
+
+    toast.success("Quantity updated successfully");
     setEditingId(null);
     setQuantity(null);
   };
