@@ -51,16 +51,21 @@ interface GroupInformationMentorProps {
     pageSize: number;
     totalCount: number;
   };
+  group: string | null | undefined;
 }
 
 function MentorPage({
   groupInformations,
   meta,
   metaMentor,
+  group,
 }: GroupInformationMentorProps) {
   return (
     <>
-      <DashboardHeaderGroup title="Group Information" group="Keluarga 72" />
+      <DashboardHeaderGroup
+        title="Group Information"
+        group={group?.split("-").join(" ") ?? "Keluarga 0"}
+      />
 
       <div className="flex w-full flex-col items-center justify-center gap-4">
         <Search placeholder="Cari Mentee..." />

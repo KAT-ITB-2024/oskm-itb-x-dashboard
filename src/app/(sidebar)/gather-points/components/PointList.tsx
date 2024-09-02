@@ -14,6 +14,7 @@ import { RiPencilFill } from "react-icons/ri";
 import { FaCheck } from "react-icons/fa";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface GroupInformationMentorProps {
   groupInformations: {
@@ -85,6 +86,12 @@ export default function PointList({
 
   const handleSave = async (nim: string) => {
     const points = parseInt(newPoints);
+
+    if (points < 0) {
+      toast.error("Poin harus lebih");
+      return;
+    }
+
     try {
       await editPoints.mutateAsync({
         userNim: nim,

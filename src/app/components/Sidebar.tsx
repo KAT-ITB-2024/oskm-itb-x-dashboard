@@ -38,8 +38,18 @@ const sidebarItems = [
   },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  role: string;
+}
+
+export default function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
+
+  // Filter out "Gather Points" if the role is "mamet"
+  const filteredSidebarItems =
+    role.toLowerCase() === "mamet"
+      ? sidebarItems.filter((item) => item.name !== "Gather Points")
+      : sidebarItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -58,7 +68,7 @@ export default function Sidebar() {
       </div>
 
       <div className="z-50 flex w-[20rem] flex-col gap-5 self-start">
-        {sidebarItems.map((item) => (
+        {filteredSidebarItems.map((item) => (
           <Link
             key={item.name}
             href={item.href}

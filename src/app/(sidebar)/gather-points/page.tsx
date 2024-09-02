@@ -51,6 +51,11 @@ export default async function Page({
   };
 }) {
   const session = await getServerAuthSession();
+  const user = session?.user;
+
+  if (user?.role.toLowerCase() !== "mentor") {
+    redirect("/");
+  }
 
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page) || 1;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown, ListFilter } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import { Button } from "~/components/ui/button";
 import {
@@ -88,20 +88,25 @@ function MametPage({
   const [keluarga, setKeluarga] = useState<
     { label: string; value: string }[] | undefined
   >(
-    groupInformations?.groups.map((g) => ({
-      label: g.namaKeluarga ?? "",
-      value: g.namaKeluarga ?? "",
-    })),
+    groupInformations?.groups
+      .filter((g) => g.namaKeluarga !== null)
+      .map((g) => ({
+        label: g.namaKeluarga ?? "",
+        value: g.namaKeluarga ?? "",
+      })),
   );
-  const [selectedKeluarga, setSelectedKeluarga] = useState<string | null>(null);
-  const [selectedSort, setSelectedSort] = useState<string>("");
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  const groupName = searchParams.get("group")?.toString() ?? "";
-  const sortBy = searchParams.get("sort") as "nim" | "nama" | undefined;
+  const groupName = searchParams.get("group")?.toString() ?? null;
+  const sortBy = searchParams.get("sort") as "nim" | "nama" | null;
+
+  const [selectedKeluarga, setSelectedKeluarga] = useState<string | null>(
+    groupName,
+  );
+  const [selectedSort, setSelectedSort] = useState<string>(sortBy ?? "");
 
   const handleFilter = (keluarga = "", sort = "") => {
     const params = new URLSearchParams(searchParams);
@@ -112,6 +117,11 @@ function MametPage({
       params.set("group", keluarga);
     }
 
+    if (keluarga !== "" && selectedKeluarga === keluarga) {
+      params.delete("group");
+      setSelectedKeluarga(null);
+    }
+
     if (sort !== "") {
       params.set("sort", sort);
     }
@@ -119,6 +129,19 @@ function MametPage({
     router.replace(`${pathname}?${params.toString()}`);
     router.refresh();
   };
+
+  useEffect(() => {
+    if (groupName === null) {
+      setKeluarga(
+        groupInformations?.groups
+          .filter((g) => g.namaKeluarga !== null)
+          .map((g) => ({
+            label: g.namaKeluarga ?? "",
+            value: g.namaKeluarga ?? "",
+          })),
+      );
+    }
+  }, [groupInformations?.groups, groupName]);
 
   return (
     <>
@@ -138,9 +161,7 @@ function MametPage({
               >
                 {selectedKeluarga
                   ? keluarga?.find((k) => k.value === selectedKeluarga)?.label
-                  : groupName === ""
-                    ? "Cari Keluarga"
-                    : groupName}
+                  : (groupName ?? "Cari Keluarga")}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -182,14 +203,14 @@ function MametPage({
           </Popover>
 
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild className="max-w-48">
               <Button
                 variant={"outline"}
                 className="flex h-12 w-full text-gray-400 hover:text-gray-400"
               >
                 {selectedSort === "" ? (
                   <>
-                    {sortBy !== undefined ? (
+                    {sortBy !== null ? (
                       <p className="text-black">
                         {sortBy === "nim" ? "NIM" : "Nama"}
                       </p>
@@ -214,7 +235,7 @@ function MametPage({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuRadioGroup
-                value={selectedSort || sortBy}
+                value={(selectedSort || sortBy) ?? ""}
                 onValueChange={(value) => {
                   setSelectedSort(value);
                   handleFilter("", value);

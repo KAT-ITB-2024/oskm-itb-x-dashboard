@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import Image from "next/image";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +29,7 @@ export default function LoginForm() {
     });
 
     if (status?.ok) {
+      toast.success("Logged in successfully");
       router.push("/assignment");
     }
   };

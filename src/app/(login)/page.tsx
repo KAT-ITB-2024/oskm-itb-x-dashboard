@@ -1,10 +1,15 @@
 import React from "react";
 import LoginForm from "./component/LoginForm";
 import { getServerAuthSession } from "~/server/auth";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await getServerAuthSession();
   const user = session?.user;
+
+  if (user) {
+    redirect("/assignment");
+  }
 
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: "url(/img/background.png)",
