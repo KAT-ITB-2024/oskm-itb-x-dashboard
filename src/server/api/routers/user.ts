@@ -292,4 +292,33 @@ export const userRouter = createTRPCRouter({
         });
       }
     }),
+
+  // Procedure to get mentor groupName
+  getMentorGroupName: mentorMametProcedure
+    .input(
+      z.object({
+        userNim: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { userNim } = input;
+
+      try {
+        const mentorGroup = await db
+          .select({ namaKeluarga: groups.name })
+          .from(groups)
+          .fullJoin(profiles, eq(profiles.group, groups.name))
+          .fullJoin(users, eq(users.id, profiles.userId))
+          .where(eq(users.nim, userNim))
+          .then((res) => res[0]?.namaKeluarga);
+
+        return mentorGroup;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get mentor group name." + String(error),
+          cause: error,
+        });
+      }
+    }),
 });

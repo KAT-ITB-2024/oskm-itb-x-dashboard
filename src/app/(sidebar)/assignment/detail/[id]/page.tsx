@@ -28,7 +28,7 @@ export default async function Page({
   let meta = {
     page: currentPage,
     totalPages: 1,
-    pageSize: 20,
+    pageSize: 10,
     totalCount: 0,
   };
 
@@ -37,13 +37,16 @@ export default async function Page({
       assignmentId: params.id,
       mentorNim: nim,
       page: currentPage,
-      pageSize: 20,
+      pageSize: 10,
       searchString: query,
     });
+
+    console.log("response", response);
 
     if (response?.data) {
       assignmentSubmissions = response.data as MenteeAssignment[];
       meta = response.meta || meta;
+      meta.totalCount = response.data.length;
     }
   } catch (error) {
     console.error("Failed to fetch assignmentSubmissions:", error);
@@ -55,12 +58,16 @@ export default async function Page({
 
   const assignmentTitle = data?.judulTugas || "Assignment X";
 
-  console.log(assignmentSubmissions);
   return (
     <div>
       <div className="flex flex-col gap-4 ">
         <DashboardHeader title="Penilaian Assignment" />
-        <MentorSubmisiPeserta assignmentTitle={assignmentTitle} assignmentSubmissions={assignmentSubmissions} meta={meta} />
+        <MentorSubmisiPeserta
+          assignmentID={params.id}
+          assignmentTitle={assignmentTitle}
+          assignmentSubmissions={assignmentSubmissions}
+          meta={meta}
+        />
       </div>
     </div>
   );
