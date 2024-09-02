@@ -3,25 +3,25 @@
       {
         "name": "oskm-dashboard-1",
         "script": "yarn",
-        "args": "start -p 3004",
+        "args": "start -p 3005",
         "exec_mode": "fork"
       },
       {
         "name": "oskm-dashboard-2",
         "script": "yarn",
-        "args": "start -p 3005",
+        "args": "start -p 3006",
         "exec_mode": "fork"
       },
       {
         "name": "oskm-dashboard-3",
         "script": "yarn",
-        "args": "start -p 3006",
+        "args": "start -p 3007",
         "exec_mode": "fork"
       },
       {
         "name": "oskm-dashboard-4",
         "script": "yarn",
-        "args": "start -p 3007",
+        "args": "start -p 3008",
         "exec_mode": "fork"
       }
     ]
