@@ -8,7 +8,7 @@ import {
   groups,
   profiles,
   users,
-  type AssignmentType,
+  roleEnum,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -21,13 +21,21 @@ import {
   mentorMametProcedure,
 } from "~/server/api/trpc";
 
-type MenteeAssignment = {
+export type MenteeAssignment = {
   nama: string;
   nim: string;
   keterlambatan: number | null;
   nilai: number;
   linkFile: string | null;
-  assignmentSubmissions: string | null;
+  assignmentSubmissions: {
+    nama: string;
+    nim: string;
+    nilai: number;
+    linkFile: string;
+    updatedAt: Date;
+    deadline: Date;
+    assignmentsId: string;
+  } | null;
 };
 
 export const assignmentRouter = createTRPCRouter({
@@ -75,11 +83,11 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getMenteeAssignmentSubmission: mentorProcedure
+    getMenteeAssignmentSubmission: mentorProcedure
     .input(
       z.object({
         assignmentId: z.string(),
-        groupName: z.string(),
+        mentorNim: z.string(),
         page: z.number().optional().default(1),
         pageSize: z.number().optional().default(10),
         searchString: z.string().optional().default(""),
@@ -87,10 +95,21 @@ export const assignmentRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { assignmentId, groupName, page, pageSize, searchString } = input;
-
+        const { assignmentId, mentorNim, page, pageSize, searchString } = input;
+  
+        const groupName =
+          (
+            await ctx.db
+              .select({
+                groupName: profiles.group,
+              })
+              .from(profiles)
+              .where(eq(users.nim, mentorNim))
+              .innerJoin(users, eq(users.id, profiles.userId))
+          )[0]?.groupName ?? "";
+  
         const offset = (page - 1) * pageSize;
-
+  
         const allMentee = await ctx.db
           .select({
             nama: profiles.name,
@@ -101,6 +120,7 @@ export const assignmentRouter = createTRPCRouter({
           .where(
             and(
               eq(profiles.group, groupName),
+              eq(users.role, roleEnum.enumValues[0]),
               or(
                 ilike(profiles.name, `%${searchString}%`),
                 ilike(users.nim, `%${searchString}%`),
@@ -110,7 +130,7 @@ export const assignmentRouter = createTRPCRouter({
           .orderBy(asc(users.nim))
           .offset(offset)
           .limit(pageSize);
-
+  
         const countRows = (
           await ctx.db
             .select({
@@ -128,7 +148,7 @@ export const assignmentRouter = createTRPCRouter({
               ),
             )
         )[0] ?? { count: 0 };
-
+  
         if (allMentee.length === 0) {
           return {
             data: [],
@@ -140,10 +160,10 @@ export const assignmentRouter = createTRPCRouter({
             },
           };
         }
-
+  
         const menteeNims = allMentee.map((mentee) => mentee.nim);
-
-        const menteeAssignment = allMentee as MenteeAssignment[];
+  
+        // Retrieve all necessary assignment submission details
         const submissions = await ctx.db
           .select({
             nama: profiles.name,
@@ -169,18 +189,23 @@ export const assignmentRouter = createTRPCRouter({
               inArray(users.nim, menteeNims),
             ),
           );
-
-        menteeAssignment.forEach((mentee) => {
-          const find = submissions.find((s) => s.nim == mentee.nim);
-          mentee.keterlambatan = calculateOverDueTime(
-            find?.deadline,
-            find?.updatedAt,
-          );
-          mentee.assignmentSubmissions = find?.assignmentsId ?? null;
-          mentee.linkFile = find?.linkFile ?? null;
-          mentee.nilai = find?.nilai ?? 0;
+  
+        // Update allMentee with submission data
+        const menteeAssignment = allMentee.map((mentee) => {
+          const submission = submissions.find((s) => s.nim === mentee.nim);
+          
+          return {
+            ...mentee,
+            keterlambatan: calculateOverDueTime(
+              submission?.deadline,
+              submission?.updatedAt
+            ),
+            assignmentSubmissions: submission ?? null,
+            linkFile: submission?.linkFile ?? null,
+            nilai: submission?.nilai ?? 0,
+          };
         });
-
+  
         return {
           data: menteeAssignment,
           meta: {
@@ -203,7 +228,7 @@ export const assignmentRouter = createTRPCRouter({
           message: "error when fetched all mentee assignment on assignment",
         });
       }
-    }),
+    }),  
 
   editMenteeAssignmentPoint: mentorProcedure
     .input(
