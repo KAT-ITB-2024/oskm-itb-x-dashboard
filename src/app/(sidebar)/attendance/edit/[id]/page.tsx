@@ -55,51 +55,56 @@ export default async function Page({
     totalCount: 0,
   };
 
-  const eventQuery = api.event.getEvent({ id: params.id });
-  const menteeQuery = api.user.detailKelompokMentor({
-    userNim: session.user.nim,
-    search: search,
-  });
-  const kelompokQuery = api.user.getMentorGroupName({
-    userNim: session.user.nim,
-  });
+  let presence = null;
+  let group = null;
 
-  const [event, kelompok, mentee] = await Promise.all([
-    eventQuery,
-    kelompokQuery,
-    menteeQuery,
-  ]);
+  const event = await api.event.getEvent({ id: params.id });
 
-  const presence = await api.presence.getPresenceOfAGroupInAnEvent({
-    eventId: params.id,
-    groupName: kelompok!,
-    presenceEvent: eventType as "Opening" | "Closing",
-    page: currentPage,
-    search: search,
-  });
+  // Mentor Queries
+  try {
+    const menteeQuery = api.user.detailKelompokMentor({
+      userNim: session.user.nim,
+      search: search,
+    });
+    const kelompokQuery = api.user.getMentorGroupName({
+      userNim: session.user.nim,
+    });
+
+    const [kelompok, mentee] = await Promise.all([kelompokQuery, menteeQuery]);
+
+    group = kelompok;
+
+    menteesData = mentee;
+    metaMentor = {
+      page: mentee.page,
+      totalPages: 1,
+      pageSize: 5,
+      totalCount: mentee.mentees.length,
+    };
+
+    presence = await api.presence.getPresenceOfAGroupInAnEvent({
+      eventId: params.id,
+      groupName: kelompok!,
+      presenceEvent: eventType as "Opening" | "Closing",
+      page: currentPage,
+      search: search,
+    });
+  } catch (error) {}
 
   const filteredPresenceData = presence?.data.filter(
     (item) => item.createdAt !== null,
   );
 
-  menteesData = mentee;
-  metaMentor = {
-    page: mentee.page,
-    totalPages: 1,
-    pageSize: 5,
-    totalCount: mentee.mentees.length,
-  };
-
   const presenceData = filteredPresenceData ?? [];
 
   return (
     <div>
-      {session?.user.role === "Mamet" && <MametEdit />}
+      {session?.user.role === "Mamet" && <MametEdit event={event} />}
       {session?.user.role === "Mentor" && (
         <MentorEdit
           menteesData={menteesData}
           metaMentor={metaMentor}
-          group={kelompok}
+          group={group}
           event={event}
           presenceData={presenceData}
         />

@@ -4,7 +4,23 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import DashboardHeader from "~/app/components/DashboardHeader";
 import MametFormAttendance from "../../../components/MametFormAttendance";
 
-function MametEdit() {
+interface Event {
+  id: string;
+  day: string;
+  eventDate: Date;
+  openingOpenPresenceTime: string;
+  closingOpenPresenceTime: string;
+  openingClosePresenceTime: string;
+  closingClosePresenceTime: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface MametEditProps {
+  event: Event | undefined;
+}
+
+function MametEdit({ event }: MametEditProps) {
   return (
     <>
       <DashboardHeader title="Edit Event" />
@@ -14,7 +30,7 @@ function MametEdit() {
           Edit Event
         </h1>
       </Link>
-      <MametFormAttendance />
+      <MametFormAttendance event={event} />
     </>
   );
 }

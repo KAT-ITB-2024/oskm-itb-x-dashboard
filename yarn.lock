@@ -3113,7 +3113,7 @@ data-view-byte-offset@^1.0.0:
     tsx "^4.15.7"
     typescript "^5.5.2"
 
-date-fns@*:
+date-fns@*, date-fns@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
   integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
@@ -5260,6 +5260,11 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
+react-day-picker@8.10.1:
+  version "8.10.1"
+  resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-8.10.1.tgz#4762ec298865919b93ec09ba69621580835b8e80"
+  integrity sha512-TMx7fNbhLk15eqcMt+7Z7S2KF7mfTId/XJDjKE8f+IUcFn0l08/kI4FiYTL/0yuOLmEcbR4Fwe3GJf/NiiMnPA==
+
 react-dom@^18.3.0:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.3.1.tgz#c2265d79511b57d479b3dd3fdfa51536494c5cb4"
@@ -5839,7 +5844,7 @@ supports-preserve-symlinks-flag@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Ahmad Naufal Ramadan/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-ebeef99d-e55a-4d05-84d6-82dbda91d0b3-1725245612694/node_modules/t3-template-app"
+    t3-template-app "file:C:/Users/Ahmad Naufal Ramadan/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-af84fb2a-68b8-4feb-beaf-513083975606-1725280257002/node_modules/t3-template-app"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"

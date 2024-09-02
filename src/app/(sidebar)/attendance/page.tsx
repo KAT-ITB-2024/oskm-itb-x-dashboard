@@ -14,7 +14,9 @@ export default async function Page() {
     <div className="flex flex-col gap-4">
       <DashboardHeader title="Events List" />
 
-      {session?.user.role === "Mamet" && <MametListAttendance />}
+      {session?.user.role === "Mamet" && (
+        <MametListAttendance events={events} />
+      )}
 
       {session?.user.role === "Mentor" && (
         <MentorListAttendance events={events} />
