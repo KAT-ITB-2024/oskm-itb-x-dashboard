@@ -87,8 +87,8 @@ export default function PointList({
   const handleSave = async (nim: string) => {
     const points = parseInt(newPoints);
 
-    if (points < 0 || points > 100) {
-      toast.error("Poin harus berada di antara 0 hingga 100");
+    if (points < 0) {
+      toast.error("Poin harus lebih");
       return;
     }
 
