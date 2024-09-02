@@ -5,18 +5,20 @@ import {
   type PresenceType,
   eventPresences,
   events,
+  presenceEventEnum,
+  presenceTypeEnum,
   profiles,
+  roleEnum,
   users,
 } from "@katitb2024/database";
-import { profile } from "console";
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import {
   createTRPCRouter,
   publicProcedure,
   //   mametProcedure,
-  //   mentorProcedure,
+  mentorProcedure,
   //   mentorMametProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
@@ -42,148 +44,143 @@ export type TPresenceBaseResponse<T> = {
 };
 
 export const presenceRouter = createTRPCRouter({
-  // Mentor (and perhaps Mamet?)
-  /**
-   * Get the presence of an event
-   *
-   * -- query --
-   * @param eventId The ID of the event
-   * @param groupName The name of the group
-   * @param page The page number (1-indexed)
-   * @param dataPerPage The number of data per page
-   * @returns TAttendanceOfAnEvent
-   */
-  getPresenceOfAGroupInAnEvent: publicProcedure
-    .input(
-      z.object({
-        eventId: z.string(),
-        groupName: z.string().optional(),
-        page: z.number(),
-        dataPerPage: z.number(),
-      }),
-    )
-    .query<TPresenceBaseResponse<TAttendanceOfAnEvent>>(
-      async ({ input: { eventId, groupName, page, dataPerPage } }) => {
-        try {
-          const returned = await db
-            .select({
-              nim: users.nim,
-              name: profiles.name,
-              group: profiles.group,
-              presence: eventPresences.presenceType,
-            })
-            .from(events)
-            .innerJoin(eventPresences, eq(events.id, eventPresences.eventId))
-            .innerJoin(users, eq(users.nim, eventPresences.userNim))
-            .innerJoin(profiles, eq(profiles.userId, users.id))
-            .where(
-              and(
-                eq(events.id, eventId),
-                groupName ? eq(profiles.group, groupName) : undefined,
-              ),
-            );
+  // Mentor
+  getPresenceOfAGroupInAnEvent: mentorProcedure
+  .input(
+    z.object({
+      eventId: z.string(),
+      groupName: z.string(),
+      presenceEvent: z.enum([...presenceEventEnum.enumValues]),
+      page: z.number().min(1).default(1), // Pagination: page number
+      limit: z.number().min(1).max(100).default(10), // Pagination: limit per page
+      search: z.string().optional(), // Search query for user's name
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const { groupName, eventId, presenceEvent, page, limit, search } = input;
 
-          const paginatedData = returned.slice(
-            dataPerPage * (page - 1),
-            dataPerPage * page,
-          );
+    const groupExists = await ctx.db
+      .select()
+      .from(profiles)
+      .where(eq(profiles.group, groupName))
+      .limit(1);
 
-          return {
-            ok: true,
-            data: paginatedData.map((row) => ({
-              nim: row.nim,
-              name: row.name,
-              group: row.group,
-              presence: row.presence,
-            })),
-          };
-        } catch (error) {
-          return {
-            ok: false,
-            message: "Internal server error",
-            data: null,
-          };
-        }
-      },
-    ),
-
-  // Mamet
-  /**
-   * Get the complete presence of all events
-   * @returns TAttendance[]
-   * @WARNING This query is not recommended to be called for the front end as this is a heavy query
-   * and no pagination is implemented
-   */
-  getCompletePresence: publicProcedure.query<
-    TPresenceBaseResponse<TAttendance[]>
-  >(async () => {
-    try {
-      const q = await db
-        .select({
-          nim: users.nim,
-          name: profiles.name,
-          group: profiles.group,
-          presence: eventPresences.presenceType,
-          day: events.day,
-          openingOrClosing: eventPresences.presenceEvent, 
-        })
-        .from(events)
-        .innerJoin(eventPresences, eq(events.id, eventPresences.eventId))
-        .innerJoin(users, eq(users.nim, eventPresences.userNim))
-        .innerJoin(profiles, eq(profiles.userId, users.id));
-
-      const groupingMap = new Map<
-        {
-          day: EventDay;
-          openingOrClosing: PresenceEvent;
-        },
-        TAttendanceOfAnEvent
-      >();
-
-      q.forEach((row) => {
-        const key = {
-          day: row.day,
-          openingOrClosing: row.openingOrClosing,
-        };
-
-        if (!groupingMap.has(key)) {
-          groupingMap.set(key, []);
-        }
-
-        groupingMap.get(key)?.push({
-          nim: row.nim,
-          name: row.name,
-          group: row.group,
-          presence: row.presence,
-        });
+    if (!groupExists.length) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Kelompok/group not found",
       });
-
-      const returned: TAttendance[] = [];
-      groupingMap.forEach((value, key) => {
-        returned.push({
-          day: key.day,
-          openingOrClosing: key.openingOrClosing,
-          attendance: value,
-        });
-      });
-
-      return {
-        ok: true,
-        message: "Success get all presence",
-        data: returned,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        message: "Internal server error",
-        data: null,
-      };
     }
+
+    const eventExists = await ctx.db
+      .select()
+      .from(events)
+      .where(eq(events.id, eventId))
+      .limit(1);
+
+    if (!eventExists.length) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Event not found",
+      });
+    }
+
+    // Fetch users in the specified group with the role "Peserta"
+    const usersQuery = ctx.db
+      .select({
+        nim: users.nim,
+        name: profiles.name,
+        userId: users.id,
+      })
+      .from(users)
+      .innerJoin(profiles, eq(users.id, profiles.userId))
+      .where(and(
+        eq(profiles.group, groupName),
+        eq(users.role, roleEnum.enumValues[0]),
+        ilike(profiles.name, `%${search ? search : ""}%`)
+      ));
+
+    const usersInGroup = await usersQuery;
+
+    if (!usersInGroup.length) {
+      return [];
+    }
+
+    const nimValues = usersInGroup.map((user) => user.nim);
+
+    // Fetch matching presences for the event
+    const matchingPresences = await ctx.db
+      .select({
+        id: eventPresences.id,
+        createdAt: eventPresences.createdAt,
+        updatedAt: eventPresences.updatedAt,
+        presenceType: eventPresences.presenceType,
+        presenceEvent: eventPresences.presenceEvent,
+        userNim: eventPresences.userNim,
+        eventId: eventPresences.eventId,
+      })
+      .from(eventPresences)
+      .where(
+        and(
+          eq(eventPresences.eventId, eventId),
+          eq(eventPresences.presenceEvent, presenceEvent),
+          inArray(eventPresences.userNim, nimValues) // use the inArray method instead of raw SQL
+        )
+      );
+
+    // Mapping presence data with user names
+    const matchingPresencesWithName = matchingPresences.map((presence) => {
+      const user = usersInGroup.find((user) => user.nim === presence.userNim);
+      return {
+        ...presence,
+        name: user?.name,
+      };
+    });
+
+    // Creating Alpha presences for users not found in eventPresences
+    const alphaPresences = usersInGroup.map((user) => ({
+      id: crypto.randomUUID(), // Generating a random unique ID
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      presenceType: presenceTypeEnum.enumValues[2], // Alpha
+      presenceEvent: presenceEvent,
+      userNim: user.nim,
+      name: user.name, // Using the user's name from profile
+      eventId: eventId,
+    }));
+
+    // Merging the presence data with Alpha data if no presence is found
+    const presences = usersInGroup.map((user) => {
+      const presence = matchingPresencesWithName.find(
+        (p) => p.userNim === user.nim
+      );
+
+      if (presence) {
+        return presence;
+      } else {
+        return alphaPresences.find((p) => p.userNim === user.nim)!;
+      }
+    });
+
+    // Implement pagination
+    const offset = (page - 1) * limit;
+    const paginatedPresences = presences.slice(offset, offset + limit);
+
+    return {
+      ok: true,
+      data: paginatedPresences,
+      message: "Successfully fetched group presence data.",
+      meta: {
+        page,
+        limit,
+        total: presences.length,
+      },
+    };
   }),
 
-  // Mamet
+  // Mentor
   // Status: Tested
-  editPresence: publicProcedure
+  editPresence: mentorProcedure
     .input(
       z.object({
         eventId: z.string(),
@@ -216,50 +213,6 @@ export const presenceRouter = createTRPCRouter({
               presence,
               openingOrClosing,
             },
-          };
-        } catch (error) {
-          return {
-            ok: false,
-            message: "Internal server error",
-            data: null,
-          };
-        }
-      },
-    ),
-
-  // Mamet
-  // Status: Tested
-  addPresence: publicProcedure
-    .input(
-      z.object({
-        eventId: z.string(),
-        openingOrClosing: z.enum(["Opening", "Closing"]),
-      }),
-    )
-    .mutation<TPresenceBaseResponse<null>>(
-      async ({ input: { eventId, openingOrClosing } }) => {
-        try {
-          const rolePesertaUsers = await db
-            .select({ nim: users.nim })
-            .from(users)
-            .where(eq(users.role, "Peserta"));
-
-          // Now we have all the nim of the Peserta
-          // We can insert them all into the eventPresences table
-          const insertData = rolePesertaUsers.map((row) => ({
-            eventId,
-            userNim: row.nim,
-            presenceType: "Alpha" as PresenceType,
-            presenceEvent: openingOrClosing,
-            updatedAt: new Date(),
-          }));
-
-          await db.insert(eventPresences).values(insertData);
-
-          return {
-            ok: true,
-            message: "Success add presence",
-            data: null,
           };
         } catch (error) {
           return {
@@ -437,8 +390,6 @@ export const presenceRouter = createTRPCRouter({
       }
     }),
 
-
-
   // mendapat list presensi peserta pada sesuai keluarga dan event
   getPresensiPeserta: publicProcedure
     .input(
@@ -462,7 +413,7 @@ export const presenceRouter = createTRPCRouter({
         .where(
           and(
             eq(profiles.group, input.group),
-            eq(users.role, "Peserta"),
+            eq(users.role, roleEnum.enumValues[0]),
             eq(eventPresences.eventId, input.eventId),
           ),
         );
@@ -523,41 +474,40 @@ export const presenceRouter = createTRPCRouter({
       return { message: "Presence successfully updated" };
     }),
   getEventsThatHasPresence: publicProcedure
-  .input(
-    z.object({
-      page: z.number(),
-      dataPerPage: z.number(),
+    .input(
+      z.object({
+        page: z.number(),
+        dataPerPage: z.number(),
+      }),
+    )
+    .query(async ({ input: { page, dataPerPage } }) => {
+      const eventsWithPresence = await db
+        .selectDistinct({
+          eventId: events.id,
+          eventDay: events.day,
+          eventDate: events.eventDate,
+          openingOpenPresenceTime: events.openingOpenPresenceTime,
+          openingClosePresenceTime: events.openingClosePresenceTime,
+          closingOpenPresenceTime: events.closingOpenPresenceTime,
+          closingClosePresenceTime: events.closingClosePresenceTime,
+        })
+        .from(events)
+        .leftJoin(eventPresences, eq(events.id, eventPresences.eventId))
+        .orderBy(asc(events.eventDate));
+
+      // Calculate total number of items (before slicing)
+      const totalItems = eventsWithPresence.length;
+
+      // Apply pagination
+      const paginatedData = eventsWithPresence.slice(
+        dataPerPage * (page - 1),
+        dataPerPage * page,
+      );
+
+      // Return both paginated data and total item count
+      return {
+        paginatedData,
+        totalItems,
+      };
     }),
-  )
-  .query(async ({ input: { page, dataPerPage } }) => {
-    const eventsWithPresence = await db
-      .selectDistinct({
-        eventId: events.id,
-        eventDay: events.day,
-        eventDate: events.eventDate,
-        openingOpenPresenceTime: events.openingOpenPresenceTime,
-        openingClosePresenceTime: events.openingClosePresenceTime,
-        closingOpenPresenceTime: events.closingOpenPresenceTime,
-        closingClosePresenceTime: events.closingClosePresenceTime,
-      })
-      .from(events)
-      .leftJoin(eventPresences, eq(events.id, eventPresences.eventId))
-      .orderBy(asc(events.eventDate));
-
-    // Calculate total number of items (before slicing)
-    const totalItems = eventsWithPresence.length;
-
-    // Apply pagination
-    const paginatedData = eventsWithPresence.slice(
-      dataPerPage * (page - 1),
-      dataPerPage * page
-    );
-
-    // Return both paginated data and total item count
-    return {
-      paginatedData,
-      totalItems,
-    };
-  }),
-
 });
