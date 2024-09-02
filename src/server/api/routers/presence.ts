@@ -103,7 +103,7 @@ export const presenceRouter = createTRPCRouter({
       const usersInGroup = await usersQuery;
 
       if (!usersInGroup.length) {
-        return [];
+        return null;
       }
 
       const nimValues = usersInGroup.map((user) => user.nim);
@@ -118,6 +118,7 @@ export const presenceRouter = createTRPCRouter({
           presenceEvent: eventPresences.presenceEvent,
           userNim: eventPresences.userNim,
           eventId: eventPresences.eventId,
+          remark: eventPresences.remarks,
         })
         .from(eventPresences)
         .where(
@@ -140,13 +141,16 @@ export const presenceRouter = createTRPCRouter({
       // Creating Alpha presences for users not found in eventPresences
       const alphaPresences = usersInGroup.map((user) => ({
         id: crypto.randomUUID(), // Generating a random unique ID
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        // createdAt: new Date(),
+        // updatedAt: new Date(),
+        createdAt: null,
+        updatedAt: null,
         presenceType: presenceTypeEnum.enumValues[2],
         presenceEvent: presenceEvent,
         userNim: user.nim,
         name: user.name,
         eventId: eventId,
+        remark: "-",
       }));
 
       // Merging the presence data with Alpha data if no presence is found
@@ -246,6 +250,64 @@ export const presenceRouter = createTRPCRouter({
       };
     }),
 
+  // Mentor
+  // Status: Tested
+  upsertGroupPresenceDataSingle: mentorProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+        presenceEvent: z.enum([...presenceEventEnum.enumValues]),
+        userNim: z.string(),
+        presenceType: z.enum([...presenceTypeEnum.enumValues]),
+        keterangan: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { eventId, presenceEvent, userNim, presenceType, keterangan } =
+        input;
+
+      // Check if the event exists
+      const eventExists = await ctx.db
+        .select()
+        .from(events)
+        .where(eq(events.id, eventId));
+
+      if (eventExists.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Event not found",
+        });
+      }
+
+      await ctx.db
+        .insert(eventPresences)
+        .values({
+          eventId,
+          userNim,
+          presenceType,
+          presenceEvent,
+          remarks: keterangan ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: [
+            eventPresences.eventId,
+            eventPresences.presenceEvent,
+            eventPresences.userNim,
+          ],
+          set: {
+            presenceType: presenceType,
+            remarks: keterangan,
+            updatedAt: new Date(),
+          },
+        });
+
+      return {
+        message: "Presences successfully inserted/updated",
+      };
+    }),
+
   // Mamet
   // Status: Tested
   getPresenceOfAnEventCSV: mametProcedure
@@ -273,11 +335,7 @@ export const presenceRouter = createTRPCRouter({
           .innerJoin(eventPresences, eq(events.id, eventPresences.eventId))
           .innerJoin(users, eq(users.nim, eventPresences.userNim))
           .innerJoin(profiles, eq(profiles.userId, users.id))
-          .where(
-            and(
-              eq(events.id, eventId),
-            ),
-          );
+          .where(and(eq(events.id, eventId)));
 
         const data = returned
           .map((row) => `${row.nim},${row.name},${row.group},${row.presence}`)

@@ -40,7 +40,7 @@ export default function MentorListAssignment({
 
   const handleOpenFileInANewTab = async (downloadUrl: string) => {
     if (downloadUrl) {
-      window.open(downloadUrl, '_blank');
+      window.open(downloadUrl, "_blank");
     }
   };
 
@@ -92,7 +92,7 @@ export default function MentorListAssignment({
               {assignments.map((item, index) => (
                 <TableRow
                   key={index}
-                  className="border-2 border-gray-500 cursor-pointer hover:bg-gray-200"
+                  className="cursor-pointer border-2 border-gray-500 hover:bg-gray-200"
                   onClick={() => handleRowClick(item.assignmentId)}
                 >
                   <TableCell className="border-2 border-gray-300 text-center">
@@ -113,9 +113,7 @@ export default function MentorListAssignment({
                   >
                     <Button
                       className="flex w-full items-center justify-center bg-transparent hover:bg-transparent"
-                      onClick={() =>
-                        handleOpenFileInANewTab(item.downloadUrl)
-                      }
+                      onClick={() => handleOpenFileInANewTab(item.downloadUrl)}
                       disabled={!item.downloadUrl}
                     >
                       <Image

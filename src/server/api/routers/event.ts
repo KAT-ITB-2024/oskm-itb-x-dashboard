@@ -14,12 +14,11 @@ import { events, eventDayEnum } from "@katitb2024/database";
 import { z_date, z_time } from "~/utils/dateUtils";
 
 export const eventRouter = createTRPCRouter({
-  getEvents: mentorMametProcedure
-    .query(async ({ ctx }) => {
-      const res = await ctx.db.select().from(events);
+  getEvents: mentorMametProcedure.query(async ({ ctx }) => {
+    const res = await ctx.db.select().from(events).orderBy(events.eventDate);
 
-      return res;
-    }),
+    return res;
+  }),
 
   getEvent: mentorMametProcedure
     .input(
