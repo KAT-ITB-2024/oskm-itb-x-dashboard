@@ -16,8 +16,10 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
+  mametProcedure,
   mentorProcedure,
 } from "~/server/api/trpc";
+import { db } from "~/server/db";
 import { TRPCError } from "@trpc/server";
 
 export type TAttendanceOfAnEvent = {
@@ -242,5 +244,63 @@ export const presenceRouter = createTRPCRouter({
       return {
         message: "Presences successfully inserted/updated",
       };
+    }),
+
+  // Mamet
+  // Status: Tested
+  getPresenceOfAnEventCSV: mametProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      }),
+    )
+    .query<
+      TPresenceBaseResponse<{
+        filename: string;
+        mimeType: string;
+        content: string;
+      }>
+    >(async ({ input: { eventId } }) => {
+      try {
+        const returned = await db
+          .select({
+            nim: users.nim,
+            name: profiles.name,
+            group: profiles.group,
+            presence: eventPresences.presenceType,
+          })
+          .from(events)
+          .innerJoin(eventPresences, eq(events.id, eventPresences.eventId))
+          .innerJoin(users, eq(users.nim, eventPresences.userNim))
+          .innerJoin(profiles, eq(profiles.userId, users.id))
+          .where(
+            and(
+              eq(events.id, eventId),
+            ),
+          );
+
+        const data = returned
+          .map((row) => `${row.nim},${row.name},${row.group},${row.presence}`)
+          .join("\n");
+
+        const headers = ["NIM", "Nama", "Kelompok", "Kehadiran"];
+        const csvContent = [headers.join(","), data].join("\n");
+
+        return {
+          ok: true,
+          message: "Success get presence",
+          data: {
+            filename: `presence_${eventId}_.csv`,
+            mimeType: "text/csv",
+            content: csvContent,
+          },
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          message: "Internal server error",
+          data: null,
+        };
+      }
     }),
 });
