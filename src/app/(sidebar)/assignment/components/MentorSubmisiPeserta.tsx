@@ -81,7 +81,16 @@ const MentorSubmisiPeserta = ({
     setSearchTerm(e.target.value);
   };
 
-  const handleEditClick = (index: number, currentValue: number) => {
+  const handleEditClick = (
+    index: number,
+    status: string,
+    currentValue: number,
+  ) => {
+    if (status.toLowerCase() === "not submitted") {
+      toast.error("Mentee haven't submitted the assignment yet");
+      return;
+    }
+
     setEditingIndex(index);
     setEditedValue(currentValue.toString()); // Convert number to string for the input field
   };
@@ -239,7 +248,9 @@ const MentorSubmisiPeserta = ({
                       <div className="flex items-center justify-center gap-2">
                         <p>{item.nilai}</p>
                         <MdModeEdit
-                          onClick={() => handleEditClick(index, item.nilai)}
+                          onClick={() =>
+                            handleEditClick(index, item.status, item.nilai)
+                          }
                           className="cursor-pointer"
                         />
                       </div>
