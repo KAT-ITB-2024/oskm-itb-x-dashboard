@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { IoMdSearch } from "react-icons/io";
+import { MdModeEdit } from "react-icons/md";
 import {
   Table,
   TableBody,
@@ -11,8 +12,13 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { type MenteeAssignment } from "~/server/api/routers/assignment";
+import { BiCheck } from "react-icons/bi";
+import { api } from "~/trpc/react";
+import { nextImageLoaderRegex } from "next/dist/build/webpack-config";
+import toast from "react-hot-toast";
 
 interface mentorSubmisiPesertaProps {
+  assignmentID: string;
   assignmentTitle: string;
   assignmentSubmissions: MenteeAssignment[];
   meta: {
@@ -30,24 +36,35 @@ const formatKeterlambatan = (seconds: number | null) => {
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
 
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
 const MentorSubmisiPeserta = ({
+  assignmentID,
   assignmentTitle,
   assignmentSubmissions,
   meta,
 }: mentorSubmisiPesertaProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editedValue, setEditedValue] = useState<string>("");
 
   // sementara di FE dulu, integrasi ke BE lagi gw kerjain
-  const filteredSubmissions = assignmentSubmissions.filter(submission =>
-    submission.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.nim.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSubmissions = assignmentSubmissions.filter(
+    (submission) =>
+      submission.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.nim.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const penilaianSubmisi = filteredSubmissions.map((submission, index) => {
-    const { nama, nim, keterlambatan, assignmentSubmissions: submissionDetail, linkFile, nilai } = submission;
+    const {
+      nama,
+      nim,
+      keterlambatan,
+      assignmentSubmissions: submissionDetail,
+      linkFile,
+      nilai,
+    } = submission;
 
     return {
       no: index + 1,
@@ -62,6 +79,40 @@ const MentorSubmisiPeserta = ({
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleEditClick = (index: number, currentValue: number) => {
+    setEditingIndex(index);
+    setEditedValue(currentValue.toString()); // Convert number to string for the input field
+  };
+
+  const editMenteePoints =
+    api.assignment.editMenteeAssignmentSubmissionPoint.useMutation();
+
+  const handleSaveClick = async (nim: string) => {
+    const updatedValue = parseFloat(editedValue); // Convert string back to number before saving
+    if (!isNaN(updatedValue)) {
+      // Save the updated value logic here, such as an API call
+      console.log(`Save value for NIM ${nim}: ${updatedValue}`);
+
+      try {
+        await editMenteePoints.mutateAsync({
+          point: updatedValue,
+          assignmentId: assignmentID,
+          menteeNim: nim,
+        });
+
+        toast.success("Nilai berhasil disimpan");
+      } catch (error) {
+        console.error("Error saving points:", error);
+        toast.error("Gagal menyimpan nilai");
+      }
+    }
+    setEditingIndex(null);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedValue(e.target.value);
   };
 
   return (
@@ -125,7 +176,7 @@ const MentorSubmisiPeserta = ({
                   Status
                 </TableHead>
                 <TableHead
-                  style={{ width: "10%" }}
+                  style={{ width: "20%" }}
                   className="border-2 border-gray-300 text-center font-bold text-white"
                 >
                   Nilai
@@ -139,7 +190,7 @@ const MentorSubmisiPeserta = ({
               </TableRow>
             </TableHeader>
             <TableBody className="bg-white">
-              {penilaianSubmisi.map((item) => (
+              {penilaianSubmisi.map((item, index) => (
                 <TableRow
                   key={item.no}
                   className="border-2 border-gray-500 text-[16px]"
@@ -156,11 +207,43 @@ const MentorSubmisiPeserta = ({
                   <TableCell className="border-2 border-gray-300 text-center">
                     {item.interval}
                   </TableCell>
-                  <TableCell className="border-2 border-gray-300 text-center">
-                    {item.status}
+                  <TableCell className={`border-2 border-gray-300 text-center`}>
+                    <div
+                      className={`rounded-lg border-2 p-2 text-center ${
+                        item.status.toLowerCase() === "submitted"
+                          ? "border-[#05A798] bg-[#C5FFF3] text-[#05A798]"
+                          : item.status.toLowerCase() === "late"
+                            ? "border-[#F06B02] bg-[#FFD897] text-[#F06B02]"
+                            : "border-[#DC2522] bg-[#FFF2F2] text-[#DC2522]"
+                      } `}
+                    >
+                      {item.status}
+                    </div>
                   </TableCell>
+
                   <TableCell className="border-2 border-gray-300 text-center">
-                    {item.nilai}
+                    {editingIndex === index ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <input
+                          type="text"
+                          value={editedValue}
+                          onChange={handleInputChange}
+                          className="rounded-md border border-gray-300 text-center"
+                        />
+                        <BiCheck
+                          onClick={() => handleSaveClick(item.nim)}
+                          className="cursor-pointer text-2xl hover:text-green-500"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                        <p>{item.nilai}</p>
+                        <MdModeEdit
+                          onClick={() => handleEditClick(index, item.nilai)}
+                          className="cursor-pointer"
+                        />
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="border-2 border-gray-300">
                     <a
@@ -183,75 +266,6 @@ const MentorSubmisiPeserta = ({
           </Table>
         </div>
       </div>
-      <nav className="gap-3items-center mt-10 flex flex-row justify-center gap-4">
-        <p>Total {meta.totalCount} Items</p>
-        <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
-          <li>
-            <a
-              href="#"
-              className={`flex h-6 items-center justify-center rounded-md ${meta.page === 1 ? 'bg-gray-300' : 'bg-[#EE1192]'} px-2 text-white`}
-              aria-disabled={meta.page === 1}
-            >
-              <span className="sr-only">Previous</span>
-              <svg
-                className="h-2 w-2 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>
-            </a>
-          </li>
-          {Array.from({ length: meta.totalPages }, (_, index) => (
-            <li key={index}>
-              <a
-                href="#"
-                aria-current={meta.page === index + 1 ? "page" : undefined}
-                className={`z-10 flex h-6 items-center justify-center rounded-md ${meta.page === index + 1 ? 'bg-[#EE1192]' : 'bg-white'} px-2 text-white`}
-              >
-                {index + 1}
-              </a>
-            </li>
-          ))}
-          <li>
-            <a
-              href="#"
-              className={`flex h-6 items-center justify-center rounded-md ${meta.page === meta.totalPages ? 'bg-gray-300' : 'bg-[#EE1192]'} px-2 text-white`}
-              aria-disabled={meta.page === meta.totalPages}
-            >
-              <span className="sr-only">Next</span>
-              <svg
-                className="h-2 w-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 1l4 4-4 4"
-                />
-              </svg>
-            </a>
-          </li>
-        </ul>
-        <div className="h-6 rounded-md border px-3.5">
-          <p>
-            <span className="text-gray-500">{meta.pageSize}</span> / page
-          </p>
-        </div>
-      </nav>
     </div>
   );
 };

@@ -50,6 +50,8 @@ export default async function Page({
     assignmentId: params.id,
   });
 
+  console.log(params.id);
+
   const assignmentTitle = data?.judulTugas || "Assignment X";
 
   console.log(assignmentSubmissions);
@@ -57,7 +59,12 @@ export default async function Page({
     <div>
       <div className="flex flex-col gap-4 ">
         <DashboardHeader title="Penilaian Assignment" />
-        <MentorSubmisiPeserta assignmentTitle={assignmentTitle} assignmentSubmissions={assignmentSubmissions} meta={meta} />
+        <MentorSubmisiPeserta
+          assignmentID={params.id}
+          assignmentTitle={assignmentTitle}
+          assignmentSubmissions={assignmentSubmissions}
+          meta={meta}
+        />
       </div>
     </div>
   );
