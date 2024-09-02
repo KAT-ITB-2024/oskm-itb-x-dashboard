@@ -8,9 +8,12 @@ import { type MenteeAssignment } from "~/server/api/routers/assignment";
 
 export default async function Page({
   params,
+  searchParams
 }: {
   params: {
     id: string;
+  };
+  searchParams?: {
     query?: string;
     page?: string;
   };
@@ -18,8 +21,8 @@ export default async function Page({
   const session = await getServerAuthSession();
   const { nim } = session?.user as User;
 
-  const query = params?.query ?? "";
-  const currentPage = Number(params?.page) || 1;
+  const query = searchParams?.query ?? "";
+  const currentPage = Number(searchParams?.page) || 1;
 
   let assignmentSubmissions: MenteeAssignment[] = [];
   let meta = {

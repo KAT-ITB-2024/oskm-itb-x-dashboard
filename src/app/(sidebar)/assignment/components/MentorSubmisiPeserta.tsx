@@ -1,7 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { IoMdSearch } from "react-icons/io";
 import {
   Table,
   TableBody,
@@ -11,6 +10,8 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { type MenteeAssignment } from "~/server/api/routers/assignment";
+import { formatKeterlambatan } from "~/utils/timeUtils";
+import Search from "./Search";
 
 interface mentorSubmisiPesertaProps {
   assignmentTitle: string;
@@ -23,30 +24,12 @@ interface mentorSubmisiPesertaProps {
   };
 }
 
-const formatKeterlambatan = (seconds: number | null) => {
-  if (seconds === null) return "-";
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-};
-
 const MentorSubmisiPeserta = ({
   assignmentTitle,
   assignmentSubmissions,
   meta,
 }: mentorSubmisiPesertaProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // sementara di FE dulu, integrasi ke BE lagi gw kerjain
-  const filteredSubmissions = assignmentSubmissions.filter(submission =>
-    submission.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.nim.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const penilaianSubmisi = filteredSubmissions.map((submission, index) => {
+  const penilaianSubmisi = assignmentSubmissions.map((submission, index) => {
     const { nama, nim, keterlambatan, assignmentSubmissions: submissionDetail, linkFile, nilai } = submission;
 
     return {
@@ -54,15 +37,11 @@ const MentorSubmisiPeserta = ({
       name: nama || "Unknown",
       nim: nim || "N/A",
       interval: formatKeterlambatan(keterlambatan),
-      status: submissionDetail ? "Submitted" : "Not Submitted",
-      nilai: nilai ?? "0",
+      status: keterlambatan === null ? (submissionDetail === null ? "Not Submitted" : "Submitted") : "Late",
+      nilai: nilai || "0",
       linksubmisi: linkFile ?? "#",
     };
   });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
 
   return (
     <div className="flex flex-col">
@@ -78,17 +57,7 @@ const MentorSubmisiPeserta = ({
           {assignmentTitle}
         </h1>
       </div>
-
-      <div className="mt-6 flex h-[48px] w-full items-start justify-between rounded-lg border-2 border-input bg-white px-4 py-3">
-        <input
-          type="text"
-          placeholder="Cari Tugas dan NIM"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="w-full bg-transparent outline-none"
-        />
-        <IoMdSearch className="text-xl text-gray-400" />
-      </div>
+      <Search placeholder="Cari berdasarkan Nama atau NIM" />
       <div className="flex w-full flex-col items-center justify-center gap-4">
         <div className="mt-5 w-full">
           <Table className="border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
