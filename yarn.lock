@@ -1130,12 +1130,12 @@
 
 "@katitb2024/database@git+https://github.com/KAT-ITB-2024/database-oskm.git#master":
   version "1.0.0"
-  resolved "git+https://github.com/KAT-ITB-2024/database-oskm.git#b52bb33a787ad601ccfa82b12a9d2af4cf21bbb8"
+  resolved "git+https://github.com/KAT-ITB-2024/database-oskm.git#1efc07d44f8fe046792353180ef9c7a25c9d70d9"
   dependencies:
     "@paralleldrive/cuid2" "^2.2.2"
     bcrypt "^5.1.1"
     csv-parser "^3.0.0"
-    database-oskm "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-b52bb33a787ad601ccfa82b12a9d2af4cf21bbb8/node_modules/@katitb2024/database"
+    database-oskm "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-@katitb2024-database-1.0.0-1efc07d44f8fe046792353180ef9c7a25c9d70d9/node_modules/@katitb2024/database"
     drizzle-dbml-generator "^0.8.0"
     drizzle-orm "^0.31.2"
     postgres "^3.4.4"
@@ -2317,17 +2317,17 @@
   dependencies:
     "@t3-oss/env-core" "0.10.1"
 
-"@tanstack/query-core@5.53.1":
-  version "5.53.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.53.1.tgz#864fa79ccba4cace939ee96f13218b924e50c785"
-  integrity sha512-mvLG7s4Zy3Yvc2LsKm8BVafbmPrsReKgqwhmp4XKVmRW9us3KbWRqu3qBBfhVavcUUEHfNK7PvpTchvQpVdFpw==
+"@tanstack/query-core@5.53.2":
+  version "5.53.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.53.2.tgz#b8413891d706e6a095997f20e250aa379b4fa6e0"
+  integrity sha512-gCsABpRrYfLsmwcQ0JCE5I3LOQ9KYrDDSnseUDP3T7ukV8E7+lhlHDJS4Gegt1TSZCsxKhc1J5A7TkF5ePjDUQ==
 
 "@tanstack/react-query@^5.39.0":
-  version "5.53.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.53.1.tgz#61524e85252b3be72816917e24c554543b46035e"
-  integrity sha512-35HU4836Ey1/W74BxmS8p9KHXcDRGPdkw6w3VX0Tc5S9v5acFl80oi/yc6nsmoLhu68wQkWMyX0h7y7cOtY5OA==
+  version "5.53.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.53.2.tgz#cc00a9c26a2c00f3302f079472dd35bb1d0cf75f"
+  integrity sha512-ZxG/rspElkfqg2LElnNtsNgPtiCZ4Wl2XY43bATQqPvNgyrhzbCFzCjDwSQy9fJhSiDVALSlxYS8YOIiToqQmg==
   dependencies:
-    "@tanstack/query-core" "5.53.1"
+    "@tanstack/query-core" "5.53.2"
 
 "@trpc/client@next":
   version "11.0.0-rc.490"
@@ -3144,7 +3144,7 @@ data-view-byte-offset@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-database-oskm-0.1.0-26804323-137a-42af-9464-f55a2f0d7c9e-1725207191653/node_modules/database-oskm"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-database-oskm-0.1.0-091f724e-9e9a-4527-82b7-350aafe4d1c2-1725238786888/node_modules/database-oskm"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
@@ -5199,9 +5199,9 @@ postcss@8.4.31:
     source-map-js "^1.0.2"
 
 postcss@^8.4.23, postcss@^8.4.34:
-  version "8.4.42"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.42.tgz#0954e9b075f961fb2790d6b807b1f24e7334dbea"
-  integrity sha512-hywKUQB9Ra4dR1mGhldy5Aj1X3MWDSIA1cEi+Uy0CjheLvP6Ual5RlwMCh8i/X121yEDLDIKBsrCQ8ba3FDMfQ==
+  version "8.4.43"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.43.tgz#a5ddf22f4cc38e64c6ae030182b43e539d316419"
+  integrity sha512-gJAQVYbh5R3gYm33FijzCZj7CHyQ3hWMgJMprLUlIYqCwTeZhBQ19wp0e9mA25BUbEvY5+EXuuaAjqQsrBxQBQ==
   dependencies:
     nanoid "^3.3.7"
     picocolors "^1.0.1"
@@ -5860,7 +5860,7 @@ supports-preserve-symlinks-flag@^1.0.0:
     sanitize-filename "^1.6.3"
     server-only "^0.0.1"
     superjson "^2.2.1"
-    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-72474589-bf2a-416e-9e5c-20fbd2dc57e9-1725207191671/node_modules/t3-template-app"
+    t3-template-app "file:C:/Users/Gijax/AppData/Local/Yarn/Cache/v6/npm-t3-template-app-0.1.0-3edb1b61-15a8-4640-8f7e-09dcbffb386b-1725238786907/node_modules/t3-template-app"
     tailwind-merge "^2.4.0"
     tailwindcss-animate "^1.0.7"
     uuid "^10.0.0"
