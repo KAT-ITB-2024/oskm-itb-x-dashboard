@@ -10,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { Button } from "~/components/ui/button";
 import Pagination from "./paginationTable";
 import SearchBar from "./searchBarTable";
 import { FiExternalLink } from "react-icons/fi";
+import Link from "next/link";
 
 // Define the type for the items
 interface Item {
@@ -22,6 +22,22 @@ interface Item {
   date: string;
   start: string;
   end: string;
+}
+
+interface Event {
+  id: string;
+  day: string;
+  eventDate: Date;
+  openingOpenPresenceTime: string;
+  closingOpenPresenceTime: string;
+  openingClosePresenceTime: string;
+  closingClosePresenceTime: string;
+  createdAt: Date;
+  updatedAt: Date;
+  lore: string;
+  characterName: string;
+  guideBook: string;
+  youtubeVideo: string;
 }
 
 const itemsPerPage = 10;
@@ -34,7 +50,7 @@ const data: Item[] = Array.from({ length: 85 }, (_, i) => ({
   end: `10:00`,
 }));
 
-export default function MentorListAttendance() {
+export default function MentorListAttendance({ events }: { events: Event[] }) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -92,32 +108,19 @@ export default function MentorListAttendance() {
         </div>
       </div>
 
-      <div className="flex w-full overflow-x-auto">
-        <Table className="w-full border-spacing-0 rounded-lg bg-gradient-to-r from-[#0010A4] to-[#EE1192]">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="rounded-tl-lg border-[1px] border-[#D1D4DB] font-bold text-white">
-                No.
-              </TableHead>
-              <TableHead className="border-[1px] border-[#D1D4DB] font-bold text-white">
-                Title
-              </TableHead>
-              <TableHead className="border-[1px] border-[#D1D4DB] font-bold text-white">
-                Tanggal
-              </TableHead>
-              <TableHead className="border-[1px] border-[#D1D4DB] font-bold text-white">
-                Mulai
-              </TableHead>
-              <TableHead className="border-[1px] border-[#D1D4DB] font-bold text-white">
-                Selesai
-              </TableHead>
-              <TableHead className="rounded-tr-lg border-[1px] border-[#D1D4DB] font-bold text-white">
-                Action
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="border-[1px] border-[#D1D4DB] bg-white text-center">
-            {currentData.map((item) => (
+      <Table className="border-spacing-0 rounded-lg">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="rounded-tl-lg">No.</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead>Tanggal</TableHead>
+            <TableHead>Mulai</TableHead>
+            <TableHead>Selesai</TableHead>
+            <TableHead className="rounded-tr-lg">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {/* {currentData.map((item) => (
               <TableRow
                 className="border-[1px] border-[#D1D4DB]"
                 key={item.eventId}
@@ -149,11 +152,31 @@ export default function MentorListAttendance() {
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-between space-x-4">
+            ))} */}
+
+          {events.map((event, idx) => (
+            <TableRow key={event.id}>
+              <TableCell>{idx + 1}</TableCell>
+              <TableCell>{event.day}</TableCell>
+              <TableCell>
+                {event.eventDate.toLocaleDateString("id-ID")}
+              </TableCell>
+              <TableCell>{event.openingOpenPresenceTime}</TableCell>
+              <TableCell>{event.closingOpenPresenceTime}</TableCell>
+              <TableCell>
+                <Link
+                  href={`/attendance/edit/${event.id}`}
+                  className="flex justify-center"
+                >
+                  <FiExternalLink size={16} />
+                </Link>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {/* <div className="flex items-center justify-between space-x-4">
         <div className="flex items-center space-x-2">
           <p className="text-[#EE1192]">Total {data.length} items</p>
         </div>
@@ -167,7 +190,7 @@ export default function MentorListAttendance() {
             <span className="text-gray-500">{itemsPerPage}</span> / page
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
