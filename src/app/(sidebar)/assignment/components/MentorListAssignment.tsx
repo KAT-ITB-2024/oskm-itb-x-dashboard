@@ -13,10 +13,8 @@ import { Button } from "~/components/ui/button";
 import Search from "./Search";
 import Pagination from "./Pagination";
 
-import { downloadFile } from "~/utils/fileUtils";
+import { useRouter } from "next/navigation";
 import { dateWIB } from "~/utils/timeUtils";
-
-import { saveAs } from "file-saver";
 
 interface MentorAssignmentListProps {
   assignments: {
@@ -38,12 +36,18 @@ export default function MentorListAssignment({
   assignments,
   meta,
 }: MentorAssignmentListProps) {
-  const handleDownload = async (downloadUrl: string, judulTugas: string) => {
+  const router = useRouter();
+
+  const handleOpenFileInANewTab = async (downloadUrl: string) => {
     if (downloadUrl) {
-      const fileBob = await downloadFile(downloadUrl);
-      saveAs(fileBob, judulTugas);
+      window.open(downloadUrl, '_blank');
     }
   };
+
+  const handleRowClick = (assignmentId: string) => {
+    router.push(`/assignment/detail/${assignmentId}`);
+  };
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4">
       <div className="flex w-full flex-col items-center justify-center">
@@ -86,7 +90,11 @@ export default function MentorListAssignment({
             </TableHeader>
             <TableBody className="bg-white">
               {assignments.map((item, index) => (
-                <TableRow key={index} className="border-2 border-gray-500 ">
+                <TableRow
+                  key={index}
+                  className="border-2 border-gray-500 cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleRowClick(item.assignmentId)}
+                >
                   <TableCell className="border-2 border-gray-300 text-center">
                     {index + 1}
                   </TableCell>
@@ -99,11 +107,14 @@ export default function MentorListAssignment({
                   <TableCell className="border-2 border-gray-300">
                     {dateWIB(item.waktuSelesai)}
                   </TableCell>
-                  <TableCell className="border-2 border-gray-300">
+                  <TableCell
+                    className="border-2 border-gray-300"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Button
                       className="flex w-full items-center justify-center bg-transparent hover:bg-transparent"
                       onClick={() =>
-                        handleDownload(item.downloadUrl, item.judulTugas)
+                        handleOpenFileInANewTab(item.downloadUrl)
                       }
                       disabled={!item.downloadUrl}
                     >

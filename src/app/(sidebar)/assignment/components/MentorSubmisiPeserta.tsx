@@ -42,7 +42,7 @@ const penilaianSubmisi = [
   },
 ];
 
-const MametSubmisiPeserta = () => {
+const MentorSubmisiPeserta = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
@@ -260,4 +260,4 @@ const MametSubmisiPeserta = () => {
   );
 };
 
-export default MametSubmisiPeserta;
+export default MentorSubmisiPeserta;
