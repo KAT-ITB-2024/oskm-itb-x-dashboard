@@ -19,10 +19,10 @@ import {
   forgotPasswordURL,
   validateToken,
 } from "~/services/forgotToken";
-import { createTRPCRouter, mentorMametProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, mentorMametProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
-  createForgotToken: mentorMametProcedure
+  createForgotToken: publicProcedure
     .input(
       z.object({
         email: z.string(),
