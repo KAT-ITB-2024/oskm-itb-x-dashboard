@@ -8,6 +8,7 @@ import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import type { AssignmentType } from "@katitb2024/database";
 import { FolderEnum } from "~/server/bucket";
+import toast from "react-hot-toast";
 
 export interface AssignmentInsertion {
   judul: string;
@@ -62,12 +63,10 @@ export default function MametAddAssignment() {
     const selectedFile = e.target?.files?.[0];
     if (selectedFile) {
       if (!ALLOWED_FORMATS.includes(selectedFile.type)) {
-        alert(
-          "Invalid file format. Please select a JPEG, PNG, PDF, or DOCX file.",
-        );
+        toast.error("Format file tidak sesuai");
         setFile(null);
       } else if (selectedFile.size > MAX_FILE_SIZE) {
-        alert("File is too large. Maximum size is 20 MB.");
+        toast.error("Ukuran file terlalu besar");
         setFile(null);
       } else {
         setFile(selectedFile);
@@ -94,7 +93,7 @@ export default function MametAddAssignment() {
       });
       router.push("/assignment");
     } catch (err) {
-      alert("Error creating assignment. Please try again.");
+      toast.error("Gagal membuat tugas");
       console.error("Error creating assignment:", err);
     } finally {
       setIsLoading(false);
@@ -119,14 +118,16 @@ export default function MametAddAssignment() {
       for (const [key, value] of Object.entries(field)) {
         if (!value) {
           if (key === "Poin" && assignmentType === "Main") continue;
-          alert(`Kolom ${key} harus diisi`);
+          toast.error(`Kolom ${key} harus diisi`);
           return;
         } else {
           if (
             key === "Waktu Selesai" &&
             setTime(startTime, jamMulai) >= setTime(deadline, jamSelesai)
           ) {
-            alert("Waktu selesai tidak boleh lebih kecil dari waktu mulai");
+            toast.error(
+              "Waktu selesai tidak boleh lebih kecil dari waktu mulai",
+            );
             return;
           }
         }
@@ -153,7 +154,7 @@ export default function MametAddAssignment() {
         await createAssignment();
       }
     } catch (err) {
-      alert("Error submitting assignment. Please try again.");
+      toast.error("Gagal submit tugas");
       console.error("Error submitting assignment:", err);
     }
   };

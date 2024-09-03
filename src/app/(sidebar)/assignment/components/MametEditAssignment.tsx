@@ -10,6 +10,7 @@ import { MdUpload } from "react-icons/md";
 import { api } from "~/trpc/react";
 import type { AssignmentType } from "@katitb2024/database";
 import { FolderEnum } from "~/server/bucket";
+import toast from "react-hot-toast";
 
 interface MametEditAssignmentProps {
   assignment: {
@@ -81,12 +82,12 @@ export default function MametEditAssignment({
     const selectedFile = e.target?.files?.[0];
     if (selectedFile) {
       if (!ALLOWED_FORMATS.includes(selectedFile.type)) {
-        alert(
-          "Invalid file format. Please select a JPEG, PNG, PDF, or DOCX file.",
+        toast.error(
+          "Format file tidak didukung. Silahkan upload file dengan format JPEG, PNG, PDF, atau DOCX.",
         );
         setFile(null);
       } else if (selectedFile.size > MAX_FILE_SIZE) {
-        alert("File is too large. Maximum size is 20 MB.");
+        toast.error("Ukuran file terlalu besar. Maksimum 20 MB.");
         setFile(null);
       } else {
         setFile(selectedFile);
@@ -113,7 +114,7 @@ export default function MametEditAssignment({
       });
       router.push("/assignment");
     } catch (err) {
-      alert("Error updating assignment. Please try again.");
+      toast.error("Gagal mengupdate tugas. Silahkan coba lagi.");
       console.error("Error updating assignment", err);
     } finally {
       setIsLoading(false);
@@ -127,7 +128,7 @@ export default function MametEditAssignment({
     setIsLoading(true);
 
     if (setTime(waktuSelesai, jamSelesai) <= setTime(waktuMulai, jamMulai)) {
-      alert("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
+      toast.error("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
       setIsLoading(false);
       return;
     }
@@ -153,7 +154,7 @@ export default function MametEditAssignment({
         await updateAssignment();
       }
     } catch (err) {
-      alert("Error updating assignment. Please try again.");
+      toast.error("Gagal mengupdate tugas. Silahkan coba lagi.");
       console.error("Error updating assignment:", err);
     }
   };

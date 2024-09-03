@@ -20,6 +20,7 @@ import Search from "./Search";
 import Pagination from "./Pagination";
 import ConfirmationModal from "./ConfirmationModal";
 import { dateWIB } from "~/utils/timeUtils";
+import toast from "react-hot-toast";
 
 interface MametAssignmentListProps {
   assignments: {
@@ -43,7 +44,8 @@ export default function MametListAssignment({
 }: MametAssignmentListProps) {
   const assignmentDeleteMutation =
     api.assignment.deleteAssignmentMamet.useMutation();
-  const assignmentCsvMutation = api.assignment.getSpecificAssignmentCsv.useMutation();
+  const assignmentCsvMutation =
+    api.assignment.getSpecificAssignmentCsv.useMutation();
   const router = useRouter();
 
   const handleDownloadCsv = async (assignmentId: string) => {
@@ -58,7 +60,7 @@ export default function MametListAssignment({
       saveAs(blob, fileName);
     } catch (error) {
       console.error("Error downloading CSV:", error);
-      alert("Failed to download CSV.");
+      toast.error("Failed to download CSV.");
     }
   };
 
@@ -67,10 +69,10 @@ export default function MametListAssignment({
       await assignmentDeleteMutation.mutateAsync({
         assignmentId,
       });
-      alert("Assignment deleted successfully");
+      toast.success("Berhasil Menghapus Tugas");
       router.refresh();
     } catch (err) {
-      alert("Error deleting assignment");
+      toast.error("Gagal Menghapus Tugas");
       console.error("Error deleting assignment : ", err);
     }
   };
@@ -166,9 +168,7 @@ export default function MametListAssignment({
                       </Button>
                       <Button
                         className={`bg-transparent text-2xl hover:bg-transparent`}
-                        onClick={() =>
-                          handleDownloadCsv(item.assignmentId)
-                        }
+                        onClick={() => handleDownloadCsv(item.assignmentId)}
                       >
                         <MdDownload className="text-[#3678FF]" />
                       </Button>
