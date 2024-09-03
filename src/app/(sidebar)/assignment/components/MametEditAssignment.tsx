@@ -10,6 +10,7 @@ import { MdUpload } from "react-icons/md";
 import { api } from "~/trpc/react";
 import type { AssignmentType } from "@katitb2024/database";
 import { FolderEnum } from "~/server/bucket";
+import toast from "react-hot-toast";
 
 interface MametEditAssignmentProps {
   assignment: {
@@ -81,12 +82,12 @@ export default function MametEditAssignment({
     const selectedFile = e.target?.files?.[0];
     if (selectedFile) {
       if (!ALLOWED_FORMATS.includes(selectedFile.type)) {
-        alert(
-          "Invalid file format. Please select a JPEG, PNG, PDF, or DOCX file.",
+        toast.error(
+          "Format file tidak didukung. Silahkan upload file dengan format JPEG, PNG, PDF, atau DOCX.",
         );
         setFile(null);
       } else if (selectedFile.size > MAX_FILE_SIZE) {
-        alert("File is too large. Maximum size is 20 MB.");
+        toast.error("Ukuran file terlalu besar. Maksimum 20 MB.");
         setFile(null);
       } else {
         setFile(selectedFile);
@@ -96,24 +97,23 @@ export default function MametEditAssignment({
   };
 
   const updateAssignment = async (
-    filename?: string | undefined,
-    presignedUrl?: string | undefined,
+    filename?: string | null,
+    presignedUrl?: string | null,
   ) => {
     try {
-      const newFilename = filename ?? "existFile;";
       await editAssignmentMutation.mutateAsync({
         id: assignment.assignmentId,
-        filename: newFilename ?? existFile,
+        filename: filename ?? "",
         title: judul,
         description: deskripsi,
         startTime: setTime(waktuMulai, jamMulai),
         deadline: setTime(waktuSelesai, jamSelesai),
         point,
-        downloadUrl: presignedUrl ?? assignment.downloadUrl,
+        downloadUrl: presignedUrl ?? "",
       });
       router.push("/assignment");
     } catch (err) {
-      alert("Error updating assignment. Please try again.");
+      toast.error("Gagal mengupdate tugas. Silahkan coba lagi.");
       console.error("Error updating assignment", err);
     } finally {
       setIsLoading(false);
@@ -127,7 +127,7 @@ export default function MametEditAssignment({
     setIsLoading(true);
 
     if (setTime(waktuSelesai, jamSelesai) <= setTime(waktuMulai, jamMulai)) {
-      alert("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
+      toast.error("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
       setIsLoading(false);
       return;
     }
@@ -150,10 +150,10 @@ export default function MametEditAssignment({
         };
         reader.readAsDataURL(file);
       } else {
-        await updateAssignment();
+        await updateAssignment(existFile ? existFile : null, existFile ? assignment.downloadUrl : null);
       }
     } catch (err) {
-      alert("Error updating assignment. Please try again.");
+      toast.error("Gagal mengupdate tugas. Silahkan coba lagi.");
       console.error("Error updating assignment:", err);
     }
   };
@@ -264,9 +264,8 @@ export default function MametEditAssignment({
             <p className="text-xs text-gray-500">Maximum file size 20 MB</p>
           </div>
           <div
-            className={`my-3 flex w-1/3 items-center justify-between gap-2 rounded-sm border-2 border-[#0010A4] px-4 py-2 text-xs font-bold text-[#0010A4]  ${
-              (file ?? existFile) ? "block" : "hidden"
-            }`}
+            className={`my-3 flex w-1/3 items-center justify-between gap-2 rounded-sm border-2 border-[#0010A4] px-4 py-2 text-xs font-bold text-[#0010A4]  ${(file ?? existFile) ? "block" : "hidden"
+              }`}
           >
             <input
               id="file-upload"

@@ -36,12 +36,22 @@ export default async function Page({
   };
 
   try {
-    const response = await api.assignment.getAllMainAssignment({
-      page: currentPage,
-      pageSize: 5,
-      searchString: query,
-      sortOrder: "asc",
-    });
+    let response;
+    if (session?.user.role === "Mamet") {
+      response = await api.assignment.getAllAssignment({
+        page: currentPage,
+        pageSize: 5,
+        searchString: query,
+        sortOrder: "asc",
+      });
+    } else {
+      response = await api.assignment.getAllMainAssignment({
+        page: currentPage,
+        pageSize: 5,
+        searchString: query,
+        sortOrder: "asc",
+      });
+    }
 
     if (response?.data) {
       assignments = response.data;

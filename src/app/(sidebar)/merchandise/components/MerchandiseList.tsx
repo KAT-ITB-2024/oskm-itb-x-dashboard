@@ -62,7 +62,7 @@ export default function MerchandiseList() {
       ),
     );
 
-    toast.success("Quantity updated successfully");
+    toast.success("Berhasil mengubah quantity");
     setEditingId(null);
     setQuantity(null);
   };

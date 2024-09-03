@@ -4,7 +4,6 @@ import Link from "next/link";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { saveAs } from "file-saver";
-import { downloadFile } from "~/utils/fileUtils";
 
 import {
   Table,
@@ -16,12 +15,12 @@ import {
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
 import { RiPencilFill } from "react-icons/ri";
-import { MdDelete } from "react-icons/md";
-import { MdDownload } from "react-icons/md";
+import { MdDelete, MdDownload } from "react-icons/md";
 import Search from "./Search";
 import Pagination from "./Pagination";
 import ConfirmationModal from "./ConfirmationModal";
 import { dateWIB } from "~/utils/timeUtils";
+import toast from "react-hot-toast";
 
 interface MametAssignmentListProps {
   assignments: {
@@ -45,12 +44,23 @@ export default function MametListAssignment({
 }: MametAssignmentListProps) {
   const assignmentDeleteMutation =
     api.assignment.deleteAssignmentMamet.useMutation();
+  const assignmentCsvMutation =
+    api.assignment.getSpecificAssignmentCsv.useMutation();
   const router = useRouter();
 
-  const handleDownload = async (downloadUrl: string, judulTugas: string) => {
-    if (downloadUrl) {
-      const fileBlob = await downloadFile(downloadUrl);
-      saveAs(fileBlob, judulTugas);
+  const handleDownloadCsv = async (assignmentId: string) => {
+    try {
+      const response = await assignmentCsvMutation.mutateAsync({
+        assignmentId,
+      });
+
+      const { fileName, mimeType, content } = response;
+
+      const blob = new Blob([content], { type: mimeType });
+      saveAs(blob, fileName);
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+      toast.error("Failed to download CSV.");
     }
   };
 
@@ -59,10 +69,10 @@ export default function MametListAssignment({
       await assignmentDeleteMutation.mutateAsync({
         assignmentId,
       });
-      alert("Assignment deleted successfully");
+      toast.success("Berhasil Menghapus Tugas");
       router.refresh();
     } catch (err) {
-      alert("Error deleting assignment");
+      toast.error("Gagal Menghapus Tugas");
       console.error("Error deleting assignment : ", err);
     }
   };
@@ -158,10 +168,7 @@ export default function MametListAssignment({
                       </Button>
                       <Button
                         className={`bg-transparent text-2xl hover:bg-transparent`}
-                        onClick={() =>
-                          handleDownload(item.downloadUrl, item.judulTugas)
-                        }
-                        disabled={!item.downloadUrl}
+                        onClick={() => handleDownloadCsv(item.assignmentId)}
                       >
                         <MdDownload className="text-[#3678FF]" />
                       </Button>
