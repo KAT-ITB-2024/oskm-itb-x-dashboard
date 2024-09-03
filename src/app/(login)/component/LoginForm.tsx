@@ -35,10 +35,10 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="login-container flex h-screen items-center justify-center">
-      <div className="login-box text-center">
+    <div className="flex h-screen items-center justify-center">
+      <div className="w-full max-w-md text-center">
         <div className="flex flex-col items-center">
-          <div className="flex justify-center">
+          <div className="flex -scale-y-100 justify-center">
             <Image
               src="/img/oskmlogo.png"
               alt="OSKM Logo"
@@ -47,18 +47,12 @@ export default function LoginForm() {
             />
           </div>
           <h1
-            className="
-              text-shadow:
-              0
-              0
-              10px
-              #0010A4 mt-[-20px] font-mogula text-[42px] font-normal
-              text-[#0010A4]"
+            className="font-mogula text-[42px] font-normal text-[#0010A4]"
           >
             LOGIN
           </h1>
         </div>
-        <div className="mx-6 mt-4 flex flex-col items-start">
+        <div className="mt-4 flex w-full flex-col items-start">
           <p className="font-REM mb-1 mt-[-15px] text-sm font-normal text-[#0010A4]">
             NIM <span className="text-[#DC2522]">*</span>
           </p>
@@ -66,13 +60,13 @@ export default function LoginForm() {
             <label htmlFor="Email" className="font-REM sr-only">
               Nim
             </label>
-            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
+            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white">
               <input
                 id="Nim"
                 type="text"
                 value={nim}
                 onChange={(v) => setNim(v.target.value)}
-                className="font-REM h-full w-full bg-white pl-3 pr-3 text-sm text-black placeholder-gray-500 focus:outline-none"
+                className="h-full w-full rounded-lg bg-white py-2 pl-3 pr-3 text-sm text-black placeholder-gray-500 focus:outline-none"
                 placeholder="Masukkan NIM Anda"
               />
             </div>
@@ -85,13 +79,13 @@ export default function LoginForm() {
             <label htmlFor="Kata Sandi" className="font-REM sr-only">
               Kata Sandi
             </label>
-            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white px-11 py-2">
+            <div className="flex items-center rounded-lg border border-[#9EA2AD] bg-white">
               <input
                 id="Kata Sandi"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(v) => setPassword(v.target.value)}
-                className="font-REM h-full w-full bg-white pl-3 pr-10 text-sm text-black placeholder-gray-500 focus:outline-none"
+                className="font-REM h-full w-full rounded-lg bg-white py-2 pl-3 pr-10 text-sm text-black placeholder-gray-500 focus:outline-none"
                 placeholder="Masukkan Sandi Anda"
               />
               <button

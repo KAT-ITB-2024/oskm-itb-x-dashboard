@@ -31,11 +31,6 @@ const sidebarItems = [
     href: "/gather-points",
     icon: GiAlliedStar,
   },
-  {
-    name: "Merchandise",
-    href: "/merchandise",
-    icon: FaShoppingCart,
-  },
 ];
 
 interface SidebarProps {
