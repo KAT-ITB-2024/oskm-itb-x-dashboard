@@ -29,7 +29,7 @@ export default function LoginForm() {
     });
 
     if (status?.ok) {
-      toast.success("Logged in successfully");
+      toast.success("Berhasil Login");
       router.push("/assignment");
     }
   };
