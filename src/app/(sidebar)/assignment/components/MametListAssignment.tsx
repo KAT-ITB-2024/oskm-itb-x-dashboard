@@ -4,7 +4,6 @@ import Link from "next/link";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { saveAs } from "file-saver";
-import { downloadFile } from "~/utils/fileUtils";
 
 import {
   Table,
@@ -16,8 +15,7 @@ import {
 } from "~/components/ui/table";
 import { Button } from "~/components/ui/button";
 import { RiPencilFill } from "react-icons/ri";
-import { MdDelete } from "react-icons/md";
-import { MdDownload } from "react-icons/md";
+import { MdDelete, MdDownload } from "react-icons/md";
 import Search from "./Search";
 import Pagination from "./Pagination";
 import ConfirmationModal from "./ConfirmationModal";
@@ -45,12 +43,22 @@ export default function MametListAssignment({
 }: MametAssignmentListProps) {
   const assignmentDeleteMutation =
     api.assignment.deleteAssignmentMamet.useMutation();
+  const assignmentCsvMutation = api.assignment.getSpecificAssignmentCsv.useMutation();
   const router = useRouter();
 
-  const handleDownload = async (downloadUrl: string, judulTugas: string) => {
-    if (downloadUrl) {
-      const fileBlob = await downloadFile(downloadUrl);
-      saveAs(fileBlob, judulTugas);
+  const handleDownloadCsv = async (assignmentId: string) => {
+    try {
+      const response = await assignmentCsvMutation.mutateAsync({
+        assignmentId,
+      });
+
+      const { fileName, mimeType, content } = response;
+
+      const blob = new Blob([content], { type: mimeType });
+      saveAs(blob, fileName);
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+      alert("Failed to download CSV.");
     }
   };
 
@@ -159,9 +167,8 @@ export default function MametListAssignment({
                       <Button
                         className={`bg-transparent text-2xl hover:bg-transparent`}
                         onClick={() =>
-                          handleDownload(item.downloadUrl, item.judulTugas)
+                          handleDownloadCsv(item.assignmentId)
                         }
-                        disabled={!item.downloadUrl}
                       >
                         <MdDownload className="text-[#3678FF]" />
                       </Button>

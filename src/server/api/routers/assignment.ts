@@ -640,7 +640,7 @@ export const assignmentRouter = createTRPCRouter({
         console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "An error occurred while generating the CSV",
+          message: "An error occurred while creating a new assignment",
         });
       }
     }),
