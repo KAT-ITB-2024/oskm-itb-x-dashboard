@@ -90,39 +90,39 @@ export default async function Page({
       sortBy: sortBy,
     });
 
-    const kelompokMentorQuery = api.user.detailKelompokMentor({
-      userNim: session.user.nim,
-      page: currentPage,
-      search: query,
-    });
-
     const tugasQuery = api.assignment.getAllMainAssignment({});
 
-    const [kelompokMamet, kelompokMentor, allTugas] = await Promise.all([
+    const [kelompokMamet, allTugas] = await Promise.all([
       kelompokMametQuery,
-      kelompokMentorQuery,
       tugasQuery,
     ]);
 
-    group = await api.user.getMentorGroupName({
-      userNim: session.user.nim,
-    });
-
     groupInformationsMamet = kelompokMamet;
-    groupInformationsMentor = kelompokMentor;
     meta = allTugas.meta;
-    metaMentor = {
-      page: kelompokMentor.page,
-      totalPages: 1,
-      pageSize: 5,
-      totalCount: kelompokMentor.mentees.length,
-    };
+
     metaMamet = {
       page: kelompokMamet.page,
       totalPages: 1,
       pageSize: 5,
       totalCount: kelompokMamet.mentees.length,
     };
+
+    groupInformationsMentor = await api.user.detailKelompokMentor({
+      userNim: session.user.nim,
+      page: currentPage,
+      search: query,
+    });
+
+    metaMentor = {
+      page: groupInformationsMentor.page,
+      totalPages: 1,
+      pageSize: 5,
+      totalCount: groupInformationsMentor.mentees.length,
+    };
+
+    group = await api.user.getMentorGroupName({
+      userNim: session.user.nim,
+    });
   } catch (error) {
     console.error("Failed to fetch assignments:", error);
   }
