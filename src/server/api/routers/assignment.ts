@@ -12,7 +12,17 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, asc, or, ilike, count, desc, sum } from "drizzle-orm";
+import {
+  eq,
+  and,
+  inArray,
+  asc,
+  or,
+  ilike,
+  count,
+  desc,
+  sum,
+} from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -359,7 +369,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getAllMainAssignment: mentorMametProcedure
+  getAllAssignment: mentorMametProcedure
     .input(
       z.object({
         searchString: z.string().optional().default(""),
@@ -427,7 +437,83 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getMainQuestAssignmentCsv: mentorMametProcedure
+  getAllMainAssignment: mentorMametProcedure
+    .input(
+      z.object({
+        searchString: z.string().optional().default(""),
+        sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
+        page: z.number().optional().default(1),
+        pageSize: z.number().optional().default(10),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { searchString, sortOrder, page, pageSize } = input;
+
+        const offset = (page - 1) * pageSize;
+
+        const res = await ctx.db
+          .select({
+            judulTugas: assignments.title,
+            waktuMulai: assignments.startTime,
+            waktuSelesai: assignments.deadline,
+            assignmentId: assignments.id,
+            downloadUrl: assignments.downloadUrl,
+          })
+          .from(assignments)
+          .where(
+            and(
+              eq(assignments.assignmentType, assignmentTypeEnum.enumValues[0]),
+              or(
+                ilike(assignments.title, `%${searchString}%`),
+                ilike(assignments.description, `%${searchString}%`),
+              ),
+            ),
+          )
+          .limit(pageSize)
+          .offset(offset)
+          .orderBy(
+            sortOrder === "asc"
+              ? asc(assignments.startTime)
+              : desc(assignments.startTime),
+          );
+
+        // Count the total number of "Main" assignments
+        const countRows = (
+          await ctx.db
+            .select({
+              count: count(),
+            })
+            .from(assignments)
+            .where(
+              eq(assignments.assignmentType, assignmentTypeEnum.enumValues[0]),
+            )
+        )[0] ?? { count: 0 }; // Ensure count matches "Main" assignments
+
+        return {
+          data: res,
+          meta: {
+            totalCount: countRows.count,
+            page,
+            pageSize,
+            totalPages: Math.ceil(countRows.count / pageSize),
+          },
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `An error occurred: ${String(error)}`,
+          });
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred while getting all main assignments",
+        });
+      }
+    }),
+
+  getSpecificAssignmentCsv: mentorMametProcedure
     .input(
       z.object({
         assignmentId: z.string(),
