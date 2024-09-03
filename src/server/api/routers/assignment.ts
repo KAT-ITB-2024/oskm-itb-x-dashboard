@@ -12,7 +12,17 @@ import {
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { eq, and, inArray, asc, or, ilike, count, desc } from "drizzle-orm";
+import {
+  eq,
+  and,
+  inArray,
+  asc,
+  or,
+  ilike,
+  count,
+  desc,
+  sum,
+} from "drizzle-orm";
 import { calculateOverDueTime } from "~/utils/dateUtils";
 import {
   createTRPCRouter,
@@ -242,34 +252,6 @@ export const assignmentRouter = createTRPCRouter({
       try {
         const { assignmentId, menteeNim, point } = input;
 
-        // Fetch group and submission data based on assignmentId and menteeNim
-        const group = (
-          await ctx.db
-            .select({
-              groupName: profiles.group,
-              groupPoint: groups.point,
-              assignmentPoint: assignmentSubmissions.point,
-            })
-            .from(assignmentSubmissions)
-            .innerJoin(users, eq(assignmentSubmissions.userNim, users.nim))
-            .innerJoin(profiles, eq(users.id, profiles.userId))
-            .innerJoin(groups, eq(profiles.group, groups.name))
-            .where(
-              and(
-                eq(assignmentSubmissions.assignmentId, assignmentId),
-                eq(users.nim, menteeNim),
-              ),
-            )
-        )[0];
-
-        if (!group) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message:
-              "Group data or assignment submission not found for the given assignment and mentee",
-          });
-        }
-
         if (point < 0 || point > 100) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -277,10 +259,28 @@ export const assignmentRouter = createTRPCRouter({
           });
         }
 
-        const { groupName, groupPoint, assignmentPoint } = group;
+        // Fetch submission data to find the previous point
+        const submission = await ctx.db
+          .select({
+            point: assignmentSubmissions.point,
+          })
+          .from(assignmentSubmissions)
+          .where(
+            and(
+              eq(assignmentSubmissions.assignmentId, assignmentId),
+              eq(assignmentSubmissions.userNim, menteeNim),
+            ),
+          );
 
-        // Adjust the group's point value by subtracting the previous point and adding the new point
-        const updatedGroupPoint = groupPoint - (assignmentPoint ?? 0) + point;
+        if (!submission || submission.length === 0) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message:
+              "Assignment submission not found for the given mentee and assignment",
+          });
+        }
+
+        const previousPoint = submission[0]?.point ?? 0;
 
         // Update the assignment submission's point
         await ctx.db
@@ -293,10 +293,63 @@ export const assignmentRouter = createTRPCRouter({
             ),
           );
 
+        // Recalculate the total points for the mentee's profile
+        const totalMenteePoints = await ctx.db
+          .select({
+            total: sum(assignmentSubmissions.point),
+          })
+          .from(assignmentSubmissions)
+          .where(eq(assignmentSubmissions.userNim, menteeNim))
+          .then((rows) => rows[0]?.total ?? 0);
+
+        // Update the mentee's profile point in the profiles table
+        const user = await ctx.db
+          .select({
+            userId: users.id,
+          })
+          .from(users)
+          .where(eq(users.nim, menteeNim));
+
+        if (!user || user.length === 0) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "User not found",
+          });
+        }
+
+        await ctx.db
+          .update(profiles)
+          .set({ point: Number(totalMenteePoints) })
+          .where(eq(profiles.userId, user[0]?.userId ?? ""));
+
+        // Recalculate the total group points for the assignment
+        const groupInfo = await ctx.db
+          .select({
+            groupName: profiles.group,
+            groupPoint: groups.point,
+          })
+          .from(profiles)
+          .innerJoin(users, eq(profiles.userId, users.id))
+          .innerJoin(groups, eq(profiles.group, groups.name))
+          .where(eq(users.nim, menteeNim))
+          .then((rows) => rows[0]);
+
+        if (!groupInfo) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Group information not found for the mentee",
+          });
+        }
+
+        const { groupName, groupPoint } = groupInfo;
+
+        // Recalculate total group points
+        const newGroupPoints = groupPoint - previousPoint + point;
+
         // Update the group's point in the groups table
         await ctx.db
           .update(groups)
-          .set({ point: updatedGroupPoint })
+          .set({ point: newGroupPoints })
           .where(eq(groups.name, groupName));
 
         return {
@@ -304,7 +357,7 @@ export const assignmentRouter = createTRPCRouter({
           message: "Mentee assignment point updated successfully",
           updatedGroup: {
             groupName,
-            updatedGroupPoint,
+            updatedGroupPoint: newGroupPoints,
           },
         };
       } catch (error) {
@@ -316,7 +369,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getAllMainAssignment: mentorMametProcedure
+  getAllAssignment: mentorMametProcedure
     .input(
       z.object({
         searchString: z.string().optional().default(""),
@@ -384,7 +437,83 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  getMainQuestAssignmentCsv: mentorMametProcedure
+  getAllMainAssignment: mentorMametProcedure
+    .input(
+      z.object({
+        searchString: z.string().optional().default(""),
+        sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
+        page: z.number().optional().default(1),
+        pageSize: z.number().optional().default(10),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { searchString, sortOrder, page, pageSize } = input;
+
+        const offset = (page - 1) * pageSize;
+
+        const res = await ctx.db
+          .select({
+            judulTugas: assignments.title,
+            waktuMulai: assignments.startTime,
+            waktuSelesai: assignments.deadline,
+            assignmentId: assignments.id,
+            downloadUrl: assignments.downloadUrl,
+          })
+          .from(assignments)
+          .where(
+            and(
+              eq(assignments.assignmentType, assignmentTypeEnum.enumValues[0]),
+              or(
+                ilike(assignments.title, `%${searchString}%`),
+                ilike(assignments.description, `%${searchString}%`),
+              ),
+            ),
+          )
+          .limit(pageSize)
+          .offset(offset)
+          .orderBy(
+            sortOrder === "asc"
+              ? asc(assignments.startTime)
+              : desc(assignments.startTime),
+          );
+
+        // Count the total number of "Main" assignments
+        const countRows = (
+          await ctx.db
+            .select({
+              count: count(),
+            })
+            .from(assignments)
+            .where(
+              eq(assignments.assignmentType, assignmentTypeEnum.enumValues[0]),
+            )
+        )[0] ?? { count: 0 }; // Ensure count matches "Main" assignments
+
+        return {
+          data: res,
+          meta: {
+            totalCount: countRows.count,
+            page,
+            pageSize,
+            totalPages: Math.ceil(countRows.count / pageSize),
+          },
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `An error occurred: ${String(error)}`,
+          });
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred while getting all main assignments",
+        });
+      }
+    }),
+
+  getSpecificAssignmentCsv: mentorMametProcedure
     .input(
       z.object({
         assignmentId: z.string(),
@@ -511,7 +640,7 @@ export const assignmentRouter = createTRPCRouter({
         console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "An error occurred while generating the CSV",
+          message: "An error occurred while creating a new assignment",
         });
       }
     }),

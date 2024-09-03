@@ -86,8 +86,7 @@ export default async function Page({
       eventId: params.id,
       groupName: kelompok!,
       presenceEvent: eventType as "Opening" | "Closing",
-      page: currentPage,
-      search: search,
+      limit: 100,
     });
   } catch (error) {}
 

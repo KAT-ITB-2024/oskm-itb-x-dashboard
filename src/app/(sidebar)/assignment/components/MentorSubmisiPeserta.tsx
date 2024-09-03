@@ -40,14 +40,26 @@ const MentorSubmisiPeserta = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editedValue, setEditedValue] = useState<string>("");
   const penilaianSubmisi = assignmentSubmissions.map((submission, index) => {
-    const { nama, nim, keterlambatan, assignmentSubmissions: submissionDetail, linkFile, nilai } = submission;
+    const {
+      nama,
+      nim,
+      keterlambatan,
+      assignmentSubmissions: submissionDetail,
+      linkFile,
+      nilai,
+    } = submission;
 
     return {
       no: index + 1,
       name: nama || "Unknown",
       nim: nim || "N/A",
       interval: formatKeterlambatan(keterlambatan),
-      status: Number(keterlambatan) > 0 ? "Late" : (submissionDetail ? "Submitted" : "Not Submitted"),
+      status:
+        Number(keterlambatan) > 0
+          ? "Late"
+          : submissionDetail
+            ? "Submitted"
+            : "Not Submitted",
       nilai: nilai || "0",
       linksubmisi: linkFile,
     };
@@ -59,7 +71,7 @@ const MentorSubmisiPeserta = ({
     currentValue: number,
   ) => {
     if (status.toLowerCase() === "not submitted") {
-      toast.error("Mentee haven't submitted the assignment yet");
+      toast.error("Mentee belum mengumpulkan tugas");
       return;
     }
 
@@ -81,6 +93,8 @@ const MentorSubmisiPeserta = ({
         });
 
         toast.success("Nilai berhasil disimpan");
+
+        router.refresh();
       } catch (error) {
         console.error("Error saving points:", error);
         toast.error("Gagal menyimpan nilai :" + String(error));
@@ -178,12 +192,13 @@ const MentorSubmisiPeserta = ({
                   </TableCell>
                   <TableCell className={`border-2 border-gray-300 text-center`}>
                     <div
-                      className={`rounded-lg border-2 p-2 text-center ${item.status.toLowerCase() === "submitted"
-                        ? "border-[#05A798] bg-[#C5FFF3] text-[#05A798]"
-                        : item.status.toLowerCase() === "late"
-                          ? "border-[#F06B02] bg-[#FFD897] text-[#F06B02]"
-                          : "border-[#DC2522] bg-[#FFF2F2] text-[#DC2522]"
-                        } `}
+                      className={`rounded-lg border-2 p-2 text-center ${
+                        item.status.toLowerCase() === "submitted"
+                          ? "border-[#05A798] bg-[#C5FFF3] text-[#05A798]"
+                          : item.status.toLowerCase() === "late"
+                            ? "border-[#F06B02] bg-[#FFD897] text-[#F06B02]"
+                            : "border-[#DC2522] bg-[#FFF2F2] text-[#DC2522]"
+                      } `}
                     >
                       {item.status}
                     </div>
@@ -208,7 +223,11 @@ const MentorSubmisiPeserta = ({
                         <p>{item.nilai}</p>
                         <MdModeEdit
                           onClick={() =>
-                            handleEditClick(index, item.status, Number(item.nilai))
+                            handleEditClick(
+                              index,
+                              item.status,
+                              Number(item.nilai),
+                            )
                           }
                           className="cursor-pointer"
                         />
@@ -254,7 +273,7 @@ const MentorSubmisiPeserta = ({
           <li>
             <a
               href="#"
-              className={`flex h-6 items-center justify-center rounded-md ${meta.page === 1 ? 'bg-gray-300' : 'bg-[#EE1192]'} px-2 text-white`}
+              className={`flex h-6 items-center justify-center rounded-md ${meta.page === 1 ? "bg-gray-300" : "bg-[#EE1192]"} px-2 text-white`}
               aria-disabled={meta.page === 1}
             >
               <span className="sr-only">Previous</span>
@@ -280,7 +299,7 @@ const MentorSubmisiPeserta = ({
               <a
                 href="#"
                 aria-current={meta.page === index + 1 ? "page" : undefined}
-                className={`z-10 flex h-6 items-center justify-center rounded-md ${meta.page === index + 1 ? 'bg-[#EE1192]' : 'bg-white'} px-2 text-white`}
+                className={`z-10 flex h-6 items-center justify-center rounded-md ${meta.page === index + 1 ? "bg-[#EE1192]" : "bg-white"} px-2 text-white`}
               >
                 {index + 1}
               </a>
@@ -289,7 +308,7 @@ const MentorSubmisiPeserta = ({
           <li>
             <a
               href="#"
-              className={`flex h-6 items-center justify-center rounded-md ${meta.page === meta.totalPages ? 'bg-gray-300' : 'bg-[#EE1192]'} px-2 text-white`}
+              className={`flex h-6 items-center justify-center rounded-md ${meta.page === meta.totalPages ? "bg-gray-300" : "bg-[#EE1192]"} px-2 text-white`}
               aria-disabled={meta.page === meta.totalPages}
             >
               <span className="sr-only">Next</span>

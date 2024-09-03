@@ -88,7 +88,7 @@ export default function PointList({
     const points = parseInt(newPoints);
 
     if (points < 0) {
-      toast.error("Poin harus lebih");
+      toast.error("Poin harus lebih besar dari 0");
       return;
     }
 
