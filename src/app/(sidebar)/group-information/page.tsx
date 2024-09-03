@@ -75,6 +75,8 @@ export default async function Page({
     totalCount: 0,
   };
 
+  let group: string | null | undefined = "";
+
   if (!session) {
     return null;
   }
@@ -102,6 +104,10 @@ export default async function Page({
       tugasQuery,
     ]);
 
+    group = await api.user.getMentorGroupName({
+      userNim: session.user.nim,
+    });
+
     groupInformationsMamet = kelompokMamet;
     groupInformationsMentor = kelompokMentor;
     meta = allTugas.meta;
@@ -128,6 +134,7 @@ export default async function Page({
           groupInformations={groupInformationsMentor}
           meta={meta}
           metaMentor={metaMentor}
+          group={group}
         />
       )}
       {session?.user.role === "Mamet" && (

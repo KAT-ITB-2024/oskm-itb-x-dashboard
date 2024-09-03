@@ -17,7 +17,7 @@ export default async function SidebarLayout({
 
   return (
     <div className="flex min-h-screen justify-between gap-12 overflow-hidden bg-[url('/sidebar/bg-dashboard.svg')] bg-cover bg-no-repeat px-10 py-12">
-      <Sidebar />
+      <Sidebar role={user.role} />
       <div className="relative h-full min-h-[87vh] flex-1 rounded-lg bg-white p-8">
         <Image
           src={"/sidebar/coral-dashboard.svg"}

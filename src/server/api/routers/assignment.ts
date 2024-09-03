@@ -8,7 +8,7 @@ import {
   groups,
   profiles,
   users,
-  type AssignmentType,
+  roleEnum,
 } from "@katitb2024/database";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -21,13 +21,21 @@ import {
   mentorMametProcedure,
 } from "~/server/api/trpc";
 
-type MenteeAssignment = {
+export type MenteeAssignment = {
   nama: string;
   nim: string;
   keterlambatan: number | null;
   nilai: number;
   linkFile: string | null;
-  assignmentSubmissions: string | null;
+  assignmentSubmissions: {
+    nama: string;
+    nim: string;
+    nilai: number;
+    linkFile: string;
+    updatedAt: Date;
+    deadline: Date;
+    assignmentsId: string;
+  } | null;
 };
 
 export const assignmentRouter = createTRPCRouter({
@@ -79,7 +87,7 @@ export const assignmentRouter = createTRPCRouter({
     .input(
       z.object({
         assignmentId: z.string(),
-        groupName: z.string(),
+        mentorNim: z.string(),
         page: z.number().optional().default(1),
         pageSize: z.number().optional().default(10),
         searchString: z.string().optional().default(""),
@@ -87,7 +95,18 @@ export const assignmentRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { assignmentId, groupName, page, pageSize, searchString } = input;
+        const { assignmentId, mentorNim, page, pageSize, searchString } = input;
+
+        const groupName =
+          (
+            await ctx.db
+              .select({
+                groupName: profiles.group,
+              })
+              .from(profiles)
+              .where(eq(users.nim, mentorNim))
+              .innerJoin(users, eq(users.id, profiles.userId))
+          )[0]?.groupName ?? "";
 
         const offset = (page - 1) * pageSize;
 
@@ -101,6 +120,7 @@ export const assignmentRouter = createTRPCRouter({
           .where(
             and(
               eq(profiles.group, groupName),
+              eq(users.role, roleEnum.enumValues[0]),
               or(
                 ilike(profiles.name, `%${searchString}%`),
                 ilike(users.nim, `%${searchString}%`),
@@ -143,7 +163,7 @@ export const assignmentRouter = createTRPCRouter({
 
         const menteeNims = allMentee.map((mentee) => mentee.nim);
 
-        const menteeAssignment = allMentee as MenteeAssignment[];
+        // Retrieve all necessary assignment submission details
         const submissions = await ctx.db
           .select({
             nama: profiles.name,
@@ -152,7 +172,7 @@ export const assignmentRouter = createTRPCRouter({
             linkFile: assignmentSubmissions.downloadUrl,
             updatedAt: assignmentSubmissions.updatedAt,
             deadline: assignments.deadline,
-            assignmentsId: assignmentSubmissions.id,
+            assignmentsId: assignmentSubmissions.assignmentId,
           })
           .from(assignmentSubmissions)
           .innerJoin(users, eq(assignmentSubmissions.userNim, users.nim))
@@ -170,15 +190,20 @@ export const assignmentRouter = createTRPCRouter({
             ),
           );
 
-        menteeAssignment.forEach((mentee) => {
-          const find = submissions.find((s) => s.nim == mentee.nim);
-          mentee.keterlambatan = calculateOverDueTime(
-            find?.deadline,
-            find?.updatedAt,
-          );
-          mentee.assignmentSubmissions = find?.assignmentsId ?? null;
-          mentee.linkFile = find?.linkFile ?? null;
-          mentee.nilai = find?.nilai ?? 0;
+        // Update allMentee with submission data
+        const menteeAssignment = allMentee.map((mentee) => {
+          const submission = submissions.find((s) => s.nim === mentee.nim);
+
+          return {
+            ...mentee,
+            keterlambatan: calculateOverDueTime(
+              submission?.deadline,
+              submission?.updatedAt,
+            ),
+            assignmentSubmissions: submission ?? null,
+            linkFile: submission?.linkFile ?? null,
+            nilai: submission?.nilai ?? 0,
+          };
         });
 
         return {
@@ -205,77 +230,88 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  editMenteeAssignmentPoint: mentorProcedure
+  editMenteeAssignmentSubmissionPoint: mentorProcedure
     .input(
       z.object({
         assignmentId: z.string(),
+        menteeNim: z.string(),
         point: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { assignmentId, point } = input;
+        const { assignmentId, menteeNim, point } = input;
 
-        const [group] = await ctx.db
-          .select({
-            groupName: groups.name,
-            point: groups.point,
-          })
-          .from(assignmentSubmissions)
-          .where(eq(assignmentSubmissions.id, assignmentId))
-          .innerJoin(users, eq(users.nim, assignmentSubmissions.userNim))
-          .innerJoin(profiles, eq(profiles.userId, users.id))
-          .innerJoin(groups, eq(groups.name, profiles.group));
+        // Fetch group and submission data based on assignmentId and menteeNim
+        const group = (
+          await ctx.db
+            .select({
+              groupName: profiles.group,
+              groupPoint: groups.point,
+              assignmentPoint: assignmentSubmissions.point,
+            })
+            .from(assignmentSubmissions)
+            .innerJoin(users, eq(assignmentSubmissions.userNim, users.nim))
+            .innerJoin(profiles, eq(users.id, profiles.userId))
+            .innerJoin(groups, eq(profiles.group, groups.name))
+            .where(
+              and(
+                eq(assignmentSubmissions.assignmentId, assignmentId),
+                eq(users.nim, menteeNim),
+              ),
+            )
+        )[0];
 
         if (!group) {
           throw new TRPCError({
             code: "NOT_FOUND",
-            message: "Group data not found for the given assignment",
+            message:
+              "Group data or assignment submission not found for the given assignment and mentee",
           });
         }
 
-        const [prevData] = await ctx.db
-          .select({
-            point: assignmentSubmissions.point,
-          })
-          .from(assignmentSubmissions)
-          .where(eq(assignmentSubmissions.id, assignmentId));
-
-        if (group?.point !== undefined && prevData?.point !== null) {
-          group.point -= prevData!.point;
-        }
-
-        if (!prevData) {
+        if (point < 0 || point > 100) {
           throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Assignment submission not found",
+            code: "BAD_REQUEST",
+            message: "Point must be between 0 and 100",
           });
         }
 
-        prevData.point = point;
-        group.point = group.point + point;
+        const { groupName, groupPoint, assignmentPoint } = group;
 
+        // Adjust the group's point value by subtracting the previous point and adding the new point
+        const updatedGroupPoint = groupPoint - (assignmentPoint ?? 0) + point;
+
+        // Update the assignment submission's point
         await ctx.db
           .update(assignmentSubmissions)
-          .set({ point: prevData.point })
-          .where(eq(assignmentSubmissions.id, assignmentId));
+          .set({ point })
+          .where(
+            and(
+              eq(assignmentSubmissions.assignmentId, assignmentId),
+              eq(assignmentSubmissions.userNim, menteeNim),
+            ),
+          );
 
-        // update group data
+        // Update the group's point in the groups table
         await ctx.db
           .update(groups)
-          .set({ point: group.point })
-          .where(eq(groups.name, group.groupName));
+          .set({ point: updatedGroupPoint })
+          .where(eq(groups.name, groupName));
 
         return {
           success: true,
           message: "Mentee assignment point updated successfully",
-          updatedGroup: group,
+          updatedGroup: {
+            groupName,
+            updatedGroupPoint,
+          },
         };
       } catch (error) {
         console.log(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Error when updating mentee assignment point : ${String(error)}`,
+          message: `Error when updating mentee assignment point: ${String(error)}`,
         });
       }
     }),
