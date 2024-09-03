@@ -97,20 +97,19 @@ export default function MametEditAssignment({
   };
 
   const updateAssignment = async (
-    filename?: string | undefined,
-    presignedUrl?: string | undefined,
+    filename?: string | null,
+    presignedUrl?: string | null,
   ) => {
     try {
-      const newFilename = filename ?? "existFile;";
       await editAssignmentMutation.mutateAsync({
         id: assignment.assignmentId,
-        filename: newFilename ?? existFile,
+        filename: filename ?? "",
         title: judul,
         description: deskripsi,
         startTime: setTime(waktuMulai, jamMulai),
         deadline: setTime(waktuSelesai, jamSelesai),
         point,
-        downloadUrl: presignedUrl ?? assignment.downloadUrl,
+        downloadUrl: presignedUrl ?? "",
       });
       router.push("/assignment");
     } catch (err) {
@@ -151,7 +150,7 @@ export default function MametEditAssignment({
         };
         reader.readAsDataURL(file);
       } else {
-        await updateAssignment();
+        await updateAssignment(existFile ? existFile : null, existFile ? assignment.downloadUrl : null);
       }
     } catch (err) {
       toast.error("Gagal mengupdate tugas. Silahkan coba lagi.");
@@ -265,9 +264,8 @@ export default function MametEditAssignment({
             <p className="text-xs text-gray-500">Maximum file size 20 MB</p>
           </div>
           <div
-            className={`my-3 flex w-1/3 items-center justify-between gap-2 rounded-sm border-2 border-[#0010A4] px-4 py-2 text-xs font-bold text-[#0010A4]  ${
-              (file ?? existFile) ? "block" : "hidden"
-            }`}
+            className={`my-3 flex w-1/3 items-center justify-between gap-2 rounded-sm border-2 border-[#0010A4] px-4 py-2 text-xs font-bold text-[#0010A4]  ${(file ?? existFile) ? "block" : "hidden"
+              }`}
           >
             <input
               id="file-upload"
