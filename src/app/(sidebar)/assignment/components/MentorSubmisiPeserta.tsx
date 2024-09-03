@@ -81,6 +81,8 @@ const MentorSubmisiPeserta = ({
         });
 
         toast.success("Nilai berhasil disimpan");
+
+        router.refresh();
       } catch (error) {
         console.error("Error saving points:", error);
         toast.error("Gagal menyimpan nilai :" + String(error));
