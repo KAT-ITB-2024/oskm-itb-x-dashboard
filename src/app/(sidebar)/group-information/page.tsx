@@ -36,6 +36,7 @@ interface GroupInformationsMentor {
   mentees: GroupInformationsMamet["mentees"];
   page: number;
   pageSize: number;
+  totalPage: number;
 }
 
 export default async function Page({
@@ -115,8 +116,8 @@ export default async function Page({
 
     metaMentor = {
       page: groupInformationsMentor.page,
-      totalPages: 1,
-      pageSize: 5,
+      totalPages: groupInformationsMentor.totalPage,
+      pageSize: groupInformationsMentor.pageSize,
       totalCount: groupInformationsMentor.mentees.length,
     };
 

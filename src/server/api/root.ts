@@ -1,5 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { utilityRouter } from "./routers/utility";
+import { merchandiseRouter } from "./routers/merchandise";
 import { assignmentRouter } from "./routers/assignment";
 import { presenceRouter } from "./routers/presence";
 import { userRouter } from "./routers/user";
@@ -18,7 +18,7 @@ export const appRouter = createTRPCRouter({
   storage: storageRouter,
   event: eventRouter,
   presence: presenceRouter,
-  utility: utilityRouter,
+  merchandise: merchandiseRouter,
 });
 
 // export type definition of API

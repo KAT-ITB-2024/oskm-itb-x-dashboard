@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DashboardHeaderGroup from "~/app/components/DashboardHeaderGroup";
 import {
   Table,
@@ -60,6 +60,17 @@ function MentorPage({
   metaMentor,
   group,
 }: GroupInformationMentorProps) {
+  const [data, setData] = useState(groupInformations?.mentees ?? []);
+
+  useEffect(() => {
+    setData(
+      groupInformations?.mentees.slice(
+        (metaMentor.page - 1) * metaMentor.pageSize,
+        metaMentor.page * metaMentor.pageSize,
+      ) ?? [],
+    );
+  }, [groupInformations, metaMentor.page, metaMentor.pageSize]);
+
   return (
     <>
       <DashboardHeaderGroup
@@ -82,7 +93,7 @@ function MentorPage({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {groupInformations?.mentees.map((item, index) => (
+            {data.map((item, index) => (
               <TableRow key={item.nim}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{item.nim}</TableCell>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import {
   Table,
@@ -13,7 +13,7 @@ import {
 import { RiPencilFill } from "react-icons/ri";
 import { FaCheck } from "react-icons/fa";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 interface GroupInformationMentorProps {
@@ -60,27 +60,41 @@ export default function PointList({
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(metaMentor.page);
   const itemsPerPage = metaMentor.pageSize;
+  const [filteredData, setFilteredData] = useState(data);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const filteredData = data.filter(
-    (item) =>
-      item.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ??
-      item.nim?.includes(searchQuery),
-  );
+  useEffect(() => {
+    setData(
+      groupInformations?.mentees.slice(
+        (metaMentor.page - 1) * metaMentor.pageSize,
+        metaMentor.page * metaMentor.pageSize,
+      ) ?? [],
+    );
+  }, [groupInformations, metaMentor.page, metaMentor.pageSize]);
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  useEffect(() => {
+    setFilteredData(
+      data.filter(
+        (item) =>
+          item.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+          item.nim?.includes(searchQuery),
+      ),
+    );
+  }, [data, searchQuery]);
+
+  const totalPages = metaMentor.totalPages;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      const params = new URLSearchParams(searchParams);
+      params.set("page", page.toString());
+      router.replace(`${pathname}?${params.toString()}`);
+      router.refresh();
     }
   };
-
-  const currentData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
-  const router = useRouter();
 
   const editPoints = api.user.editActivityPoints.useMutation();
 
@@ -133,7 +147,7 @@ export default function PointList({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {currentData.map((item, index) => (
+          {filteredData.map((item, index) => (
             <TableRow key={item.nim}>
               <TableCell>
                 {index + 1 + (currentPage - 1) * itemsPerPage}

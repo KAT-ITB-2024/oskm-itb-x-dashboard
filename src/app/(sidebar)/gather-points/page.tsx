@@ -85,7 +85,7 @@ export default async function Page({
 
     metaMentor = {
       page: kelompokMentor.page,
-      totalPages: Math.ceil(kelompokMentor.mentees.length / 5), // Assuming 5 items per page
+      totalPages: kelompokMentor.totalPage,
       pageSize: kelompokMentor.pageSize,
       totalCount: kelompokMentor.mentees.length,
     };
