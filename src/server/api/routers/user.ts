@@ -19,7 +19,11 @@ import {
   forgotPasswordURL,
   validateToken,
 } from "~/services/forgotToken";
-import { createTRPCRouter, mentorMametProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  mentorMametProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
   createForgotToken: publicProcedure
@@ -99,7 +103,7 @@ export const userRouter = createTRPCRouter({
       const { userNim, search, page, pageSize } = input;
 
       try {
-        const offset = (page - 1) * pageSize;
+        // const offset = (page - 1) * pageSize;
 
         const mentorGroup = await db
           .select({ namaKeluarga: groups.name })
@@ -145,9 +149,7 @@ export const userRouter = createTRPCRouter({
             profiles.name,
             profiles.faculty,
             users.activityPoints,
-          )
-          .offset(offset)
-          .limit(pageSize);
+          );
 
         return {
           mentees: menteesData.map((mentee) => ({
@@ -160,6 +162,7 @@ export const userRouter = createTRPCRouter({
           })),
           page,
           pageSize,
+          totalPage: Math.ceil(menteesData.length / pageSize),
         };
       } catch (error) {
         throw new TRPCError({

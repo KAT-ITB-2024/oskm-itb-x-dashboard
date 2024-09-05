@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardHeaderGroup from "~/app/components/DashboardHeaderGroup";
 import Search from "./Search";
 import {
@@ -96,6 +96,7 @@ function MentorEdit({
   event,
   presenceData,
 }: MentorEditProps) {
+  const [data, setData] = useState(menteesData?.mentees ?? []);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newKeterangan, setNewKeterangan] = useState<string>("");
 
@@ -107,6 +108,15 @@ function MentorEdit({
 
   const updatePresenceMutation =
     api.presence.upsertGroupPresenceDataSingle.useMutation();
+
+  useEffect(() => {
+    setData(
+      menteesData?.mentees.slice(
+        (metaMentor.page - 1) * metaMentor.pageSize,
+        metaMentor.page * metaMentor.pageSize,
+      ) ?? [],
+    );
+  }, [menteesData, metaMentor.page, metaMentor.pageSize]);
 
   const handleSave = async (nim: string, presence: string) => {
     try {
@@ -232,7 +242,7 @@ function MentorEdit({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {menteesData?.mentees.map((item, index) => (
+            {data.map((item, index) => (
               <TableRow key={item.nim}>
                 <TableCell>
                   {index + 1 + (metaMentor.page - 1) * metaMentor.pageSize}

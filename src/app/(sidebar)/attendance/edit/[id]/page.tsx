@@ -65,6 +65,7 @@ export default async function Page({
     const menteeQuery = api.user.detailKelompokMentor({
       userNim: session.user.nim,
       search: search,
+      page: currentPage,
     });
     const kelompokQuery = api.user.getMentorGroupName({
       userNim: session.user.nim,
@@ -77,8 +78,8 @@ export default async function Page({
     menteesData = mentee;
     metaMentor = {
       page: mentee.page,
-      totalPages: 1,
-      pageSize: 5,
+      totalPages: mentee.totalPage,
+      pageSize: mentee.pageSize,
       totalCount: mentee.mentees.length,
     };
 
