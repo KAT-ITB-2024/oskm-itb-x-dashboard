@@ -1,4 +1,4 @@
-// Router ini digunakan untuk segala yang berkaitan dengan utility seperti menambahkan activity point dan lain-lain
+// Router ini digunakan untuk segala yang berkaitan dengan merchandise
 import {
   merchandises,
   merchandiseExchanges,
@@ -13,7 +13,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, itbxProcedure } from "~/server/api/trpc";
 
-export const utilityRouter = createTRPCRouter({
+export const merchandiseRouter = createTRPCRouter({
   // GET All Merchandise + limit, offset, search query
   getAllMerchandise: itbxProcedure
     .input(
