@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import type { AssignmentType } from "@katitb2024/database";
 import { FolderEnum } from "~/server/bucket";
 import toast from "react-hot-toast";
+import { AllowableFileTypeEnum } from "~/types/enums/storage";
+import { uploadFile } from "~/utils/fileUtils";
 
 export interface AssignmentInsertion {
   judul: string;
@@ -31,7 +33,9 @@ const MAX_FILE_SIZE = 20 * 1024 * 1024;
 export default function MametAddAssignment() {
   const router = useRouter();
 
-  const fileUploadMutation = api.storage.uploadFile.useMutation();
+  const uploadFileMutation = api.storage.generateUploadUrl.useMutation();
+  const downloadFileMutation = api.storage.generateDownloadUrl.useMutation();
+
   const createAssignmentMutation =
     api.assignment.uploadNewAssignmentMamet.useMutation();
 
@@ -104,58 +108,65 @@ export default function MametAddAssignment() {
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
-    setIsLoading(true);
-    const fields = [
-      { "Judul Tugas": title },
-      { "Deskripsi Tugas": description },
-      { "Waktu Mulai": startTime },
-      { "Waktu Selesai": deadline },
-      { "Tipe Tugas": assignmentType },
-      { Poin: point },
-    ];
+    const toastId = toast("toast");
+    try {
+      setIsLoading(true);
+      toast.loading("Loading...", {
+        id: toastId,
+      });
+      const fields = [
+        { "Judul Tugas": title },
+        { "Deskripsi Tugas": description },
+        { "Waktu Mulai": startTime },
+        { "Waktu Selesai": deadline },
+        { "Tipe Tugas": assignmentType },
+        { Poin: point },
+      ];
 
-    for (const field of fields) {
-      for (const [key, value] of Object.entries(field)) {
-        if (!value) {
-          if (key === "Poin" && assignmentType === "Main") continue;
-          toast.error(`Kolom ${key} harus diisi`);
-          return;
-        } else {
-          if (
-            key === "Waktu Selesai" &&
-            setTime(startTime, jamMulai) >= setTime(deadline, jamSelesai)
-          ) {
-            toast.error(
-              "Waktu selesai tidak boleh lebih kecil dari waktu mulai",
-            );
+      for (const field of fields) {
+        for (const [key, value] of Object.entries(field)) {
+          if (!value) {
+            if (key === "Poin" && assignmentType === "Main") continue;
+            toast.error(`Kolom ${key} harus diisi`);
             return;
+          } else {
+            if (
+              key === "Waktu Selesai" &&
+              setTime(startTime, jamMulai) >= setTime(deadline, jamSelesai)
+            ) {
+              toast.error(
+                "Waktu selesai tidak boleh lebih kecil dari waktu mulai",
+              );
+              return;
+            }
           }
         }
       }
-    }
-    try {
       if (file) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          if (e.target?.result) {
-            const base64Content = (e.target.result as string)
-              .toString()
-              .split(",")[1];
-            const { presignedUrl } = await fileUploadMutation.mutateAsync({
-              folder: FolderEnum.ASSIGNMENT_MAMET,
-              fileName: file.name,
-              fileContent: base64Content!,
-            });
-            await createAssignment(file.name, presignedUrl);
-          }
-        };
-        reader.readAsDataURL(file);
+        const { url, filename } = await uploadFileMutation.mutateAsync({
+          filename: file.name,
+          folder: FolderEnum.ASSIGNMENT_MAMET,
+          contentType: AllowableFileTypeEnum.PDF,
+        });
+
+        const downloadUrl = await downloadFileMutation.mutateAsync({
+          filename: filename,
+          folder: FolderEnum.ASSIGNMENT_MAMET,
+        });
+
+        await createAssignment(file.name, downloadUrl);
+
+        await uploadFile(url, file, AllowableFileTypeEnum.PDF);
+
+        toast.success("Tugas berhasil dibuat");
       } else {
         await createAssignment();
       }
     } catch (err) {
       toast.error("Gagal submit tugas");
       console.error("Error submitting assignment:", err);
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 
