@@ -111,6 +111,11 @@ jobs:
             echo "NEXT_PUBLIC_DO_SECRET_KEY secret is missing"
             exit 1
           fi
+      - name: Remove yarn.lock
+        run: rm -f yarn.lock
+      - name: Remove untracked files
+        run: |
+          git clean -f -d
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
