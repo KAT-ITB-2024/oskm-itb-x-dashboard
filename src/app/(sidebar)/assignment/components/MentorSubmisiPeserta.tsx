@@ -17,6 +17,7 @@ import { BiCheck } from "react-icons/bi";
 import { api } from "~/trpc/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Pagination from "./Pagination";
 
 interface mentorSubmisiPesertaProps {
   assignmentID: string;
@@ -267,75 +268,7 @@ const MentorSubmisiPeserta = ({
           </Table>
         </div>
       </div>
-      <nav className="gap-3items-center mt-10 flex flex-row justify-center gap-4">
-        <p>Total {meta.totalCount} Items</p>
-        <ul className="flex h-6 items-center gap-3 -space-x-px text-base">
-          <li>
-            <a
-              href="#"
-              className={`flex h-6 items-center justify-center rounded-md ${meta.page === 1 ? "bg-gray-300" : "bg-[#EE1192]"} px-2 text-white`}
-              aria-disabled={meta.page === 1}
-            >
-              <span className="sr-only">Previous</span>
-              <svg
-                className="h-2 w-2 rtl:rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 1 1 5l4 4"
-                />
-              </svg>
-            </a>
-          </li>
-          {Array.from({ length: meta.totalPages }, (_, index) => (
-            <li key={index}>
-              <a
-                href="#"
-                aria-current={meta.page === index + 1 ? "page" : undefined}
-                className={`z-10 flex h-6 items-center justify-center rounded-md ${meta.page === index + 1 ? "bg-[#EE1192]" : "bg-white"} px-2 text-white`}
-              >
-                {index + 1}
-              </a>
-            </li>
-          ))}
-          <li>
-            <a
-              href="#"
-              className={`flex h-6 items-center justify-center rounded-md ${meta.page === meta.totalPages ? "bg-gray-300" : "bg-[#EE1192]"} px-2 text-white`}
-              aria-disabled={meta.page === meta.totalPages}
-            >
-              <span className="sr-only">Next</span>
-              <svg
-                className="h-2 w-2"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M1 1l4 4-4 4"
-                />
-              </svg>
-            </a>
-          </li>
-        </ul>
-        <div className="h-6 rounded-md border px-3.5">
-          <p>
-            <span className="text-gray-500">{meta.pageSize}</span> / page
-          </p>
-        </div>
-      </nav>
+      <Pagination meta={meta} />
     </div>
   );
 };

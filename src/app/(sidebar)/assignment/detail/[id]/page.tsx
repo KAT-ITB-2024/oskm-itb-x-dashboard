@@ -41,12 +41,9 @@ export default async function Page({
       searchString: query,
     });
 
-    console.log("response", response);
-
     if (response?.data) {
       assignmentSubmissions = response.data as MenteeAssignment[];
       meta = response.meta || meta;
-      meta.totalCount = response.data.length;
     }
   } catch (error) {
     console.error("Failed to fetch assignmentSubmissions:", error);
