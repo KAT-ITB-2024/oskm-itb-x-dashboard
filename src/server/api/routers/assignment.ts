@@ -151,6 +151,7 @@ export const assignmentRouter = createTRPCRouter({
             .where(
               and(
                 eq(profiles.group, groupName),
+                eq(users.role, roleEnum.enumValues[0]),
                 or(
                   ilike(profiles.name, `%${searchString}%`),
                   ilike(users.nim, `%${searchString}%`),
