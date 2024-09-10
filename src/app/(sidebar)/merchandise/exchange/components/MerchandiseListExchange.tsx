@@ -9,8 +9,8 @@ import {
   TableRow,
 } from "~/components/ui/table";
 
-import { IoMdSearch } from "react-icons/io";
 import Link from "next/link";
+import Search from "~/app/(sidebar)/assignment/components/Search";
 
 // MOCKUP DATA
 interface MerchandiseItem {
@@ -66,14 +66,10 @@ const merchandises: Merchandise[] = [
 export default function MerchandiseListExchange() {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4">
-      <div className="flex w-full items-center justify-between rounded-lg border-2 border-input bg-white px-6 py-3">
-        <input
-          type="text"
-          placeholder="Cari Order ID"
-          className="w-full bg-transparent outline-none"
-        />
-        <IoMdSearch className="text-xl text-gray-400" />
+      <div className="flex w-full flex-col items-center justify-center">
+        <Search placeholder="Cari Order ID..." />
       </div>
+
       <Table className="border-spacing-0 rounded-lg">
         <TableHeader>
           <TableRow>
