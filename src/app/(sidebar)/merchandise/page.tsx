@@ -44,8 +44,6 @@ export default async function Page({
       pageSize: 5,
       totalCount: response.count ?? 0,
     };
-
-    console.log(merchandises);
   } catch (error) {
     console.error("Failed to fetch merchandises:", error);
   }
