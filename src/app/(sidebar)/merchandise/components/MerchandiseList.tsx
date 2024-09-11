@@ -14,7 +14,7 @@ import { MdCheck } from "react-icons/md";
 import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import Search from "../../assignment/components/Search";
+import Search from "./Search";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +23,7 @@ interface MerchandiseListProps {
     id: string;
     name: string;
     price: number;
-    image: string;
+    image: string | null;
     stock: number;
   }[];
   meta: {
@@ -98,7 +98,10 @@ export default function MerchandiseList({
                 <TableCell className="text-start">{item.name}</TableCell>
                 <TableCell>{item.price}</TableCell>
                 <TableCell>
-                  <Link href={item.image} className="text-[#3678FF] underline">
+                  <Link
+                    href={item.image ?? ""}
+                    className="text-[#3678FF] underline"
+                  >
                     Link
                   </Link>
                 </TableCell>

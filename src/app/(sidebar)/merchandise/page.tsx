@@ -7,7 +7,7 @@ interface Merchandises {
   id: string;
   name: string;
   price: number;
-  image: string;
+  image: string | null;
   stock: number;
 }
 
@@ -22,8 +22,8 @@ export default async function Page({
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page) || 1;
 
-  const merchandises: Merchandises[] = [];
-  const meta = {
+  let merchandises: Merchandises[] = [];
+  let meta = {
     page: currentPage,
     totalPages: 1,
     pageSize: 5,
@@ -37,7 +37,15 @@ export default async function Page({
       search: query,
     });
 
-    console.log(response);
+    merchandises = response.res;
+    meta = {
+      page: currentPage,
+      totalPages: Math.ceil(response.count! / 5),
+      pageSize: 5,
+      totalCount: response.count ?? 0,
+    };
+
+    console.log(merchandises);
   } catch (error) {
     console.error("Failed to fetch merchandises:", error);
   }
