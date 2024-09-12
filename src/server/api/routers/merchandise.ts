@@ -11,11 +11,11 @@ import { TRPCError } from "@trpc/server";
 import { count, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 
-import { createTRPCRouter, itbxProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const merchandiseRouter = createTRPCRouter({
   // GET All Merchandise + limit, offset, search query
-  getAllMerchandise: itbxProcedure
+  getAllMerchandise: publicProcedure
     .input(
       z.object({
         limit: z.number().optional(),
@@ -38,7 +38,8 @@ export const merchandiseRouter = createTRPCRouter({
             input.search && input.search !== ""
               ? ilike(merchandises.name, `%${input.search}%`)
               : undefined,
-          );
+          )
+          .orderBy(merchandises.name);
 
         const limit =
           input.limit !== undefined ? query.limit(input.limit) : query;
@@ -70,7 +71,7 @@ export const merchandiseRouter = createTRPCRouter({
     }),
 
   // PUT Edit Quantity Merchandise
-  updateQuantity: itbxProcedure
+  updateQuantity: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -109,7 +110,7 @@ export const merchandiseRouter = createTRPCRouter({
     }),
 
   // GET All Exchange Merchandise + limit, offset, search query
-  getMerchandiseExchange: itbxProcedure
+  getMerchandiseExchange: publicProcedure
     .input(
       z.object({
         limit: z.number().optional(),
@@ -165,7 +166,7 @@ export const merchandiseRouter = createTRPCRouter({
     }),
 
   // Get Details Exchange Merchandise
-  getDetailsExchange: itbxProcedure
+  getDetailsExchange: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -189,6 +190,7 @@ export const merchandiseRouter = createTRPCRouter({
           .select({
             merchandiseId: merchandiseExchangeDetails.merchandiseId,
             merchandiseName: merchandises.name,
+            price: merchandises.price,
             quantity: merchandiseExchangeDetails.quantity,
           })
           .from(merchandiseExchangeDetails)
@@ -217,7 +219,7 @@ export const merchandiseRouter = createTRPCRouter({
     }),
 
   // PUT Change Exchange Status
-  editExchangeStatus: itbxProcedure
+  editExchangeStatus: publicProcedure
     .input(
       z.object({
         id: z.string(),
