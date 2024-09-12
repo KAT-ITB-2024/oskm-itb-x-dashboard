@@ -31,6 +31,11 @@ const sidebarItems = [
     href: "/gather-points",
     icon: GiAlliedStar,
   },
+  {
+    name: "Merchandise",
+    href: "/merchandise",
+    icon: FaShoppingCart,
+  },
 ];
 
 interface SidebarProps {
@@ -44,7 +49,7 @@ export default function Sidebar({ role }: SidebarProps) {
   const filteredSidebarItems =
     role.toLowerCase() === "mamet"
       ? sidebarItems.filter((item) => item.name !== "Gather Points")
-      : sidebarItems;
+      : sidebarItems.filter((item) => item.name !== "Merchandise");
 
   const handleSignOut = async () => {
     await signOut();
