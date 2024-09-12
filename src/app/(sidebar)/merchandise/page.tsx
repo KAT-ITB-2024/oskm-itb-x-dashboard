@@ -2,6 +2,8 @@ import DashboardHeader from "~/app/components/DashboardHeader";
 import MerchandiseNavigation from "./components/MerchandiseNavigation";
 import MerchandiseList from "./components/MerchandiseList";
 import { api } from "~/trpc/server";
+import { redirect } from "next/navigation";
+import { getServerAuthSession } from "~/server/auth";
 
 interface Merchandises {
   id: string;
@@ -19,6 +21,17 @@ export default async function Page({
     page?: string;
   };
 }) {
+  const session = await getServerAuthSession();
+  const user = session?.user;
+
+  if (user?.role.toLowerCase() !== "mamet") {
+    redirect("/");
+  }
+
+  if (!session) {
+    return redirect("/");
+  }
+
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page) || 1;
 

@@ -38,7 +38,8 @@ export const merchandiseRouter = createTRPCRouter({
             input.search && input.search !== ""
               ? ilike(merchandises.name, `%${input.search}%`)
               : undefined,
-          );
+          )
+          .orderBy(merchandises.name);
 
         const limit =
           input.limit !== undefined ? query.limit(input.limit) : query;
