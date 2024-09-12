@@ -189,6 +189,7 @@ export const merchandiseRouter = createTRPCRouter({
           .select({
             merchandiseId: merchandiseExchangeDetails.merchandiseId,
             merchandiseName: merchandises.name,
+            price: merchandises.price,
             quantity: merchandiseExchangeDetails.quantity,
           })
           .from(merchandiseExchangeDetails)
