@@ -223,27 +223,94 @@ export const merchandiseRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        setDone: z.boolean(), // True bila set ke Done, False bila set ke Undone
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const res = await ctx.db
-          .update(merchandiseExchanges)
-          .set({
-            status: input.setDone
-              ? merchandiseExchangeStatusEnum.enumValues[0]
-              : merchandiseExchangeStatusEnum.enumValues[1],
-          })
-          .where(eq(merchandiseExchanges.id, input.id))
-          .returning({ foundId: merchandiseExchanges.id });
+        await ctx.db.transaction(async (trx) => {
+          const current = await trx
+            .selectDistinct({
+              status: merchandiseExchanges.status,
+            })
+            .from(merchandiseExchanges)
+            .where(eq(merchandiseExchanges.id, input.id));
 
-        if (!res.length) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Merchandise can't be found",
-          });
-        }
+          if (!current[0]) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Merchandise exchange not found",
+            });
+          }
+
+          if (
+            current[0].status == merchandiseExchangeStatusEnum.enumValues[0]
+          ) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Merchandise exchange status is already updated",
+            });
+          }
+
+          const res = await trx
+            .update(merchandiseExchanges)
+            .set({
+              status: merchandiseExchangeStatusEnum.enumValues[0],
+            })
+            .where(eq(merchandiseExchanges.id, input.id))
+            .returning({ foundId: merchandiseExchanges.id });
+
+          if (!res.length) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Merchandise can't be found",
+            });
+          }
+
+          const details = await trx
+            .select({
+              merchandiseId: merchandiseExchangeDetails.merchandiseId,
+              quantity: merchandiseExchangeDetails.quantity,
+            })
+            .from(merchandiseExchangeDetails)
+            .where(
+              eq(merchandiseExchangeDetails.merchandiseExchangeId, input.id),
+            );
+
+          if (!details.length) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "No merchandise exchange details found",
+            });
+          }
+
+          for (const detail of details) {
+            const itemStock = await trx
+              .selectDistinct({ stock: merchandises.stock })
+              .from(merchandises)
+              .where(eq(merchandises.id, detail.merchandiseId));
+
+            if (itemStock[0] === undefined || itemStock[0] === null) {
+              throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "No merchandise id:" + detail.merchandiseId + " found",
+              });
+            }
+
+            if (itemStock[0].stock >= 0) {
+              await trx
+                .update(merchandises)
+                .set({
+                  stock: itemStock[0]?.stock - detail.quantity,
+                })
+                .where(eq(merchandises.id, detail.merchandiseId));
+            } else {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Not enough stock for merchandise",
+              });
+            }
+          }
+        });
 
         return {
           success: true,
