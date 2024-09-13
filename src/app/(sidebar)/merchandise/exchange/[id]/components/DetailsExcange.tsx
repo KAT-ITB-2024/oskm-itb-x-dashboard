@@ -45,7 +45,6 @@ export default function DetailExchange({
       if (status === "Not Taken") {
         await editStatus.mutateAsync({
           id: orderId,
-          setDone: true,
         });
       }
       router.refresh();
